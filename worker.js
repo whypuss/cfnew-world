@@ -3442,7 +3442,9 @@
                 regionNames: {
                     HK: '🇭🇰 香港', US: '🇺🇸 美国', SG: '🇸🇬 新加坡', JP: '🇯🇵 日本',
                     KR: '🇰🇷 韩国', DE: '🇩🇪 德国', SE: '🇸🇪 瑞典', NL: '🇳🇱 荷兰',
-                    FI: '🇫🇮 芬兰', GB: '🇬🇧 英国'
+                    FI: '🇫🇮 芬兰', GB: '🇬🇧 英国',
+                    AU: '🇦🇺 澳洲', BR: '🇧🇷 巴西', CA: '🇨🇦 加拿大', FR: '🇫🇷 法国',
+                    CH: '🇨🇭 瑞士', RU: '🇷🇺 俄国', IN: '🇮🇳 印度', TW: '🇹🇼 台湾'
                 },
                 terminal: '终端 v2.9.8',
                 githubProject: 'GitHub 项目',
@@ -3582,7 +3584,9 @@
                 regionNames: {
                     HK: '🇭🇰 هنگ کنگ', US: '🇺🇸 آمریکا', SG: '🇸🇬 سنگاپور', JP: '🇯🇵 ژاپن',
                     KR: '🇰🇷 کره جنوبی', DE: '🇩🇪 آلمان', SE: '🇸🇪 سوئد', NL: '🇳🇱 هلند',
-                    FI: '🇫🇮 فنلاند', GB: '🇬🇧 بریتانیا'
+                    FI: '🇫🇮 فنلاند', GB: '🇬🇧 بریتانیا',
+                    AU: '🇦🇺 استرالیا', BR: '🇧🇷 برزیل', CA: '🇨🇦 کانادا', FR: '🇫🇷 فرانسه',
+                    CH: '🇨🇭 سوئیس', RU: '🇷🇺 روسیه', IN: '🇮🇳 هند', TW: '🇹🇼 تایوان'
                 },
                 terminal: 'ترمینال v2.9.8',
                 githubProject: 'پروژه GitHub',
@@ -4618,6 +4622,14 @@
                                     <option value="NL">${t.regionNames.NL}</option>
                                     <option value="FI">${t.regionNames.FI}</option>
                                     <option value="GB">${t.regionNames.GB}</option>
+                                    <option value="AU">${t.regionNames.AU}</option>
+                                    <option value="BR">${t.regionNames.BR}</option>
+                                    <option value="CA">${t.regionNames.CA}</option>
+                                    <option value="FR">${t.regionNames.FR}</option>
+                                    <option value="CH">${t.regionNames.CH}</option>
+                                    <option value="RU">${t.regionNames.RU}</option>
+                                    <option value="IN">${t.regionNames.IN}</option>
+                                    <option value="TW">${t.regionNames.TW}</option>
                             </select>
                                 <small id="wkRegionHint" style="color: #7aa9c4; font-size: 0.85rem; display: none;">⚠️ ${t.customIPDisabledHint}</small>
                         </div>
@@ -5311,7 +5323,9 @@
                             regionNames: {
                                 'HK': '🇭🇰 香港', 'US': '🇺🇸 美国', 'SG': '🇸🇬 新加坡', 'JP': '🇯🇵 日本',
                                 'KR': '🇰🇷 韩国', 'DE': '🇩🇪 德国', 'SE': '🇸🇪 瑞典', 'NL': '🇳🇱 荷兰',
-                                'FI': '🇫🇮 芬兰', 'GB': '🇬🇧 英国'
+                                'FI': '🇫🇮 芬兰', 'GB': '🇬🇧 英国',
+                                'AU': '🇦🇺 澳洲', 'BR': '🇧🇷 巴西', 'CA': '🇨🇦 加拿大', 'FR': '🇫🇷 法国',
+                                'CH': '🇨🇭 瑞士', 'RU': '🇷🇺 俄国', 'IN': '🇮🇳 印度', 'TW': '🇹🇼 台湾'
                             },
                             customIPMode: '自定义ProxyIP模式 (p变量启用)',
                             customIPModeDesc: '自定义IP模式 (已禁用地区匹配)',
@@ -5336,7 +5350,9 @@
                             regionNames: {
                                 'HK': '🇭🇰 هنگ کنگ', 'US': '🇺🇸 آمریکا', 'SG': '🇸🇬 سنگاپور', 'JP': '🇯🇵 ژاپن',
                                 'KR': '🇰🇷 کره جنوبی', 'DE': '🇩🇪 آلمان', 'SE': '🇸🇪 سوئد', 'NL': '🇳🇱 هلند',
-                                'FI': '🇫🇮 فنلاند', 'GB': '🇬🇧 بریتانیا'
+                                'FI': '🇫🇮 فنلاند', 'GB': '🇬🇧 بریتانیا',
+                                'AU': '🇦🇺 استرالیا', 'BR': '🇧🇷 برزیل', 'CA': '🇨🇦 کانادا', 'FR': '🇫🇷 فرانسه',
+                                'CH': '🇨🇭 سوئیس', 'RU': '🇷🇺 روسیه', 'IN': '🇮🇳 هند', 'TW': '🇹🇼 تایوان'
                             },
                             customIPMode: 'حالت ProxyIP سفارشی (متغیر p فعال است)',
                             customIPModeDesc: 'حالت IP سفارشی (تطبیق منطقه غیرفعال است)',
