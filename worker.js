@@ -163,6 +163,164 @@ Sitemap: https://example.com/sitemap.xml
         { domain: "cdn.tzpro.xyz" }, { domain: "cf.877771.xyz" }, { domain: "xn--b6gac.eu.org" }
     ];
 
+    // P1-2: Source weight table for node reputation system
+    const SOURCE_WEIGHTS = {
+        'CMLiussss': 1.0,    // Primary source - highest trust
+        'self-test': 1.0,    // Native/backup IPs used for self-testing
+        'direct-domains': 0.8, // Direct domains list
+        'wetest': 0.2,       // WeTest IP database - lower trust
+        'cdn': 0.1           // CDN-sourced IPs - lowest trust
+    };
+
+    // P1-2: Node record KV schema for reputation tracking
+    // Key format: node:{ip}:{port}
+    // Value: JSON node record
+    const NODE_RECORD_PREFIX = 'node:';
+    const MIN_CHECKS_FOR_REPUTATION = 10;
+    const QUARANTINE_FAIL_THRESHOLD = 5;
+    const QUARANTINE_SUCCESS_RATE_THRESHOLD = 0.20; // 20%
+
+    /**
+     * Node record schema:
+     * {
+     *   ip: string,
+     *   port: number,
+     *   source: string,          // Source identifier
+     *   successCount: number,   // Successful checks
+     *   failCount: number,      // Failed checks
+     *   totalChecks: number,    // Total checks performed
+     *   successRate: number,    // successCount / totalChecks (0-1)
+     *   lastCheckTime: number,  // Unix timestamp ms
+     *   lastSuccessTime: number,// Unix timestamp ms
+     *   latencyScore: number,   // Latency-based score (0-100, higher is better)
+     *   recentAlive: boolean,    // True if alive in recent checks
+     *   quarantined: boolean,   // True if node is quarantined
+     *   quarantinedAt: number|null, // When quarantined
+     *   quarantineReason: string|null // Why quarantined
+     * }
+     */
+
+    // P1-2: Compute node reputation score
+    // Formula: successRate*0.45 + sourceWeight*0.25 + recentAlive*0.15 + latencyScore*0.15
+    function computeNodeScore(nodeRecord) {
+        if (!nodeRecord || nodeRecord.quarantined) {
+            return 0;
+        }
+
+        const successRate = nodeRecord.successRate || 0;
+        const sourceWeight = SOURCE_WEIGHTS[nodeRecord.source] || 0.5;
+        const recentAlive = nodeRecord.recentAlive ? 1 : 0;
+        const latencyScore = nodeRecord.latencyScore || 50; // Default 50 if unknown
+
+        const score = (successRate * 0.45) + (sourceWeight * 0.25) + (recentAlive * 0.15) + (latencyScore * 0.15);
+        return Math.min(1, Math.max(0, score)); // Clamp to 0-1
+    }
+
+    // P1-2: Get node record from KV
+    async function getNodeRecord(ip, port) {
+        if (!kvStore) return null;
+        try {
+            const key = `${NODE_RECORD_PREFIX}${ip}:${port}`;
+            const data = await kvStore.get(key);
+            if (data) {
+                return JSON.parse(data);
+            }
+        } catch (_) {}
+        return null;
+    }
+
+    // P1-2: Save node record to KV
+    async function saveNodeRecord(record) {
+        if (!kvStore) return;
+        try {
+            const key = `${NODE_RECORD_PREFIX}${record.ip}:${record.port}`;
+            await kvStore.put(key, JSON.stringify(record));
+        } catch (_) {}
+    }
+
+    // P1-2: Update node reputation after a check result
+    async function updateNodeReputation(ip, port, source, success, latency = null) {
+        if (!kvStore) return;
+
+        const key = `${NODE_RECORD_PREFIX}${ip}:${port}`;
+        let record = await getNodeRecord(ip, port);
+
+        if (!record) {
+            record = {
+                ip: ip,
+                port: port,
+                source: source,
+                successCount: 0,
+                failCount: 0,
+                totalChecks: 0,
+                successRate: 0,
+                lastCheckTime: Date.now(),
+                lastSuccessTime: 0,
+                latencyScore: 50,
+                recentAlive: false,
+                quarantined: false,
+                quarantinedAt: null,
+                quarantineReason: null
+            };
+        }
+
+        record.totalChecks++;
+        record.lastCheckTime = Date.now();
+
+        if (success) {
+            record.successCount++;
+            record.lastSuccessTime = Date.now();
+            record.recentAlive = true;
+        } else {
+            record.failCount++;
+            // recentAlive false if many recent failures (last 3 checks all failed)
+            if (record.failCount >= 3) {
+                record.recentAlive = false;
+            }
+        }
+
+        // Update latency score (lower latency = higher score, 0-100)
+        if (latency !== null && latency > 0) {
+            // Convert latency to score: 0ms = 100, 5000ms+ = 0
+            record.latencyScore = Math.max(0, Math.min(100, 100 - (latency / 50)));
+        }
+
+        // Calculate success rate
+        record.successRate = record.successCount / record.totalChecks;
+
+        // P1-2: Check quarantine conditions
+        const shouldQuarantine = (
+            record.failCount > QUARANTINE_FAIL_THRESHOLD ||
+            (record.totalChecks >= MIN_CHECKS_FOR_REPUTATION && record.successRate < QUARANTINE_SUCCESS_RATE_THRESHOLD)
+        );
+
+        if (shouldQuarantine && !record.quarantined) {
+            record.quarantined = true;
+            record.quarantinedAt = Date.now();
+            if (record.failCount > QUARANTINE_FAIL_THRESHOLD) {
+                record.quarantineReason = `failCount(${record.failCount}) > ${QUARANTINE_FAIL_THRESHOLD}`;
+            } else {
+                record.quarantineReason = `successRate(${Math.round(record.successRate * 100)}%) < ${QUARANTINE_SUCCESS_RATE_THRESHOLD * 100}% over ${record.totalChecks} checks`;
+            }
+        }
+
+        await saveNodeRecord(record);
+        return record;
+    }
+
+    // P1-2: Check if a node is quarantined
+    async function isNodeQuarantined(ip, port) {
+        const record = await getNodeRecord(ip, port);
+        return record ? record.quarantined : false;
+    }
+
+    // P1-2: Get all quarantined nodes (for logging/monitoring)
+    async function getQuarantinedNodes() {
+        // Note: This requires listing all keys, which may be expensive
+        // In production, consider maintaining a separate index of quarantined nodes
+        return [];
+    }
+
     const E_INVALID_DATA = atob('aW52YWxpZCBkYXRh');
     const E_INVALID_USER = atob('aW52YWxpZCB1c2Vy');
     const E_UNSUPPORTED_CMD = atob('Y29tbWFuZCBpcyBub3Qgc3VwcG9ydGVk');
@@ -2392,26 +2550,48 @@ Sitemap: https://example.com/sitemap.xml
             } catch (_) {}
         }
 
-        async function addNodesFromList(list) {
+        // P1-2: Enhanced addNodesFromList with source tagging and quarantine filtering
+        async function addNodesFromList(list, source) {
             if (ev) {
-                finalLinks.push(...generateLinksFromSource(list, user, workerDomain, echConfig));
+                finalLinks.push(...generateLinksFromSource(list, user, workerDomain, echConfig, false, source));
             }
             if (et) {
-                finalLinks.push(...await generateTrojanLinksFromSource(list, user, workerDomain, echConfig));
+                finalLinks.push(...await generateTrojanLinksFromSource(list, user, workerDomain, echConfig, false, source));
             }
             if (ex) {
-                finalLinks.push(...generateXhttpLinksFromSource(list, user, workerDomain, echConfig));
+                finalLinks.push(...generateXhttpLinksFromSource(list, user, workerDomain, echConfig, false, source));
+            }
+        }
+
+        // P1-2: Filter quarantined nodes from finalLinks before generating subscription
+        async function filterQuarantinedNodes() {
+            if (!kvStore || finalLinks.length === 0) {
+                return;
+            }
+            const quarantinePromises = finalLinks.map(async (linkData) => {
+                if (typeof linkData !== 'object' || !linkData.ip) {
+                    return true; // Keep string links or old format as-is
+                }
+                const quarantined = await isNodeQuarantined(linkData.ip, linkData.port);
+                return !quarantined;
+            });
+            const keepFlags = await Promise.all(quarantinePromises);
+            // Filter in-place
+            for (let i = finalLinks.length - 1; i >= 0; i--) {
+                if (!keepFlags[i]) {
+                    finalLinks.splice(i, 1);
+                }
             }
         }
 
         if (ena) {
             if (currentWorkerRegion === 'CUSTOM') {
                 const nativeList = [{ ip: workerDomain, isp: '原生地址' }];
-                await addNodesFromList(nativeList);
+                await addNodesFromList(nativeList, 'self-test');
             } else {
                 try {
                     const nativeList = [{ ip: workerDomain, isp: '原生地址' }];
-                    await addNodesFromList(nativeList);
+                    await addNodesFromList(nativeList, 'self-test');
                 } catch (error) {
                     if (!currentWorkerRegion) {
                         currentWorkerRegion = await detectWorkerRegion(request);
@@ -2421,10 +2601,10 @@ Sitemap: https://example.com/sitemap.xml
                     if (bestBackupIP) {
                         fallbackAddress = bestBackupIP.domain + ':' + bestBackupIP.port;
                         const backupList = [{ ip: bestBackupIP.domain, isp: 'ProxyIP-' + currentWorkerRegion }];
-                        await addNodesFromList(backupList);
+                        await addNodesFromList(backupList, 'CMLiussss');
                     } else {
                         const nativeList = [{ ip: workerDomain, isp: '原生地址' }];
-                        await addNodesFromList(nativeList);
+                        await addNodesFromList(nativeList, 'self-test');
                     }
                 }
             }
@@ -2435,17 +2615,17 @@ Sitemap: https://example.com/sitemap.xml
         if (disablePreferred) {
         } else if (hasCustomPreferred) {
             if (customPreferredIPs.length > 0 && epi) {
-                await addNodesFromList(customPreferredIPs);
+                await addNodesFromList(customPreferredIPs, 'self-test');
             }
 
             if (customPreferredDomains.length > 0 && epd) {
                 const customDomainList = customPreferredDomains.map(d => ({ ip: d.domain, isp: d.name || d.domain }));
-                await addNodesFromList(customDomainList);
+                await addNodesFromList(customDomainList, 'self-test');
             }
         } else {
             if (epd) {
             const domainList = directDomains.map(d => ({ ip: d.domain, isp: d.name || d.domain }));
-                await addNodesFromList(domainList);
+                await addNodesFromList(domainList, 'direct-domains');
             }
 
             if (epi) {
@@ -2453,7 +2633,7 @@ Sitemap: https://example.com/sitemap.xml
                 try {
                     const dynamicIPList = await fetchDynamicIPs();
                     if (dynamicIPList.length > 0) {
-                            await addNodesFromList(dynamicIPList);
+                            await addNodesFromList(dynamicIPList, 'wetest');
                     }
                 } catch (error) {
                     if (!currentWorkerRegion) {
@@ -2465,7 +2645,7 @@ Sitemap: https://example.com/sitemap.xml
                         fallbackAddress = bestBackupIP.domain + ':' + bestBackupIP.port;
                         
                         const backupList = [{ ip: bestBackupIP.domain, isp: 'ProxyIP-' + currentWorkerRegion }];
-                            await addNodesFromList(backupList);
+                            await addNodesFromList(backupList, 'CMLiussss');
                         }
                     }
                 }
@@ -2476,13 +2656,13 @@ Sitemap: https://example.com/sitemap.xml
                 const newIPList = await fetchAndParseNewIPs();
                 if (newIPList.length > 0) {
                     if (ev) {
-                        finalLinks.push(...generateLinksFromNewIPs(newIPList, user, workerDomain, echConfig));
+                        finalLinks.push(...generateLinksFromNewIPs(newIPList, user, workerDomain, echConfig, false, 'CMLiussss'));
                     }
                     if (et) {
-                        finalLinks.push(...await generateTrojanLinksFromNewIPs(newIPList, user, workerDomain, echConfig));
+                        finalLinks.push(...await generateTrojanLinksFromNewIPs(newIPList, user, workerDomain, echConfig, false, 'CMLiussss'));
                     }
                     if (ex) {
-                         finalLinks.push(...generateXhttpLinksFromSource(newIPList, user, workerDomain, echConfig));
+                         finalLinks.push(...generateXhttpLinksFromSource(newIPList, user, workerDomain, echConfig, false, 'CMLiussss'));
                     }
                 }
             } catch (error) {
@@ -2501,12 +2681,18 @@ Sitemap: https://example.com/sitemap.xml
             }
         }
 
+        // P1-2: Apply quarantine filtering before generating subscription
+        await filterQuarantinedNodes();
+
         if (finalLinks.length === 0) {
             const errorRemark = "所有节点获取失败";
             const proto = atob('dmxlc3M=');
             const errorLink = `${proto}://00000000-0000-0000-0000-000000000000@127.0.0.1:80?encryption=none&security=none&type=ws&host=error.com&path=%2F#${encodeURIComponent(errorRemark)}`;
-            finalLinks.push(errorLink);
+            finalLinks.push({ link: errorLink, ip: '127.0.0.1', port: 80, source: 'system', type: 'vmess' });
         }
+
+        // P1-2: Extract link strings from objects for subscription generation
+        const linkStrings = finalLinks.map(item => typeof item === 'object' ? item.link : item);
 
         let subscriptionContent;
         let contentType = 'text/plain; charset=utf-8';
@@ -2517,41 +2703,41 @@ Sitemap: https://example.com/sitemap.xml
             case 'stash':
             case 'meta':
             case 'clashmeta':
-                subscriptionContent = generateClashYaml(finalLinks);
+                subscriptionContent = generateClashYaml(linkStrings);
                 contentType = 'text/yaml; charset=utf-8';
                 break;
             case atob('c3VyZ2U='):     // surge
             case atob('c3VyZ2Uy'):
             case atob('c3VyZ2Uz'):
             case atob('c3VyZ2U0'):
-                subscriptionContent = generateSurgeIni(finalLinks);
+                subscriptionContent = generateSurgeIni(linkStrings);
                 contentType = 'text/plain; charset=utf-8';
                 break;
             case atob('cXVhbnR1bXVsdA=='):  // quantumult
             case atob('cXVhbng='):          // quanx
             case 'quanx':
-                subscriptionContent = generateQuanxConf(finalLinks);
+                subscriptionContent = generateQuanxConf(linkStrings);
                 contentType = 'text/plain; charset=utf-8';
                 break;
             case atob('c3M='):
             case atob('c3Ny'):
-                subscriptionContent = btoa(finalLinks.join('\n'));
+                subscriptionContent = btoa(linkStrings.join('\n'));
                 break;
             case atob('djJyYXk='):
-                subscriptionContent = btoa(finalLinks.join('\n'));
+                subscriptionContent = btoa(linkStrings.join('\n'));
                 break;
             case atob('bG9vbg=='):
-                subscriptionContent = generateLoonIni(finalLinks);
+                subscriptionContent = generateLoonIni(linkStrings);
                 contentType = 'text/plain; charset=utf-8';
                 break;
             case atob('c2luZ2JveA=='):  // singbox
             case 'sing-box':
             case 'singbox':
-                subscriptionContent = generateSingBoxJson(finalLinks);
+                subscriptionContent = generateSingBoxJson(linkStrings);
                 contentType = 'application/json; charset=utf-8';
                 break;
             default:
-                subscriptionContent = btoa(finalLinks.join('\n'));
+                subscriptionContent = btoa(linkStrings.join('\n'));
         }
 
         // P1-1: KV subscription cache WRITE after content generation (15min TTL)
@@ -2560,7 +2746,7 @@ Sitemap: https://example.com/sitemap.xml
                 const cacheData = JSON.stringify({
                     subscriptionContent: subscriptionContent,
                     contentType: contentType,
-                    finalLinks: finalLinks,
+                    finalLinks: linkStrings, // P1-2: Store link strings instead of objects for cache compatibility
                 });
                 await kvStore.put(cacheKey, cacheData, { expirationTtl: 900 });
             } catch (_) {}
@@ -2584,7 +2770,8 @@ Sitemap: https://example.com/sitemap.xml
         });
     }
 
-    function generateLinksFromSource(list, user, workerDomain, echConfig = null, skipNumbering = false) {
+    // P1-2: Enhanced generateLinksFromSource with source tagging, returns objects with link metadata
+    function generateLinksFromSource(list, user, workerDomain, echConfig = null, skipNumbering = false, source = 'unknown') {
         const CF_HTTP_PORTS = [80, 8080, 8880, 2052, 2082, 2086, 2095];
         const CF_HTTPS_PORTS = [443, 2053, 2083, 2087, 2096, 8443];
 
@@ -2602,6 +2789,8 @@ Sitemap: https://example.com/sitemap.xml
                 nodeNameBase = `${nodeNameBase}-${item.colo.trim()}`;
             }
             const safeIP = item.ip.includes(':') ? `[${item.ip}]` : item.ip;
+            // Extract raw IP for metadata (remove brackets from IPv6)
+            const rawIP = item.ip.includes(':') ? item.ip.replace(/^\[|\]$/g, '') : item.ip;
 
             let portsToGenerate = [];
             if (item.port) {
@@ -2634,6 +2823,7 @@ Sitemap: https://example.com/sitemap.xml
                     wsNodeName = namer(nodeNameBase, nodeName);  // 编号
                 }
 
+                let link;
                 if (tls) {
                     const wsParams = new URLSearchParams({ 
                         encryption: 'none', 
@@ -2652,7 +2842,7 @@ Sitemap: https://example.com/sitemap.xml
                         wsParams.set('ech', `${echDomain}+${dnsServer}`);
                     }
 
-                    links.push(`${proto}://${user}@${safeIP}:${port}?${wsParams.toString()}#${encodeURIComponent(wsNodeName)}`);
+                    link = `${proto}://${user}@${safeIP}:${port}?${wsParams.toString()}#${encodeURIComponent(wsNodeName)}`;
                 } else {
                     const wsParams = new URLSearchParams({
                         encryption: 'none',
@@ -2662,14 +2852,24 @@ Sitemap: https://example.com/sitemap.xml
                         path: wsPath
                     });
 
-                    links.push(`${proto}://${user}@${safeIP}:${port}?${wsParams.toString()}#${encodeURIComponent(wsNodeName)}`);
+                    link = `${proto}://${user}@${safeIP}:${port}?${wsParams.toString()}#${encodeURIComponent(wsNodeName)}`;
                 }
+                
+                // P1-2: Return object with link metadata for reputation tracking
+                links.push({
+                    link: link,
+                    ip: rawIP,
+                    port: port,
+                    source: source,
+                    type: 'vmess'
+                });
             }
         }
         return links;
     }
 
-    async function generateTrojanLinksFromSource(list, user, workerDomain, echConfig = null, skipNumbering = false) {
+    // P1-2: Enhanced generateTrojanLinksFromSource with source tagging, returns objects with link metadata
+    async function generateTrojanLinksFromSource(list, user, workerDomain, echConfig = null, skipNumbering = false, source = 'unknown') {
         const CF_HTTP_PORTS = [80, 8080, 8880, 2052, 2082, 2086, 2095];
         const CF_HTTPS_PORTS = [443, 2053, 2083, 2087, 2096, 8443];
 
@@ -2688,6 +2888,7 @@ Sitemap: https://example.com/sitemap.xml
                 nodeNameBase = `${nodeNameBase}-${item.colo.trim()}`;
             }
             const safeIP = item.ip.includes(':') ? `[${item.ip}]` : item.ip;
+            const rawIP = item.ip.includes(':') ? item.ip.replace(/^\[|\]$/g, '') : item.ip;
 
             let portsToGenerate = [];
             if (item.port) {
@@ -2720,6 +2921,7 @@ Sitemap: https://example.com/sitemap.xml
                     wsNodeName = namer(nodeNameBase, nodeName);  // 编号
                 }
 
+                let link;
                 if (tls) {
                     const wsParams = new URLSearchParams({ 
                         security: 'tls', 
@@ -2737,7 +2939,7 @@ Sitemap: https://example.com/sitemap.xml
                         wsParams.set('ech', `${echDomain}+${dnsServer}`);
                     }
 
-                    links.push(`${atob('dHJvamFuOi8v')}${password}@${safeIP}:${port}?${wsParams.toString()}#${encodeURIComponent(wsNodeName)}`);
+                    link = `${atob('dHJvamFuOi8v')}${password}@${safeIP}:${port}?${wsParams.toString()}#${encodeURIComponent(wsNodeName)}`;
                 } else {
                     const wsParams = new URLSearchParams({
                         security: 'none',
@@ -2746,8 +2948,17 @@ Sitemap: https://example.com/sitemap.xml
                         path: wsPath
                     });
 
-                    links.push(`${atob('dHJvamFuOi8v')}${password}@${safeIP}:${port}?${wsParams.toString()}#${encodeURIComponent(wsNodeName)}`);
+                    link = `${atob('dHJvamFuOi8v')}${password}@${safeIP}:${port}?${wsParams.toString()}#${encodeURIComponent(wsNodeName)}`;
                 }
+                
+                // P1-2: Return object with link metadata for reputation tracking
+                links.push({
+                    link: link,
+                    ip: rawIP,
+                    port: port,
+                    source: source,
+                    type: 'trojan'
+                });
             }
         }
         return links;
@@ -7035,7 +7246,8 @@ Sitemap: https://example.com/sitemap.xml
         }
     }
 
-    function generateLinksFromNewIPs(list, user, workerDomain, echConfig = null, skipNumbering = false) {
+    // P1-2: Enhanced generateLinksFromNewIPs with source tagging, returns objects with link metadata
+    function generateLinksFromNewIPs(list, user, workerDomain, echConfig = null, skipNumbering = false, source = 'unknown') {
         const CF_HTTP_PORTS = [80, 8080, 8880, 2052, 2082, 2086, 2095];
         const CF_HTTPS_PORTS = [443, 2053, 2083, 2087, 2096, 8443];
         const links = [];
@@ -7048,6 +7260,7 @@ Sitemap: https://example.com/sitemap.xml
             const nodeNameBase = item.name.replace(/\s/g, '_');
             const port = item.port;
             const safeIP = item.ip.includes(':') ? `[${item.ip}]` : item.ip;
+            const rawIP = item.ip.includes(':') ? item.ip.replace(/^\[|\]$/g, '') : item.ip;
 
             const getNodeName = (suffix) => {
                 const nodeName = `${nodeNameBase}-${port}${suffix}`;
@@ -7068,13 +7281,14 @@ Sitemap: https://example.com/sitemap.xml
                 }
 
                 link += `#${encodeURIComponent(wsNodeName)}`;
-                links.push(link);
+                // P1-2: Return object with link metadata
+                links.push({ link: link, ip: rawIP, port: port, source: source, type: 'vmess' });
             } else if (CF_HTTP_PORTS.includes(port)) {
                 if (!disableNonTLS) {
                     const suffix = '-WS';
                     const wsNodeName = getNodeName(suffix);
                     const link = `${proto}://${user}@${safeIP}:${port}?encryption=none&security=none&type=ws&host=${workerDomain}&path=${wsPath}#${encodeURIComponent(wsNodeName)}`;
-                    links.push(link);
+                    links.push({ link: link, ip: rawIP, port: port, source: source, type: 'vmess' });
                 }
             } else {
                 const suffix = '-WS-TLS';
@@ -7089,13 +7303,14 @@ Sitemap: https://example.com/sitemap.xml
                 }
 
                 link += `#${encodeURIComponent(wsNodeName)}`;
-                links.push(link);
+                links.push({ link: link, ip: rawIP, port: port, source: source, type: 'vmess' });
             }
         }
         return links;
     }
 
-    function generateXhttpLinksFromSource(list, user, workerDomain, echConfig = null, skipNumbering = false) {
+    // P1-2: Enhanced generateXhttpLinksFromSource with source tagging, returns objects with link metadata
+    function generateXhttpLinksFromSource(list, user, workerDomain, echConfig = null, skipNumbering = false, source = 'unknown') {
         const links = [];
         const nodePath = user.substring(0, 8);
 
@@ -7107,6 +7322,7 @@ Sitemap: https://example.com/sitemap.xml
             nodeNameBase = nodeNameBase.replace(/\s/g, '_');
             if (item.colo) nodeNameBase = `${nodeNameBase}-${item.colo}`;
             const safeIP = item.ip.includes(':') ? `[${item.ip}]` : item.ip;
+            const rawIP = item.ip.includes(':') ? item.ip.replace(/^\[|\]$/g, '') : item.ip;
             const port = item.port || 443;
 
             const getNodeName = (suffix) => {
@@ -7135,12 +7351,15 @@ Sitemap: https://example.com/sitemap.xml
                 params.set('ech', `${echDomain}+${dnsServer}`);
             }
 
-            links.push(`vless://${user}@${safeIP}:${port}?${params.toString()}#${encodeURIComponent(wsNodeName)}`);
+            const link = `vless://${user}@${safeIP}:${port}?${params.toString()}#${encodeURIComponent(wsNodeName)}`;
+            // P1-2: Return object with link metadata
+            links.push({ link: link, ip: rawIP, port: port, source: source, type: 'vless' });
         }
         return links;
     }
 
-    async function generateTrojanLinksFromNewIPs(list, user, workerDomain, echConfig = null, skipNumbering = false) {
+    // P1-2: Enhanced generateTrojanLinksFromNewIPs with source tagging, returns objects with link metadata
+    async function generateTrojanLinksFromNewIPs(list, user, workerDomain, echConfig = null, skipNumbering = false, source = 'unknown') {
         const CF_HTTP_PORTS = [80, 8080, 8880, 2052, 2082, 2086, 2095];
         const CF_HTTPS_PORTS = [443, 2053, 2083, 2087, 2096, 8443];
 
@@ -7155,6 +7374,7 @@ Sitemap: https://example.com/sitemap.xml
             const nodeNameBase = item.name.replace(/\s/g, '_');
             const port = item.port;
             const safeIP = item.ip.includes(':') ? `[${item.ip}]` : item.ip;
+            const rawIP = item.ip.includes(':') ? item.ip.replace(/^\[|\]$/g, '') : item.ip;
 
             const getNodeName = (suffix) => {
                 const nodeName = `${nodeNameBase}-${port}${suffix}`;
@@ -7175,13 +7395,13 @@ Sitemap: https://example.com/sitemap.xml
                 }
 
                 link += `#${encodeURIComponent(wsNodeName)}`;
-                links.push(link);
+                links.push({ link: link, ip: rawIP, port: port, source: source, type: 'trojan' });
             } else if (CF_HTTP_PORTS.includes(port)) {
                 if (!disableNonTLS) {
                     const suffix = `-${atob('VHJvamFu')}-WS`;
                     const wsNodeName = getNodeName(suffix);
                     const link = `${atob('dHJvamFuOi8v')}${password}@${safeIP}:${port}?security=none&type=ws&host=${workerDomain}&path=${wsPath}#${encodeURIComponent(wsNodeName)}`;
-                    links.push(link);
+                    links.push({ link: link, ip: rawIP, port: port, source: source, type: 'trojan' });
                 }
             } else {
                 const suffix = `-${atob('VHJvamFu')}-WS-TLS`;
@@ -7195,7 +7415,7 @@ Sitemap: https://example.com/sitemap.xml
                     link += `&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
                 }
                 link += `#${encodeURIComponent(wsNodeName)}`;
-                links.push(link);
+                links.push({ link: link, ip: rawIP, port: port, source: source, type: 'trojan' });
             }
         }
         return links;
