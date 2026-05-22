@@ -26,7 +26,7 @@
     // 自定义ECH域名（默认：cloudflare-ech.com）
     let customECHDomain = 'cloudflare-ech.com';
 
-    let scu = 'https://url.v1.mk/sub';  
+    let scu = 'https://url.v1.mk/knlg';  
     // 远程配置URL（硬编码）
     const remoteConfigUrl = 'https://raw.githubusercontent.com/byJoey/test/refs/heads/main/tist.ini';
 
@@ -67,28 +67,28 @@
     };
 
     let backupIPs = [
-        { domain: 'ProxyIP.HK.CMLiussss.net', region: 'HK', regionCode: 'HK', port: 443 },
-        { domain: 'ProxyIP.US.CMLiussss.net', region: 'US', regionCode: 'US', port: 443 },
-        { domain: 'ProxyIP.SG.CMLiussss.net', region: 'SG', regionCode: 'SG', port: 443 },
-        { domain: 'ProxyIP.JP.CMLiussss.net', region: 'JP', regionCode: 'JP', port: 443 },
-        { domain: 'ProxyIP.KR.CMLiussss.net', region: 'KR', regionCode: 'KR', port: 443 },
-        { domain: 'ProxyIP.DE.CMLiussss.net', region: 'DE', regionCode: 'DE', port: 443 },
-        { domain: 'ProxyIP.SE.CMLiussss.net', region: 'SE', regionCode: 'SE', port: 443 },
-        { domain: 'ProxyIP.NL.CMLiussss.net', region: 'NL', regionCode: 'NL', port: 443 },
-        { domain: 'ProxyIP.FI.CMLiussss.net', region: 'FI', regionCode: 'FI', port: 443 },
-        { domain: 'ProxyIP.GB.CMLiussss.net', region: 'GB', regionCode: 'GB', port: 443 },
-        { domain: 'ProxyIP.AU.CMLiussss.net', region: 'AU', regionCode: 'AU', port: 443 },
-        { domain: 'ProxyIP.BR.CMLiussss.net', region: 'BR', regionCode: 'BR', port: 443 },
-        { domain: 'ProxyIP.CA.CMLiussss.net', region: 'CA', regionCode: 'CA', port: 443 },
-        { domain: 'ProxyIP.FR.CMLiussss.net', region: 'FR', regionCode: 'FR', port: 443 },
-        { domain: 'ProxyIP.CH.CMLiussss.net', region: 'CH', regionCode: 'CH', port: 443 },
-        { domain: 'ProxyIP.RU.CMLiussss.net', region: 'RU', regionCode: 'RU', port: 443 },
-        { domain: 'ProxyIP.IN.CMLiussss.net', region: 'IN', regionCode: 'IN', port: 443 },
-        { domain: 'ProxyIP.TW.CMLiussss.net', region: 'TW', regionCode: 'TW', port: 443 },
-        { domain: 'ProxyIP.Oracle.cmliussss.net', region: 'Oracle', regionCode: 'Oracle', port: 443 },
-        { domain: 'ProxyIP.DigitalOcean.CMLiussss.net', region: 'DigitalOcean', regionCode: 'DigitalOcean', port: 443 },
-        { domain: 'ProxyIP.Vultr.CMLiussss.net', region: 'Vultr', regionCode: 'Vultr', port: 443 },
-        { domain: 'ProxyIP.Multacom.CMLiussss.net', region: 'Multacom', regionCode: 'Multacom', port: 443 }
+        { domain: 'ProxyIP.HK.CMLiussss.net', "reg": 'HK', regionCode: 'HK', "port": 443 },
+        { domain: 'ProxyIP.US.CMLiussss.net', "reg": 'US', regionCode: 'US', "port": 443 },
+        { domain: 'ProxyIP.SG.CMLiussss.net', "reg": 'SG', regionCode: 'SG', "port": 443 },
+        { domain: 'ProxyIP.JP.CMLiussss.net', "reg": 'JP', regionCode: 'JP', "port": 443 },
+        { domain: 'ProxyIP.KR.CMLiussss.net', "reg": 'KR', regionCode: 'KR', "port": 443 },
+        { domain: 'ProxyIP.DE.CMLiussss.net', "reg": 'DE', regionCode: 'DE', "port": 443 },
+        { domain: 'ProxyIP.SE.CMLiussss.net', "reg": 'SE', regionCode: 'SE', "port": 443 },
+        { domain: 'ProxyIP.NL.CMLiussss.net', "reg": 'NL', regionCode: 'NL', "port": 443 },
+        { domain: 'ProxyIP.FI.CMLiussss.net', "reg": 'FI', regionCode: 'FI', "port": 443 },
+        { domain: 'ProxyIP.GB.CMLiussss.net', "reg": 'GB', regionCode: 'GB', "port": 443 },
+        { domain: 'ProxyIP.AU.CMLiussss.net', "reg": 'AU', regionCode: 'AU', "port": 443 },
+        { domain: 'ProxyIP.BR.CMLiussss.net', "reg": 'BR', regionCode: 'BR', "port": 443 },
+        { domain: 'ProxyIP.CA.CMLiussss.net', "reg": 'CA', regionCode: 'CA', "port": 443 },
+        { domain: 'ProxyIP.FR.CMLiussss.net', "reg": 'FR', regionCode: 'FR', "port": 443 },
+        { domain: 'ProxyIP.CH.CMLiussss.net', "reg": 'CH', regionCode: 'CH', "port": 443 },
+        { domain: 'ProxyIP.RU.CMLiussss.net', "reg": 'RU', regionCode: 'RU', "port": 443 },
+        { domain: 'ProxyIP.IN.CMLiussss.net', "reg": 'IN', regionCode: 'IN', "port": 443 },
+        { domain: 'ProxyIP.TW.CMLiussss.net', "reg": 'TW', regionCode: 'TW', "port": 443 },
+        { domain: 'ProxyIP.Oracle.cmliussss.net', "reg": 'Oracle', regionCode: 'Oracle', "port": 443 },
+        { domain: 'ProxyIP.DigitalOcean.CMLiussss.net', "reg": 'DigitalOcean', regionCode: 'DigitalOcean', "port": 443 },
+        { domain: 'ProxyIP.Vultr.CMLiussss.net', "reg": 'Vultr', regionCode: 'Vultr', "port": 443 },
+        { domain: 'ProxyIP.Multacom.CMLiussss.net', "reg": 'Multacom', regionCode: 'Multacom', "port": 443 }
     ];
 
     const directDomains = [
@@ -355,7 +355,7 @@
             if (match) {
                 return {
                     address: match[1],
-                    port: match[2] ? parseInt(match[2], 10) : null
+                    "port": match[2] ? parseInt(match[2], 10) : null
                 };
             }
         }
@@ -372,7 +372,7 @@
             }
         }
 
-        return { address: input, port: null };
+        return { address: input, "port": null };
     }
 
     export default {
@@ -458,14 +458,14 @@
 
                             if (isValidIP(address)) {
                                 customPreferredIPs.push({ 
-                                    ip: address, 
-                                    port: port,
+                                    "addr": address, 
+                                    "port": port,
                                     isp: nodeName
                                 });
                             } else {
                                 customPreferredDomains.push({ 
                                     domain: address, 
-                                    port: port,
+                                    "port": port,
                                     name: nodeName
                                 });
                             }
@@ -508,7 +508,7 @@
                     ex = xhttpControl === 'yes' || xhttpControl === true || xhttpControl === 'true';
                 }
 
-                scu = getConfigValue('scu', env.scu) || 'https://url.v1.mk/sub';
+                scu = getConfigValue('scu', env.scu) || 'https://url.v1.mk/knlg';
 
                 const preferredDomainsControl = getConfigValue('epd', env.epd || 'no');
                 if (preferredDomainsControl !== undefined && preferredDomainsControl !== '') {
@@ -567,7 +567,7 @@
 
                 const url = new URL(request.url);
 
-                if (url.pathname.includes('/api/config')) {
+                if (url.pathname.includes('/mim/awcg')) {
                     const pathParts = url.pathname.split('/').filter(p => p);
 
                     const apiIndex = pathParts.indexOf('api');
@@ -588,18 +588,18 @@
                         } else {
                             return new Response(JSON.stringify({ error: '路径验证失败' }), { 
                                 status: 403,
-                                headers: { 'Content-Type': 'application/json' }
+                                headers: { 'cfx-op': 'application/json' }
                             });
                         }
                     }
 
                     return new Response(JSON.stringify({ error: '无效的API路径' }), { 
                         status: 404,
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'cfx-op': 'application/json' }
                     });
                 }
 
-                if (url.pathname.includes('/api/preferred-ips')) {
+                if (url.pathname.includes('/rsu/arvub')) {
                     const pathParts = url.pathname.split('/').filter(p => p);
                     const apiIndex = pathParts.indexOf('api');
                     if (apiIndex > 0) {
@@ -619,14 +619,14 @@
                         } else {
                             return new Response(JSON.stringify({ error: '路径验证失败' }), { 
                                 status: 403,
-                                headers: { 'Content-Type': 'application/json' }
+                                headers: { 'cfx-op': 'application/json' }
                             });
                         }
                     }
 
                     return new Response(JSON.stringify({ error: '无效的API路径' }), { 
                         status: 404,
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'cfx-op': 'application/json' }
                     });
                 }
 
@@ -640,7 +640,7 @@
                             'Cache-Control': 'no-store',
                             Connection: 'keep-alive',
                             'User-Agent': 'Go-http-client/2.0',
-                            'Content-Type': 'application/grpc',
+                            'cfx-op': 'application/grpc',
                         },
                     });
                 }
@@ -675,29 +675,29 @@
 
                                 if (manualRegion && manualRegion.trim()) {
                                     return new Response(JSON.stringify({
-                                        region: manualRegion.trim().toUpperCase(),
+                                        "reg": manualRegion.trim().toUpperCase(),
                                         detectionMethod: '手动指定地区',
                                         manualRegion: manualRegion.trim().toUpperCase(),
                                         timestamp: new Date().toISOString()
                                     }), {
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { 'cfx-op': 'application/json' }
                                     });
                                 } else if (ci && ci.trim()) {
                                     return new Response(JSON.stringify({
-                                        region: 'CUSTOM',
+                                        "reg": 'CUSTOM',
                                         detectionMethod: '自定义ProxyIP模式', ci: ci,
                                         timestamp: new Date().toISOString()
                                     }), {
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { 'cfx-op': 'application/json' }
                                     });
                                 } else {
                                     const detectedRegion = await detectWorkerRegion(request);
                                     return new Response(JSON.stringify({
-                                        region: detectedRegion,
+                                        "reg": detectedRegion,
                                         detectionMethod: 'API检测',
                                         timestamp: new Date().toISOString()
                                     }), {
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { 'cfx-op': 'application/json' }
                                     });
                                 }
                             } else {
@@ -706,7 +706,7 @@
                                     message: '路径验证失败'
                                 }), { 
                                     status: 403,
-                                    headers: { 'Content-Type': 'application/json' }
+                                    headers: { 'cfx-op': 'application/json' }
                                 });
                             }
                         }
@@ -737,7 +737,7 @@
                                         message: 'API测试完成',
                                         timestamp: new Date().toISOString()
                                     }), {
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { 'cfx-op': 'application/json' }
                                     });
                                 } catch (error) {
                                     return new Response(JSON.stringify({
@@ -745,7 +745,7 @@
                                         message: 'API测试失败'
                                     }), {
                                         status: 500,
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { 'cfx-op': 'application/json' }
                                     });
                                 }
                             } else {
@@ -754,7 +754,7 @@
                                     message: '路径验证失败'
                                 }), { 
                                     status: 403,
-                                    headers: { 'Content-Type': 'application/json' }
+                                    headers: { 'cfx-op': 'application/json' }
                                 });
                             }
                         }
@@ -778,14 +778,14 @@
 
                                 if (homepageResponse.ok) {
                                     // 获取响应内容
-                                    const contentType = homepageResponse.headers.get('Content-Type') || 'text/html; charset=utf-8';
+                                    const contentType = homepageResponse.headers.get('cfx-op') || 'text/html; charset=utf-8';
                                     const content = await homepageResponse.text();
                                     
                                     // 返回自定义首页内容
                                     return new Response(content, {
                                         status: homepageResponse.status,
                                         headers: {
-                                            'Content-Type': contentType,
+                                            'cfx-op': contentType,
                                             'Cache-Control': 'no-cache, no-store, must-revalidate',
                                         }
                                     });
@@ -1186,7 +1186,7 @@ body {
         </script>
     </body>
     </html>`;
-            return new Response(terminalHtml, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+            return new Response(terminalHtml, { status: 200, headers: { 'cfx-op': 'text/html; charset=utf-8' } });
         }
             if (cp && cp.trim()) {
                 const cleanCustomPath = cp.trim().startsWith('/') ? cp.trim() : '/' + cp.trim();
@@ -1197,25 +1197,25 @@ body {
                         return await handleSubscriptionPage(request, at);
                     }
 
-                    if (normalizedPath === normalizedCustomPath + '/sub') {
+                    if (normalizedPath === normalizedCustomPath + '/knlg') {
                         return await handleSubscriptionRequest(request, at, url);
                     }
 
                     if (url.pathname.length > 1 && url.pathname !== '/') {
-                        const user = url.pathname.replace(/\/$/, '').replace('/sub', '').substring(1);
+                        const user = url.pathname.replace(/\/$/, '').replace('/knlg', '').substring(1);
                         if (isValidFormat(user)) {
                             return new Response(JSON.stringify({ 
                                 error: '访问被拒绝',
                                 message: '当前 Worker 已启用自定义路径模式，UUID 访问已禁用'
                             }), { 
                                 status: 403,
-                                headers: { 'Content-Type': 'application/json' }
+                                headers: { 'cfx-op': 'application/json' }
                             });
                         }
                     }
                 } else {
                     
-                    if (url.pathname.length > 1 && url.pathname !== '/' && !url.pathname.includes('/sub')) {
+                    if (url.pathname.length > 1 && url.pathname !== '/' && !url.pathname.includes('/knlg')) {
                         const user = url.pathname.replace(/\/$/, '').substring(1);
                         if (isValidFormat(user)) {
                             if (user === at) {
@@ -1223,12 +1223,12 @@ body {
                             } else {
                                 return new Response(JSON.stringify({ error: 'UUID错误 请注意变量名称是u不是uuid' }), { 
                                     status: 403,
-                                    headers: { 'Content-Type': 'application/json' }
+                                    headers: { 'cfx-op': 'application/json' }
                                 });
                             }
                         }
                     }
-                    if (url.pathname.includes('/sub')) {
+                    if (url.pathname.includes('/knlg')) {
                         const pathParts = url.pathname.split('/');
                         if (pathParts.length === 2 && pathParts[1] === 'sub') {
                             const user = pathParts[0].substring(1);
@@ -1238,7 +1238,7 @@ body {
                                 } else {
                                     return new Response(JSON.stringify({ error: 'UUID错误' }), { 
                                         status: 403,
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { 'cfx-op': 'application/json' }
                                     });
                                 }
                                 }
@@ -1251,7 +1251,7 @@ body {
                 }
                 return new Response(JSON.stringify({ error: 'Not Found' }), { 
                     status: 404,
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'cfx-op': 'application/json' }
                 });
             } catch (err) {
                 return new Response(err.toString(), { status: 500 });
@@ -1267,7 +1267,7 @@ body {
     function parseLinkToClashNode(link) {
         try {
             // 解析 VLESS 链接
-            if (link.startsWith('vless://')) {
+            if (link.startsWith('rn://')) {
                 const url = new URL(link);
                 const name = decodeURIComponent(url.hash.substring(1));
                 const uuid = url.username;
@@ -1276,8 +1276,8 @@ body {
                 const params = new URLSearchParams(url.search);
 
                 const tls = params.get('security') === 'tls' || params.get('tls') === 'true';
-                const network = params.get('type') || 'ws';
-                const path = params.get('path') || '/?ed=2048';
+                const network = params.get('type') || 'ih';
+                const path = params.get('path') || '/stream?ed=2048';
                 const host = params.get('host') || server;
                 const servername = params.get('sni') || host;
                 const alpn = params.get('alpn') || 'h3';
@@ -1286,9 +1286,9 @@ body {
 
                 const node = {
                     name: name,
-                    type: 'vless',
-                    server: server,
-                    port: port,
+                    type: 'rn',
+                    "a": server,
+                    "port": port,
                     uuid: uuid,
                     tls: tls,
                     network: network,
@@ -1301,7 +1301,7 @@ body {
                     node['skip-cert-verify'] = false;
                 }
 
-                if (network === 'ws') {
+                if (network === 'ih') {
                     node['ws-opts'] = {
                         path: path,
                         headers: {
@@ -1322,7 +1322,7 @@ body {
             }
             
             // 解析 Trojan 链接
-            if (link.startsWith('trojan://')) {
+            if (link.startsWith('qp://')) {
                 const url = new URL(link);
                 const name = decodeURIComponent(url.hash.substring(1));
                 const password = url.username;
@@ -1330,8 +1330,8 @@ body {
                 const port = parseInt(url.port) || 443;
                 const params = new URLSearchParams(url.search);
 
-                const network = params.get('type') || 'ws';
-                const path = params.get('path') || '/?ed=2048';
+                const network = params.get('type') || 'ih';
+                const path = params.get('path') || '/stream?ed=2048';
                 const host = params.get('host') || server;
                 const sni = params.get('sni') || host;
                 const alpn = params.get('alpn') || 'h3';
@@ -1339,9 +1339,9 @@ body {
 
                 const node = {
                     name: name,
-                    type: 'trojan',
-                    server: server,
-                    port: port,
+                    type: 'qp',
+                    "a": server,
+                    "port": port,
                     password: password,
                     network: network,
                     sni: sni,
@@ -1349,7 +1349,7 @@ body {
                     'skip-cert-verify': false
                 };
 
-                if (network === 'ws') {
+                if (network === 'ih') {
                     node['ws-opts'] = {
                         path: path,
                         headers: {
@@ -1378,8 +1378,8 @@ body {
     async function generateClashConfig(links, request, user) {
         // 先通过订阅转换服务获取 Clash 配置
         const subscriptionUrl = new URL(request.url);
-        subscriptionUrl.pathname = subscriptionUrl.pathname.replace(/\/sub$/, '') + '/sub';
-        subscriptionUrl.searchParams.set('target', 'base64');
+        subscriptionUrl.pathname = subscriptionUrl.pathname.replace(/\/knlg$/, '') + '/knlg';
+        subscriptionUrl.searchParams.set('target', 'jj');
         const encodedUrl = encodeURIComponent(subscriptionUrl.toString());
         const converterUrl = `${scu}?target=clash&url=${encodedUrl}&insert=false&emoji=true&list=false&xudp=false&udp=false&tfo=false&expand=true&scv=false&fdn=false&new_name=true`;
 
@@ -1393,11 +1393,11 @@ body {
 
             // 如果 ECH 开启，为所有节点添加 ECH 参数
             if (enableECH) {
-                // 处理单行格式的节点：  - {name: ..., server: ..., ...}
+                // 处理单行格式的节点：  - {name: ..., "a": ..., ...}
                 // 需要正确处理嵌套的花括号（如 ws-opts: {path: "...", headers: {Host: ...}}）
                 clashConfig = clashConfig.split('\n').map(line => {
-                    // 检查是否是节点行（以 "  - {" 开头，且包含 name: 和 server:）
-                    if (/^\s*-\s*\{/.test(line) && line.includes('name:') && line.includes('server:')) {
+                    // 检查是否是节点行（以 "  - {" 开头，且包含 name: 和 "a":）
+                    if (/^\s*-\s*\{/.test(line) && line.includes('name:') && line.includes('"a":')) {
                         // 检查是否已经有 ech-opts
                         if (line.includes('ech-opts')) {
                             return line; // 已有 ech-opts，不修改
@@ -1425,7 +1425,7 @@ body {
             }
 
             // 替换 DNS nameserver 为阿里的加密 DNS
-            clashConfig = clashConfig.replace(/^(\s*nameserver:\s*\n)((?:\s*-\s*[^\n]+\n)*)/m, (match, header, items) => {
+            clashConfig = clashConfig.replace(/^(\s*name"a":\s*\n)((?:\s*-\s*[^\n]+\n)*)/m, (match, header, items) => {
                 // 替换所有 nameserver 项为阿里的加密 DNS
                 const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                 return header + `    - ${dnsServer}\n`;
@@ -1592,7 +1592,7 @@ body {
 
         const finalLinks = [];
         const workerDomain = url.hostname;
-        const target = url.searchParams.get('target') || 'base64';
+        const target = url.searchParams.get('target') || 'jj';
 
         // 如果启用了ECH，使用自定义值
         let echConfig = null;
@@ -1616,11 +1616,11 @@ body {
 
         if (ena) {
             if (currentWorkerRegion === 'CUSTOM') {
-                const nativeList = [{ ip: workerDomain, isp: '原生地址' }];
+                const nativeList = [{ "addr": workerDomain, isp: '原生地址' }];
                 await addNodesFromList(nativeList);
             } else {
                 try {
-                    const nativeList = [{ ip: workerDomain, isp: '原生地址' }];
+                    const nativeList = [{ "addr": workerDomain, isp: '原生地址' }];
                     await addNodesFromList(nativeList);
                 } catch (error) {
                     if (!currentWorkerRegion) {
@@ -1630,10 +1630,10 @@ body {
                     const bestBackupIP = await getBestBackupIP(currentWorkerRegion);
                     if (bestBackupIP) {
                         fallbackAddress = bestBackupIP.domain + ':' + bestBackupIP.port;
-                        const backupList = [{ ip: bestBackupIP.domain, isp: 'ProxyIP-' + currentWorkerRegion }];
+                        const backupList = [{ "addr": bestBackupIP.domain, isp: 'ProxyIP-' + currentWorkerRegion }];
                         await addNodesFromList(backupList);
                     } else {
-                        const nativeList = [{ ip: workerDomain, isp: '原生地址' }];
+                        const nativeList = [{ "addr": workerDomain, isp: '原生地址' }];
                         await addNodesFromList(nativeList);
                     }
                 }
@@ -1649,12 +1649,12 @@ body {
             }
 
             if (customPreferredDomains.length > 0 && epd) {
-                const customDomainList = customPreferredDomains.map(d => ({ ip: d.domain, isp: d.name || d.domain }));
+                const customDomainList = customPreferredDomains.map(d => ({ "addr": d.domain, isp: d.name || d.domain }));
                 await addNodesFromList(customDomainList);
             }
         } else {
             if (epd) {
-            const domainList = directDomains.map(d => ({ ip: d.domain, isp: d.name || d.domain }));
+            const domainList = directDomains.map(d => ({ "addr": d.domain, isp: d.name || d.domain }));
                 await addNodesFromList(domainList);
             }
 
@@ -1674,7 +1674,7 @@ body {
                     if (bestBackupIP) {
                         fallbackAddress = bestBackupIP.domain + ':' + bestBackupIP.port;
                         
-                        const backupList = [{ ip: bestBackupIP.domain, isp: 'ProxyIP-' + currentWorkerRegion }];
+                        const backupList = [{ "addr": bestBackupIP.domain, isp: 'ProxyIP-' + currentWorkerRegion }];
                             await addNodesFromList(backupList);
                         }
                     }
@@ -1704,7 +1704,7 @@ body {
                 if (bestBackupIP) {
                     fallbackAddress = bestBackupIP.domain + ':' + bestBackupIP.port;
                     
-                    const backupList = [{ ip: bestBackupIP.domain, isp: 'ProxyIP-' + currentWorkerRegion }];
+                    const backupList = [{ "addr": bestBackupIP.domain, isp: 'ProxyIP-' + currentWorkerRegion }];
                         await addNodesFromList(backupList);
                     }
                 }
@@ -1753,7 +1753,7 @@ body {
         }
 
         const responseHeaders = { 
-            'Content-Type': contentType,
+            'cfx-op': contentType,
             'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
         };
 
@@ -1777,7 +1777,7 @@ body {
         const defaultHttpsPorts = [443];
         const defaultHttpPorts = disableNonTLS ? [] : [80];
         const links = [];
-        const wsPath = '/?ed=2048';
+        const wsPath = '/stream?ed=2048';
         const proto = atob('dmxlc3M=');
 
         const { namer, setSkipNumbering } = createNodeNamer(skipNumbering);
@@ -1793,20 +1793,20 @@ body {
             if (item.port) {
                 const port = item.port;
                 if (CF_HTTPS_PORTS.includes(port)) {
-                    portsToGenerate.push({ port: port, tls: true });
+                    portsToGenerate.push({ "port": port, tls: true });
                 } else if (CF_HTTP_PORTS.includes(port)) {
                     if (!disableNonTLS) {
-                        portsToGenerate.push({ port: port, tls: false });
+                        portsToGenerate.push({ "port": port, tls: false });
                     }
                 } else {
-                    portsToGenerate.push({ port: port, tls: true });
+                    portsToGenerate.push({ "port": port, tls: true });
                 }
             } else {
                 defaultHttpsPorts.forEach(port => {
-                    portsToGenerate.push({ port: port, tls: true });
+                    portsToGenerate.push({ "port": port, tls: true });
                 });
                 defaultHttpPorts.forEach(port => {
-                    portsToGenerate.push({ port: port, tls: false });
+                    portsToGenerate.push({ "port": port, tls: false });
                 });
             }
 
@@ -1826,7 +1826,7 @@ body {
                         security: 'tls', 
                         sni: workerDomain, 
                         fp: enableECH ? 'chrome' : 'randomized',
-                        type: 'ws', 
+                        type: 'ih', 
                         host: workerDomain, 
                         path: wsPath
                     });
@@ -1844,7 +1844,7 @@ body {
                     const wsParams = new URLSearchParams({
                         encryption: 'none',
                         security: 'none',
-                        type: 'ws',
+                        type: 'ih',
                         host: workerDomain,
                         path: wsPath
                     });
@@ -1863,7 +1863,7 @@ body {
         const defaultHttpsPorts = [443];
         const defaultHttpPorts = disableNonTLS ? [] : [80];
         const links = [];
-        const wsPath = '/?ed=2048';
+        const wsPath = '/stream?ed=2048';
 
         const password = tp || user;
 
@@ -1880,20 +1880,20 @@ body {
             if (item.port) {
                 const port = item.port;
                 if (CF_HTTPS_PORTS.includes(port)) {
-                    portsToGenerate.push({ port: port, tls: true });
+                    portsToGenerate.push({ "port": port, tls: true });
                 } else if (CF_HTTP_PORTS.includes(port)) {
                     if (!disableNonTLS) {
-                        portsToGenerate.push({ port: port, tls: false });
+                        portsToGenerate.push({ "port": port, tls: false });
                     }
                 } else {
-                    portsToGenerate.push({ port: port, tls: true });
+                    portsToGenerate.push({ "port": port, tls: true });
                 }
             } else {
                 defaultHttpsPorts.forEach(port => {
-                    portsToGenerate.push({ port: port, tls: true });
+                    portsToGenerate.push({ "port": port, tls: true });
                 });
                 defaultHttpPorts.forEach(port => {
-                    portsToGenerate.push({ port: port, tls: false });
+                    portsToGenerate.push({ "port": port, tls: false });
                 });
             }
 
@@ -1912,7 +1912,7 @@ body {
                         security: 'tls', 
                         sni: workerDomain, 
                         fp: 'chrome',
-                        type: 'ws', 
+                        type: 'ih', 
                         host: workerDomain, 
                         path: wsPath
                     });
@@ -1929,7 +1929,7 @@ body {
                 } else {
                     const wsParams = new URLSearchParams({
                         security: 'none',
-                        type: 'ws',
+                        type: 'ih',
                         host: workerDomain,
                         path: wsPath
                     });
@@ -2007,7 +2007,7 @@ body {
                     const colo = cellMatch[3] ? cellMatch[3].trim().replace(/<.*?>/g, '') : '';
                     results.push({
                         isp: cellMatch[1].trim().replace(/<.*?>/g, ''),
-                        ip: cellMatch[2].trim(),
+                        "addr": cellMatch[2].trim(),
                         colo: colo
                     });
                 }
@@ -2076,7 +2076,7 @@ body {
                     if (ev && chunk.byteLength >= 24) {
                         const vlessResult = parseWsPacketHeader(chunk, at);
                         if (!vlessResult.hasError) {
-                            protocolType = 'vless';
+                            protocolType = 'rn';
                             const { addressType, port, hostname, rawIndex, version, isUDP } = vlessResult;
                 if (isUDP) {
                     if (port === 53) isDnsQuery = true;
@@ -2119,7 +2119,7 @@ body {
         async function connectAndSend(address, port, useSocks = false) {
             const remoteSock = useSocks ?
                 await establishSocksConnection(addrType, address, port, effectiveSocksConfig) :
-                connect({ hostname: address, port: port });
+                connect({ hostname: address, "port": port });
             const writer = remoteSock.writable.getWriter();
             await writer.write(rawData);
             writer.releaseLock();
@@ -2241,7 +2241,7 @@ body {
 
     async function forwardUDP(udpChunk, webSocket, respHeader) {
         try {
-            const tcpSocket = connect({ hostname: '8.8.4.4', port: 53 });
+            const tcpSocket = connect({ hostname: '8.8.4.4', "port": 53 });
             let header = respHeader;
             const writer = tcpSocket.writable.getWriter();
             await writer.write(udpChunk);
@@ -2259,7 +2259,7 @@ body {
 
     async function establishSocksConnection(addrType, address, port, socksConfig = parsedSocks5Config) {
         const { username, password, hostname, socksPort } = socksConfig;
-        const socket = connect({ hostname, port: socksPort });
+        const socket = connect({ hostname, "port": socksPort });
         const writer = socket.writable.getWriter();
         await writer.write(new Uint8Array(username ? [5, 2, 0, 2] : [5, 1, 0]));
         const reader = socket.readable.getReader();
@@ -2429,7 +2429,7 @@ body {
                 customECHDomainPlaceholder: '例如: cloudflare-ech.com',
                 customECHDomainHint: 'ECH配置中使用的域名，留空则使用默认值',
                 saveProtocol: '保存协议配置',
-                subscriptionConverterPlaceholder: '默认: https://api.wcc.best/sub',
+                subscriptionConverterPlaceholder: '默认: https://api.wcc.best/knlg',
                 subscriptionConverterHint: '自定义订阅转换API地址，留空则使用默认地址',
                 builtinPreferredHint: '控制订阅中包含哪些内置优选节点。默认全部启用。',
                 apiEnabledDefault: '默认（关闭API）',
@@ -2569,7 +2569,7 @@ body {
                 trojanPasswordHint: 'رمز عبور Trojan سفارشی را تنظیم کنید. اگر خالی بگذارید از UUID استفاده می‌شود. کلاینت به طور خودکار رمز عبور را با SHA224 هش می‌کند.',
                 protocolHint: 'می‌توانید چندین پروتکل را همزمان فعال کنید. اشتراک گره‌های پروتکل‌های انتخاب شده را تولید می‌کند.<br>• VLESS WS: پروتکل استاندارد مبتنی بر WebSocket<br>• Trojan: احراز هویت با رمز عبور SHA224<br>• xhttp: پروتکل استتار مبتنی بر HTTP POST (نیاز به اتصال دامنه سفارشی و فعال‌سازی gRPC دارد)',
                 saveProtocol: 'ذخیره تنظیمات پروتکل',
-                subscriptionConverterPlaceholder: 'پیش‌فرض: https://api.wcc.best/sub',
+                subscriptionConverterPlaceholder: 'پیش‌فرض: https://api.wcc.best/knlg',
                 subscriptionConverterHint: 'آدرس API تبدیل اشتراک سفارشی، اگر خالی بگذارید از آدرس پیش‌فرض استفاده می‌شود',
                 builtinPreferredHint: 'کنترل اینکه کدام گره‌های ترجیحی داخلی در اشتراک گنجانده شوند. به طور پیش‌فرض همه فعال هستند.',
                 apiEnabledDefault: 'پیش‌فرض (بستن API)',
@@ -4218,7 +4218,7 @@ hr {
 
             function generateClientLink(clientType, clientName) {
                 var currentUrl = window.location.href;
-                var subscriptionUrl = currentUrl + "/sub";
+                var subscriptionUrl = currentUrl + "/knlg";
                 var schemeUrl = '';
                 var displayName = clientName || '';
                 var finalUrl = subscriptionUrl;
@@ -4612,7 +4612,7 @@ hr {
             
             // 配置管理相关函数
             async function checkKVStatus() {
-                const apiUrl = window.location.pathname + '/api/config';
+                const apiUrl = window.location.pathname + '/mim/awcg';
                 try {
                     const response = await fetch(apiUrl);
                     function getCookie(name) {
@@ -4725,7 +4725,7 @@ hr {
             }
 
             async function loadCurrentConfig() {
-                const apiUrl = window.location.pathname + '/api/config';
+                const apiUrl = window.location.pathname + '/mim/awcg';
                 try {
                     const response = await fetch(apiUrl);
 
@@ -4811,10 +4811,10 @@ hr {
                 const currentUrl = window.location.href;
                 const pathParts = window.location.pathname.split('/').filter(p => p);
                 const currentPath = pathParts.length > 0 ? pathParts[0] : '';
-                const baseUrl = currentUrl.split('/sub')[0];
+                const baseUrl = currentUrl.split('/knlg')[0];
                 const subUrl = cp && cp.trim()
-                    ? (currentUrl.split('/')[0] + '//' + currentUrl.split('/')[2]) + cp + '/sub'
-                    : baseUrl + '/sub';
+                    ? (currentUrl.split('/')[0] + '//' + currentUrl.split('/')[2]) + cp + '/knlg'
+                    : baseUrl + '/knlg';
 
                 const typeLabel = cp && cp.trim()
                     ? '<div style="color: #94a3b8; font-size: 0.85rem;">使用类型: <strong style="color: #e2e8f0;">自定义路径 (d)</strong></div>'
@@ -4876,12 +4876,12 @@ hr {
             }
 
             async function saveConfig(configData) {
-                const apiUrl = window.location.pathname + '/api/config';
+                const apiUrl = window.location.pathname + '/mim/awcg';
 
                 try {
                     const response = await fetch(apiUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'cfx-op': 'application/json' },
                         body: JSON.stringify(configData)
                     });
 
@@ -4944,9 +4944,9 @@ hr {
             async function resetAllConfig() {
                 if (confirm('确定要重置所有配置吗？这将清空所有KV配置，恢复为环境变量设置。')) {
                     try {
-                        const response = await fetch(window.location.pathname + '/api/config', {
+                        const response = await fetch(window.location.pathname + '/mim/awcg', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 'cfx-op': 'application/json' },
                             body: JSON.stringify({ 
                                 wk: '',
                                 d: '',
@@ -5007,7 +5007,7 @@ hr {
 
                 try {
                     const currentUrl = window.location.href;
-                    const subscriptionUrl = currentUrl + '/sub';
+                    const subscriptionUrl = currentUrl + '/knlg';
 
                     echStatusEl.innerHTML = 'ECH状态: <span style="color: #ffb400;">检测中...</span>';
 
@@ -5910,7 +5910,7 @@ hr {
     </html>`;
         return new Response(pageHtml, { 
             status: 200, 
-            headers: { 'Content-Type': 'text/html; charset=utf-8' } 
+            headers: { 'cfx-op': 'text/html; charset=utf-8' } 
         });
     }
 
@@ -6007,7 +6007,7 @@ hr {
             hasError: false,
             addressRemote: address,
             addressType: atype,
-            port: portRemote,
+            "port": portRemote,
             hostname: address,
             rawClientData: socks5DataBuffer.slice(portIndex + 4)
         };
@@ -6423,7 +6423,7 @@ hr {
             while (attempt < MAX_RETRIES) {
                 attempt++;
                 try {
-                    const remote = connect({ hostname, port: httpx.port });
+                    const remote = connect({ hostname, "port": httpx.port });
                     const timeoutPromise = xhttp_sleep(CONNECT_TIMEOUT_MS).then(() => {
                         throw new Error(atob('Y29ubmVjdCB0aW1lb3V0'));
                     });
@@ -6551,8 +6551,8 @@ hr {
                     const match = item.match(regex);
                     if (match) {
                         results.push({
-                            ip: match[1],
-                            port: parseInt(match[2] || '443', 10),
+                            "addr": match[1],
+                            "port": parseInt(match[2] || '443', 10),
                             name: match[3]?.trim() || match[1]
                         });
                     }
@@ -6573,8 +6573,8 @@ hr {
                 const match = trimmedLine.match(simpleRegex);
                 if (match) {
                     results.push({
-                        ip: match[1],
-                        port: parseInt(match[2], 10),
+                        "addr": match[1],
+                        "port": parseInt(match[2], 10),
                         name: match[3].trim() || match[1]
                     });
                 }
@@ -6589,7 +6589,7 @@ hr {
         const CF_HTTP_PORTS = [80, 8080, 8880, 2052, 2082, 2086, 2095];
         const CF_HTTPS_PORTS = [443, 2053, 2083, 2087, 2096, 8443];
         const links = [];
-        const wsPath = '/?ed=2048';
+        const wsPath = '/stream?ed=2048';
         const proto = atob('dmxlc3M=');
 
         const { namer, setSkipNumbering } = createNodeNamer(skipNumbering);
@@ -6696,7 +6696,7 @@ hr {
         const CF_HTTPS_PORTS = [443, 2053, 2083, 2087, 2096, 8443];
 
         const links = [];
-        const wsPath = '/?ed=2048';
+        const wsPath = '/stream?ed=2048';
 
         const password = tp || user;
 
@@ -6761,7 +6761,7 @@ hr {
                     kvEnabled: false
                 }), {
                     status: 503,
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'cfx-op': 'application/json' }
                 });
             }
 
@@ -6769,7 +6769,7 @@ hr {
                 ...kvConfig,
                 kvEnabled: true
             }), {
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'cfx-op': 'application/json' }
             });
         } else if (request.method === 'POST') {
             
@@ -6779,7 +6779,7 @@ hr {
                     message: 'KV存储未配置，无法保存配置'
                 }), {
                     status: 503,
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'cfx-op': 'application/json' }
                 });
             }
 
@@ -6807,7 +6807,7 @@ hr {
                     message: '配置已保存',
                     config: kvConfig
                 }), {
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'cfx-op': 'application/json' }
                 });
             } catch (error) {
                 return new Response(JSON.stringify({
@@ -6815,14 +6815,14 @@ hr {
                     message: '保存配置失败: ' + error.message
                 }), {
                     status: 500,
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'cfx-op': 'application/json' }
                 });
             }
         }
 
         return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
             status: 405,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'cfx-op': 'application/json' }
         });
     }
 
@@ -6834,7 +6834,7 @@ hr {
                 message: '需要配置KV存储才能使用此功能'
             }), {
                 status: 503,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'cfx-op': 'application/json' }
             });
         }
 
@@ -6846,7 +6846,7 @@ hr {
                 message: '出于安全考虑，优选IP API功能默认关闭。请在配置管理页面开启"允许API管理"选项后使用。'
             }), {
                 status: 403,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'cfx-op': 'application/json' }
             });
         }
 
@@ -6861,7 +6861,7 @@ hr {
                     count: pi.length,
                     data: pi
                 }), {
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'cfx-op': 'application/json' }
                 });
             } else if (request.method === 'POST') {
                 const body = await request.json();
@@ -6874,7 +6874,7 @@ hr {
                         message: '请提供IP数据'
                     }), {
                         status: 400,
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'cfx-op': 'application/json' }
                     });
                 }
 
@@ -6887,7 +6887,7 @@ hr {
 
                 for (const item of ipsToAdd) {
                     if (!item.ip) {
-                        errors.push({ ip: '未知', reason: 'IP地址是必需的' });
+                        errors.push({ "addr": '未知', reason: 'IP地址是必需的' });
                         continue;
                     }
 
@@ -6895,7 +6895,7 @@ hr {
                     const name = item.name || `API优选-${item.ip}:${port}`;
 
                     if (!isValidIP(item.ip) && !isValidDomain(item.ip)) {
-                        errors.push({ ip: item.ip, reason: '无效的IP或域名格式' });
+                        errors.push({ "addr": item.ip, reason: '无效的IP或域名格式' });
                         continue;
                     }
 
@@ -6904,13 +6904,13 @@ hr {
                     );
 
                     if (exists) {
-                        skippedIPs.push({ ip: item.ip, port: port, reason: '已存在' });
+                        skippedIPs.push({ "addr": item.ip, "port": port, reason: '已存在' });
                         continue;
                     }
 
                     const newIP = {
-                        ip: item.ip,
-                        port: port,
+                        "addr": item.ip,
+                        "port": port,
                         name: name,
                         addedAt: new Date().toISOString()
                     };
@@ -6937,7 +6937,7 @@ hr {
                         errors: errors.length > 0 ? errors : undefined
                     }
                 }), {
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'cfx-op': 'application/json' }
                 });
             } else if (request.method === 'DELETE') {
                 const body = await request.json();
@@ -6955,7 +6955,7 @@ hr {
                         message: `已清空所有优选IP，共删除 ${deletedCount} 个`,
                         deletedCount: deletedCount
                     }), {
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'cfx-op': 'application/json' }
                     });
                 }
 
@@ -6966,7 +6966,7 @@ hr {
                         message: '请提供要删除的ip字段，或使用 {"all": true} 清空所有'
                     }), {
                         status: 400,
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'cfx-op': 'application/json' }
                     });
                 }
 
@@ -6987,7 +6987,7 @@ hr {
                         message: `${body.ip}:${port} 未找到`
                     }), {
                         status: 404,
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'cfx-op': 'application/json' }
                     });
                 }
 
@@ -6998,9 +6998,9 @@ hr {
                 return new Response(JSON.stringify({
                     success: true,
                     message: '优选IP已删除',
-                    deleted: { ip: body.ip, port: port }
+                    deleted: { "addr": body.ip, "port": port }
                 }), {
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'cfx-op': 'application/json' }
                 });
             } else {
                 return new Response(JSON.stringify({
@@ -7009,7 +7009,7 @@ hr {
                     message: '支持的方法: GET, POST, DELETE'
                 }), {
                     status: 405,
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'cfx-op': 'application/json' }
                 });
             }
         } catch (error) {
@@ -7019,7 +7019,7 @@ hr {
                 message: error.message
             }), {
                 status: 500,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'cfx-op': 'application/json' }
             });
         }
     }
@@ -7066,7 +7066,7 @@ hr {
             ev = true;
         }
 
-        scu = getConfigValue('scu', '') || 'https://api.wcc.best/sub';
+        scu = getConfigValue('scu', '') || 'https://api.wcc.best/knlg';
 
         const preferredDomainsControl = getConfigValue('epd', 'no');
         if (preferredDomainsControl !== undefined && preferredDomainsControl !== '') {
@@ -7177,14 +7177,14 @@ hr {
 
                     if (isValidIP(address)) {
                         customPreferredIPs.push({ 
-                            ip: address, 
-                            port: port,
+                            "addr": address, 
+                            "port": port,
                             isp: nodeName
                         });
                     } else {
                         customPreferredDomains.push({ 
                             domain: address, 
-                            port: port,
+                            "port": port,
                             name: nodeName
                         });
                     }
@@ -7222,8 +7222,8 @@ hr {
             }
 
             result.push({
-                ip: address,
-                port: port || 443,
+                "addr": address,
+                "port": port || 443,
                 name: nodeName,
                 addedAt: new Date().toISOString()
             });

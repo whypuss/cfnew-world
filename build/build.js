@@ -12,6 +12,7 @@ const crypto = require('crypto');
 // Configuration
 const PLAIN_JS_PATH = path.join(__dirname, '..', 'plain.js');
 const OUTPUT_PATH = path.join(__dirname, '..', 'plain.js'); // Overwrite plain.js
+const WORKER_JS_PATH = path.join(__dirname, '..', 'worker.js');
 const MAPPINGS_PATH = path.join(__dirname, 'mappings.json');
 
 // Character sets for random string generation
@@ -124,6 +125,39 @@ function generateMappings() {
     mappings.wsPath['/?ed=2048'] = randomWsPath() + '?ed=2048';
 
     return mappings;
+}
+
+/**
+ * Patch worker.js with randomized routes:
+ * 1. Update RANDOMIZED_ROUTES constant (line ~24)
+ * 2. Update browser-side sub-path literal in terminalHtml (lines ~5217, ~5953)
+ */
+function patchWorkerJs(mappings) {
+    if (!fs.existsSync(WORKER_JS_PATH)) {
+        console.warn(`  worker.js not found at ${WORKER_JS_PATH}, skipping`);
+        return;
+    }
+
+    let workerSource = fs.readFileSync(WORKER_JS_PATH, 'utf8');
+    const subPath = mappings.routes['/sub'];
+    const configPath = mappings.routes['/api/config'];
+    const preferredPath = mappings.routes['/api/preferred-ips'];
+    const wsPath = mappings.routes['/?ed=2048'];
+
+    // 1. Update RANDOMIZED_ROUTES constant in worker.js
+    const rrPattern = /const RANDOMIZED_ROUTES = \{[^}]+\};/;
+    const newRr = `const RANDOMIZED_ROUTES = { '/sub': '${subPath}', '/api/config': '${configPath}', '/api/preferred-ips': '${preferredPath}', '/?ed=2048': '${wsPath}' };`;
+    workerSource = workerSource.replace(rrPattern, newRr);
+    console.log(`  Updated RANDOMIZED_ROUTES constant`);
+
+    // 2. Update browser-side hardcoded sub path (e.g. '/qktzh') in terminalHtml
+    // Matches: currentUrl + '/qktzh'  or  currentUrl + "/qktzh"
+    const oldSubLiteral = /(\+\s*)'\/qktzh'/g;
+    workerSource = workerSource.replace(oldSubLiteral, `$1'${subPath}'`);
+    console.log(`  Updated browser-side sub path literals`);
+
+    fs.writeFileSync(WORKER_JS_PATH, workerSource, 'utf8');
+    console.log(`  Patched worker.js`);
 }
 
 /**
@@ -258,9 +292,12 @@ function build() {
         console.log(`      ${k} → ${v}`);
     }
 
-    // Apply replacements
+    // Apply replacements to plain.js
     const transformed = applyReplacements(source, mappings);
-    console.log('\n✅ Applied all replacements');
+    console.log('\n  Applied replacements to plain.js');
+
+    // Also patch worker.js with randomized routes
+    patchWorkerJs(mappings);
 
     // Validate output
     const issues = validateOutput(transformed);
@@ -291,10 +328,10 @@ function build() {
     console.log(`   JSON keys randomized: ${Object.keys(mappings.jsonKeys).length}`);
     console.log('='.repeat(50));
     console.log('✅ Fingerprint randomization complete!');
-    console.log('\nNext steps:');
-    console.log('   1. Review the transformed plain.js');
-    console.log('   2. Run: node obfuscate.js');
-    console.log('   3. Deploy worker.js to Cloudflare\n');
+    console.log('\n  Next steps:');
+    console.log('     node build/build.js   # Re-run to regenerate routes');
+    console.log('     git add -A && git commit && git push');
+    console.log('     npx wrangler deploy\n');
 
     return mappings;
 }
@@ -304,4 +341,4 @@ if (require.main === module) {
     build();
 }
 
-module.exports = { generateMappings, applyReplacements, validateOutput };
+module.exports = { generateMappings, applyReplacements, patchWorkerJs, validateOutput };

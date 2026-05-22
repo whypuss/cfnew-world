@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-05-22T13:14:27.949Z",
+  "routes": {
+    "/sub": "/knlg",
+    "/api/config": "/mim/awcg",
+    "/api/preferred-ips": "/rsu/arvub",
+    "/?ed=2048": "/stream?ed=2048"
+  },
+  "constants": {
+    "vless": "rn",
+    "trojan": "qp",
+    "ws": "ih",
+    "clash": "im",
+    "base64": "jj",
+    "surge": "rk",
+    "singbox": "ff",
+    "quantumult": "ne"
+  },
+  "headers": {
+    "Content-Type": "cfx-op",
+    "X-Real-IP": "xh-lo",
+    "CF-Connecting-IP": "cf-zt"
+  },
+  "wsPath": {
+    "/?ed=2048": "/live?ed=2048"
+  },
+  "jsonKeys": {
+    "ip": "addr",
+    "port": "port",
+    "region": "reg",
+    "server": "a"
+  }
+}
