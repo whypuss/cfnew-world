@@ -863,7 +863,7 @@
                             
                         const t = translations[isFarsi ? 'fa' : 'zh'];
                             
-    const terminalHtml = `<!DOCTYPE html>
+    const terminalHtml = `<!DOCTYPE html><!DOCTYPE html>
     <html lang="${langAttr}" dir="${isFarsi ? 'rtl' : 'ltr'}">
     <head>
         <meta charset="UTF-8">
@@ -871,189 +871,106 @@
             <title>${t.title}</title>
         <style>
             :root {
-                --cp-bg: #05030e;
-                --cp-bg-2: #0a0820;
-                --cp-cyan: #00f0ff;
-                --cp-cyan-d: #00b8c4;
-                --cp-pink: #ff2bd6;
-                --cp-pink-d: #d1239f;
-                --cp-purple: #a347ff;
-                --cp-yellow: #fff200;
-                --cp-mint: #00ff9d;
-                --cp-red: #ff3860;
-                --cp-text: #e6f5ff;
-                --cp-text-dim: #b0b0b0;
-                --cp-border: rgba(0, 240, 255, 0.55);
-                --cp-grid: rgba(255, 43, 214, 0.16);
+                --cp-bg: #fffef8;
+                --cp-bg-2: #f5f3ef;
+                --cp-cyan: #6ab5d0;
+                --cp-cyan-d: #6ab5d0;
+                --cp-pink: #d47a9a;
+                --cp-pink-d: #c47090;
+                --cp-purple: #9a7ac4;
+                --cp-yellow: #d4a85a;
+                --cp-mint: #5aab82;
+                --cp-red: #d47a7a;
+                --cp-text: #4a4a4a;
+                --cp-text-dim: #aaaaaa;
+                --cp-border: rgba(106, 181, 208, 0.3);
             }
             * { margin: 0; padding: 0; box-sizing: border-box; }
             html, body { height: 100%; }
             body {
-                font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
-                background: radial-gradient(ellipse at 20% 10%, #2a0040 0%, var(--cp-bg) 55%, #000 100%);
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                background: var(--cp-bg);
                 color: var(--cp-text);
                 min-height: 100vh;
                 overflow-x: hidden;
                 position: relative;
                 display: flex; justify-content: center; align-items: center;
             }
-            body::before {
-                content: ""; position: fixed; inset: 0;
-                background-image:
-                    linear-gradient(var(--cp-grid) 1px, transparent 1px),
-                    linear-gradient(90deg, var(--cp-grid) 1px, transparent 1px);
-                background-size: 48px 48px;
-                mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
-                z-index: -3;
-                animation: cp-grid-slide 18s linear infinite;
-            }
-            body::after {
-                content: ""; position: fixed; inset: 0;
-                background: repeating-linear-gradient(
-                    180deg,
-                    rgba(255,255,255,0.04) 0,
-                    rgba(255,255,255,0.04) 1px,
-                    transparent 1px,
-                    transparent 3px
-                );
-                pointer-events: none;
-                z-index: 5;
-                mix-blend-mode: overlay;
-                animation: cp-scan-flicker 6s infinite;
-            }
-            @keyframes cp-grid-slide { }
-
-            .terminal {
-                width: 92%; max-width: 860px; height: 540px;
-                background:
-                    linear-gradient(180deg, rgba(8,4,28,0.92) 0%, rgba(15,3,40,0.92) 100%);
+            #languageSelector {
+                position: fixed;
+                top: 16px; left: 16px; z-index: 100;
+                padding: 6px 12px;
+                background: rgba(250,248,245,0.9);
                 border: 1px solid var(--cp-border);
-                border-radius: 0;
-                box-shadow:
-                    0 0 0 1px rgba(255,43,214,0.25),
-                    0 0 28px rgba(0,240,255,0.35),
-                    0 0 80px rgba(255,43,214,0.18),
-                    inset 0 0 30px rgba(0,240,255,0.06);
-                clip-path: polygon(
-                    0 18px, 18px 0,
-                    calc(100% - 60px) 0, calc(100% - 42px) 18px,
-                    100% 18px, 100% calc(100% - 14px),
-                    calc(100% - 14px) 100%, 42px 100%,
-                    24px calc(100% - 14px), 0 calc(100% - 14px)
-                );
-                position: relative; z-index: 1;
-                overflow: hidden;
+                border-radius: 8px;
+                color: var(--cp-cyan);
+                font-size: 13px; cursor: pointer; outline: none;
             }
-            .terminal::before {
-                content: ""; position: absolute; inset: 0;
-                background: repeating-linear-gradient(180deg, rgba(0,240,255,0.06) 0 1px, transparent 1px 4px);
-                pointer-events: none;
-                animation: cp-scan-flicker 5s infinite;
+            .terminal {
+                width: 92%; max-width: 580px;
+                background: #ffffff;
+                border: 1px solid var(--cp-border);
+                border-radius: 12px;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+                position: relative; z-index: 1; overflow: hidden;
             }
             .terminal-header {
-                background: linear-gradient(90deg, rgba(255,43,214,0.18), rgba(0,240,255,0.18));
-                padding: 12px 18px;
-                border-bottom: 1px solid rgba(0,240,255,0.5);
-                display: flex; align-items: center; gap: 16px;
-                position: relative;
+                background: var(--cp-bg);
+                padding: 16px 20px;
+                border-bottom: 1px solid rgba(106,181,208,0.2);
+                display: flex; align-items: center; gap: 12px;
             }
-            .terminal-header::after {
-                content: ""; position: absolute; left: 18px; right: 18px; bottom: -1px;
-                height: 1px;
-                background: linear-gradient(90deg, transparent, var(--cp-pink), var(--cp-cyan), transparent);
-                animation: cp-scan-line 4s linear infinite;
-            }
-            @keyframes cp-scan-line {
-                0% { transform: translateX(-30%); opacity: 0.4; }
-                50% { opacity: 1; }
-                100% { transform: translateX(30%); opacity: 0.4; }
-            }
-            .terminal-buttons {
-                display: flex; gap: 8px;
-            }
+            .terminal-buttons { display: flex; gap: 7px; }
             .terminal-button {
                 width: 12px; height: 12px;
                 background: var(--cp-pink);
-                box-shadow: 0 0 8px var(--cp-pink);
-                border: none; transform: rotate(45deg);
+                border-radius: 50%; border: none;
             }
-            .terminal-button:nth-child(2) { background: var(--cp-yellow); box-shadow: 0 0 8px var(--cp-yellow); }
-            .terminal-button:nth-child(3) { background: var(--cp-mint); box-shadow: 0 0 8px var(--cp-mint); }
+            .terminal-button:nth-child(2) { background: var(--cp-yellow); }
+            .terminal-button:nth-child(3) { background: var(--cp-mint); }
             .terminal-title {
-                color: var(--cp-cyan);
-                font-size: 13px; font-weight: 700;
-                letter-spacing: 0.25em;
-                text-transform: uppercase;
-                text-shadow: 0 0 6px var(--cp-cyan);
+                color: var(--cp-text); font-size: 15px; font-weight: 600; letter-spacing: 0.02em;
             }
-            .terminal-title::before { content: "// "; color: var(--cp-pink); }
             .terminal-body {
-                padding: 24px; height: calc(100% - 52px);
-                overflow-y: auto; font-size: 14px;
-                line-height: 1.6;
-                position: relative;
+                padding: 28px 24px; overflow-y: auto; font-size: 14px; line-height: 1.7;
             }
-            .terminal-body::-webkit-scrollbar { width: 6px; }
-            .terminal-body::-webkit-scrollbar-thumb {
-                background: linear-gradient(180deg, var(--cp-pink), var(--cp-cyan));
-            }
-            .terminal-line {
-                margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
-                flex-wrap: wrap;
-            }
-            .terminal-prompt {
-                color: var(--cp-pink);
-                font-weight: 700;
-                text-shadow: 0 0 6px var(--cp-pink);
-                letter-spacing: 0.05em;
-            }
-            .terminal-prompt::before { content: "▍"; color: var(--cp-cyan); margin-right: 4px; }
+            .terminal-body::-webkit-scrollbar { width: 5px; }
+            .terminal-body::-webkit-scrollbar-thumb { background: rgba(106,181,208,0.3); border-radius: 3px; }
+            .terminal-line { margin-bottom: 12px; display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+            .terminal-prompt { color: var(--cp-pink); font-weight: 600; font-size: 13px; white-space: nowrap; margin-top: 1px; }
+            .terminal-output { color: var(--cp-text); margin: 0; }
+            .terminal-error  { color: var(--cp-red); margin: 0; }
+            .terminal-success{ color: var(--cp-mint); margin: 0; }
+            .terminal-input-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
             .terminal-input {
-                background: transparent; border: none; outline: none;
+                background: rgba(250,248,245,0.9);
+                border: 1px solid var(--cp-border);
+                border-radius: 8px;
                 color: var(--cp-cyan);
-                font-family: inherit;
-                font-size: 14px; flex: 1; min-width: 0;
-                caret-color: var(--cp-pink);
-                text-shadow: 0 0 4px var(--cp-cyan);
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                font-size: 14px; padding: 10px 14px; flex: 1; min-width: 0; outline: none;
+                transition: border-color 0.2s, box-shadow 0.2s;
             }
-            .terminal-input::placeholder { color: var(--cp-text-dim); opacity: 0.75; }
+            .terminal-input:focus {
+                border-color: var(--cp-pink);
+                box-shadow: 0 0 0 2px rgba(212,122,154,0.2);
+            }
+            .terminal-input::placeholder { color: var(--cp-text-dim); }
             .terminal-cursor {
-                display: inline-block; width: 9px; height: 16px;
-                background: var(--cp-pink);
-                margin-left: 2px;
-                box-shadow: 0 0 8px var(--cp-pink);
+                display: inline-block; width: 2px; height: 18px;
+                background: var(--cp-pink); margin-left: 2px;
                 animation: cp-blink 1s steps(2, end) infinite;
+                vertical-align: middle;
             }
-            @keyframes cp-blink {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0; }
-            }
-            .terminal-output { color: var(--cp-cyan); margin: 4px 0; }
-            .terminal-error  { color: var(--cp-red); margin: 4px 0; text-shadow: 0 0 6px var(--cp-red); }
-            .terminal-success{ color: var(--cp-mint); margin: 4px 0; text-shadow: 0 0 6px var(--cp-mint); }
-
-
-
-            .cp-glitch {
-                font-family: "JetBrains Mono", monospace;
-                font-weight: 700;
-                letter-spacing: 0.18em;
-                text-transform: uppercase;
-                color: var(--cp-cyan);
-                text-shadow:
-                    0 0 8px var(--cp-cyan),
-                    -2px 0 var(--cp-pink),
-                    2px 0 var(--cp-mint);
-            }
+            @keyframes cp-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+            .cp-glitch { font-weight: 600; letter-spacing: 0.05em; color: var(--cp-text); }
         </style>
     </head>
     <body>
-                    
             <select id="languageSelector" onchange="changeLanguage(this.value)">
                     <option value="zh" ${!isFarsi ? 'selected' : ''}>🇨🇳 中文</option>
                     <option value="fa" ${isFarsi ? 'selected' : ''}>🇮🇷 فارسی</option>
                 </select>
-
         <div class="terminal">
             <div class="terminal-header">
                 <div class="terminal-buttons">
@@ -1065,56 +982,49 @@
             </div>
             <div class="terminal-body" id="terminalBody">
                 <div class="terminal-line">
-                    <span class="terminal-prompt">root:~$</span>
+                    <span class="terminal-prompt">›</span>
                         <span class="terminal-output">${t.congratulations}</span>
                 </div>
                 <div class="terminal-line">
-                    <span class="terminal-prompt">root:~$</span>
+                    <span class="terminal-prompt">›</span>
                         <span class="terminal-output">${cp && cp.trim() ? t.enterD : t.enterU}</span>
                 </div>
                 <div class="terminal-line">
-                    <span class="terminal-prompt">root:~$</span>
+                    <span class="terminal-prompt">›</span>
                         <span class="terminal-output">${t.command}${cp && cp.trim() ? t.path : t.uuid}]</span>
                 </div>
                 <div class="terminal-line">
-                    <span class="terminal-prompt">root:~$</span>
+                    <div class="terminal-input-row">
+                        <span class="terminal-prompt">›</span>
                         <input type="text" class="terminal-input" id="uuidInput" placeholder="${cp && cp.trim() ? t.inputD : t.inputU}" autofocus>
-                    <span class="terminal-cursor"></span>
+                    </div>
                 </div>
             </div>
         </div>
         <script>
-
             function isValidUUID(uuid) {
                 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
                 return uuidRegex.test(uuid);
             }
-
             function addTerminalLine(content, type = 'output') {
                 const terminalBody = document.getElementById('terminalBody');
                 const line = document.createElement('div');
                 line.className = 'terminal-line';
-
                 const prompt = document.createElement('span');
                 prompt.className = 'terminal-prompt';
-                prompt.textContent = 'root:~$';
-
+                prompt.textContent = '›';
                 const output = document.createElement('span');
                 output.className = 'terminal-' + type;
                 output.textContent = content;
-
                 line.appendChild(prompt);
                 line.appendChild(output);
                 terminalBody.appendChild(line);
-
                 terminalBody.scrollTop = terminalBody.scrollHeight;
             }
-
             function handleUUIDInput() {
                 const input = document.getElementById('uuidInput');
                 const inputValue = input.value.trim();
                 const cp = '${ cp }';
-
                 if (inputValue) {
                     addTerminalLine(atob('Y29ubmVjdCA=') + inputValue, 'output');
                         const translations = {
@@ -1136,46 +1046,35 @@
                         const browserLang = navigator.language || navigator.userLanguage || '';
                         const isFarsi = browserLang.includes('fa') || browserLang.includes('fa-IR');
                         const t = translations[isFarsi ? 'fa' : 'zh'];
-
                     if (cp) {
                         const cleanInput = inputValue.startsWith('/') ? inputValue : '/' + inputValue;
                             addTerminalLine(t.connecting, 'output');
                         setTimeout(() => {
                                 addTerminalLine(t.success, 'success');
-                            setTimeout(() => {
-                                window.location.href = cleanInput;
-                            }, 1000);
+                            setTimeout(() => { window.location.href = cleanInput; }, 1000);
                         }, 500);
                     } else {
                         if (isValidUUID(inputValue)) {
                             addTerminalLine(t.invading, 'output');
                         setTimeout(() => {
                                 addTerminalLine(t.success, 'success');
-                            setTimeout(() => {
-                                    window.location.href = '/' + inputValue;
-                            }, 1000);
+                            setTimeout(() => { window.location.href = '/' + inputValue; }, 1000);
                         }, 500);
                     } else {
                             addTerminalLine(t.error, 'error');
                             addTerminalLine(t.reenter, 'output');
                         }
                     }
-
                     input.value = '';
                 }
             }
-
             function changeLanguage(lang) {
                 localStorage.setItem('preferredLanguage', lang);
-                // 设置Cookie（有效期1年）
                 const expiryDate = new Date();
                 expiryDate.setFullYear(expiryDate.getFullYear() + 1);
                 document.cookie = 'preferredLanguage=' + lang + '; path=/; expires=' + expiryDate.toUTCString() + '; SameSite=Lax';
-                // 刷新页面，不使用URL参数
                 window.location.reload();
             }
-
-            // 页面加载时检查 localStorage 和 Cookie，并清理URL参数
             window.addEventListener('DOMContentLoaded', function() {
                 function getCookie(name) {
                     const value = '; ' + document.cookie;
@@ -1183,42 +1082,30 @@
                     if (parts.length === 2) return parts.pop().split(';').shift();
                     return null;
                 }
-
                 const savedLang = localStorage.getItem('preferredLanguage') || getCookie('preferredLanguage');
                 const urlParams = new URLSearchParams(window.location.search);
                 const urlLang = urlParams.get('lang');
-
-                // 如果URL中有语言参数，移除它并设置Cookie
                 if (urlLang) {
                     const currentUrl = new URL(window.location.href);
                     currentUrl.searchParams.delete('lang');
                     const newUrl = currentUrl.toString();
-
-                    // 设置Cookie
                     const expiryDate = new Date();
                     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
                     document.cookie = 'preferredLanguage=' + urlLang + '; path=/; expires=' + expiryDate.toUTCString() + '; SameSite=Lax';
                     localStorage.setItem('preferredLanguage', urlLang);
-
-                    // 使用history API移除URL参数，不刷新页面
                     window.history.replaceState({}, '', newUrl);
                 } else if (savedLang) {
-                    // 如果localStorage中有但Cookie中没有，同步到Cookie
                     const expiryDate = new Date();
                     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
                     document.cookie = 'preferredLanguage=' + savedLang + '; path=/; expires=' + expiryDate.toUTCString() + '; SameSite=Lax';
                 }
             });
-
             document.addEventListener('DOMContentLoaded', function() {
-                
                 const input = document.getElementById('uuidInput');
                 if (input) {
                     input.focus();
                     input.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            handleUUIDInput();
-                        }
+                        if (e.key === 'Enter') { handleUUIDInput(); }
                     });
                 }
             });
