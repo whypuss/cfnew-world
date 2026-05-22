@@ -2686,7 +2686,7 @@ Sitemap: https://example.com/sitemap.xml
     async function handleSubscriptionRequest(request, user, url = null) {
         if (!url) url = new URL(request.url);
 
-        const finalLinks = [];
+        let finalLinks = [];
         const workerDomain = url.hostname;
         const target = url.searchParams.get('target') || 'base64';
 
