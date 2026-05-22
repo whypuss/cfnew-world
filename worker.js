@@ -1754,7 +1754,7 @@ Sitemap: https://example.com/sitemap.xml
 
                     if (url.pathname.length > 1 && url.pathname !== '/') {
                         const usedAlias = extractSubAlias(url.pathname);
-                        const user = url.pathname.replace(/\\/$/, '').replace(usedAlias, '').substring(1);
+                        const user = url.pathname.replace(/\/$/, '').replace(usedAlias, '').substring(1);
                         if (isValidFormat(user)) {
                             return new Response(JSON.stringify({ 
                                 error: '访问被拒绝',
@@ -1768,7 +1768,7 @@ Sitemap: https://example.com/sitemap.xml
                 } else {
                     
                     if (url.pathname.length > 1 && url.pathname !== '/' && !hasSubRoute(url.pathname)) {
-                        const user = url.pathname.replace(/\\/$/, '').substring(1);
+                        const user = url.pathname.replace(/\/$/, '').substring(1);
                         if (isValidFormat(user)) {
                             if (user === at) {
                                 return await handleSubscriptionPage(request, user);
