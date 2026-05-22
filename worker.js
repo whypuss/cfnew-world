@@ -882,7 +882,7 @@
                 --cp-mint: #00ff9d;
                 --cp-red: #ff3860;
                 --cp-text: #e6f5ff;
-                --cp-text-dim: #555555;
+                --cp-text-dim: #b0b0b0;
                 --cp-border: rgba(0, 240, 255, 0.55);
                 --cp-grid: rgba(255, 43, 214, 0.16);
             }
@@ -922,42 +922,6 @@
                 animation: cp-scan-flicker 6s infinite;
             }
             @keyframes cp-grid-slide { }
-            @keyframes cp-scan-flicker {
-                0%, 100% { opacity: 0.6; }
-                50% { opacity: 0.9; }
-            }
-            .matrix-bg {
-                position: fixed; inset: 0;
-                background:
-                    radial-gradient(circle at 80% 90%, rgba(255,43,214,0.18) 0%, transparent 45%),
-                    radial-gradient(circle at 10% 80%, rgba(0,240,255,0.18) 0%, transparent 45%);
-                z-index: -2;
-                pointer-events: none;
-            }
-            .matrix-rain { display: none; }
-            .matrix-code-rain {
-                position: fixed; inset: 0;
-                pointer-events: none; z-index: -1;
-                overflow: hidden;
-            }
-            .matrix-column {
-                position: absolute; top: -120%; left: 0;
-                color: var(--cp-cyan);
-                font-family: "JetBrains Mono", "Courier New", monospace;
-                font-size: 14px; line-height: 1.25;
-                text-shadow: 0 0 6px var(--cp-cyan), 0 0 12px rgba(0,240,255,0.5);
-                animation: cp-drop linear infinite;
-            }
-            @keyframes cp-drop {
-                0%   { top: -120%; opacity: 0; }
-                10%  { opacity: 0.85; }
-                90%  { opacity: 0.4; }
-                100% { top: 110vh; opacity: 0; }
-            }
-            .matrix-column:nth-child(odd)  { animation-duration: 12s; }
-            .matrix-column:nth-child(even) { animation-duration: 18s; color: var(--cp-pink); text-shadow: 0 0 6px var(--cp-pink), 0 0 14px rgba(255,43,214,0.5); }
-            .matrix-column:nth-child(3n)   { animation-duration: 20s; color: var(--cp-purple); text-shadow: 0 0 6px var(--cp-purple); }
-            .matrix-column:nth-child(5n)   { animation-duration: 9s; opacity: 0.6; }
 
             .terminal {
                 width: 92%; max-width: 860px; height: 540px;
@@ -1068,77 +1032,7 @@
             .terminal-error  { color: var(--cp-red); margin: 4px 0; text-shadow: 0 0 6px var(--cp-red); }
             .terminal-success{ color: var(--cp-mint); margin: 4px 0; text-shadow: 0 0 6px var(--cp-mint); }
 
-            .cp-hud {
-                position: fixed; top: 18px; right: 22px;
-                color: var(--cp-cyan);
-                font-family: "JetBrains Mono", monospace;
-                font-size: 11px; letter-spacing: 0.2em;
-                text-transform: uppercase;
-                text-align: right;
-                opacity: 0.85;
-                z-index: 1000;
-            }
-            .cp-hud .cp-hud-label { color: var(--cp-pink); }
-            .cp-hud .cp-hud-line { display: block; }
-            .cp-lang-wrapper {
-                position: fixed; top: 18px; left: 22px; z-index: 1000;
-                display: flex; align-items: center; gap: 10px;
-            }
-            .cp-lang-tag {
-                color: var(--cp-pink); font-size: 11px;
-                letter-spacing: 0.25em; text-transform: uppercase;
-                text-shadow: 0 0 6px var(--cp-pink);
-            }
-            #languageSelector {
-                background: rgba(8,4,28,0.85);
-                border: 1px solid var(--cp-cyan);
-                color: var(--cp-cyan);
-                padding: 6px 12px;
-                font-family: inherit;
-                font-size: 12px;
-                cursor: pointer;
-                letter-spacing: 0.12em;
-                text-shadow: 0 0 6px var(--cp-cyan);
-                box-shadow: 0 0 12px rgba(0,240,255,0.35);
-                clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-            }
-            #languageSelector option { background: var(--cp-bg-2); color: var(--cp-cyan); }
 
-            /* FX toggle - 页面特效图形化开关 */
-            .cp-fx-toggle {
-                position: fixed; top: 68px; left: 22px; z-index: 1001;
-                background: rgba(8,4,28,0.85);
-                border: 1px solid var(--cp-mint);
-                color: var(--cp-mint);
-                padding: 6px 12px;
-                font-family: inherit;
-                font-size: 11px;
-                letter-spacing: 0.18em;
-                text-transform: uppercase;
-                cursor: pointer;
-                text-shadow: 0 0 6px var(--cp-mint);
-                box-shadow: 0 0 10px rgba(0,255,157,0.35);
-                clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
-                transition: all 0.2s ease;
-                display: inline-flex; align-items: center; gap: 6px;
-            }
-            .cp-fx-toggle:hover { color: var(--cp-pink); border-color: var(--cp-pink); text-shadow: 0 0 8px var(--cp-pink); box-shadow: 0 0 16px rgba(255,43,214,0.55); }
-            .cp-fx-toggle .cp-fx-dot { width: 6px; height: 6px; background: var(--cp-mint); border-radius: 50%; box-shadow: 0 0 8px var(--cp-mint); transition: all 0.2s; }
-            body.fx-off .cp-fx-toggle { color: var(--cp-text-dim); border-color: var(--cp-text-dim); text-shadow: none; box-shadow: none; }
-            body.fx-off .cp-fx-toggle .cp-fx-dot { background: transparent; border: 1px solid var(--cp-text-dim); box-shadow: none; }
-            body.fx-off .matrix-bg,
-            body.fx-off .matrix-code-rain,
-            body.fx-off .matrix-column { display: none !important; }
-            body.fx-off::before,
-            body.fx-off::after { display: none !important; content: none !important; }
-            body.fx-off { background: var(--cp-bg) !important; }
-            body.fx-off * {
-                animation: none !important;
-                transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s !important;
-            }
-            body.fx-off .cp-glitch::before,
-            body.fx-off .cp-glitch::after { display: none !important; }
-            body.fx-off .terminal-cursor::after { animation: none !important; }
 
             .cp-glitch {
                 font-family: "JetBrains Mono", monospace;
@@ -1154,24 +1048,12 @@
         </style>
     </head>
     <body>
-        <div class="matrix-bg"></div>
-        <div class="matrix-code-rain" id="matrixCodeRain"></div>
-            <div class="cp-hud">
-                <span class="cp-hud-line"><span class="cp-hud-label">SYS::</span> ${t.terminal}</span>
-                <span class="cp-hud-line"><span class="cp-hud-label">NODE::</span> NIGHT_CITY</span>
-                <span class="cp-hud-line"><span class="cp-hud-label">LINK::</span> SECURE / ENC</span>
-            </div>
-            <div class="cp-lang-wrapper">
-                <span class="cp-lang-tag">LANG_</span>
-                <select id="languageSelector" onchange="changeLanguage(this.value)">
+                    
+            <select id="languageSelector" onchange="changeLanguage(this.value)">
                     <option value="zh" ${!isFarsi ? 'selected' : ''}>🇨🇳 中文</option>
                     <option value="fa" ${isFarsi ? 'selected' : ''}>🇮🇷 فارسی</option>
                 </select>
-            </div>
-            <button type="button" id="cpFxToggle" class="cp-fx-toggle" onclick="cpToggleFx()" title="${isFarsi ? 'تغییر افکت‌های صفحه' : '切换页面特效'}" aria-label="FX toggle">
-                <span class="cp-fx-dot" aria-hidden="true"></span>
-                <span id="cpFxLabel">FX: ON</span>
-            </button>
+
         <div class="terminal">
             <div class="terminal-header">
                 <div class="terminal-buttons">
@@ -1202,84 +1084,6 @@
             </div>
         </div>
         <script>
-            // 页面特效图形化开关 (localStorage 持久化)
-            window.cpApplyFx = function() {
-                var off = localStorage.getItem('cp-fx-off') === '1';
-                document.body.classList.toggle('fx-off', off);
-                var lbl = document.getElementById('cpFxLabel');
-                if (lbl) lbl.textContent = off ? 'FX: OFF' : 'FX: ON';
-                if (off) {
-                    var rain = document.getElementById('matrixCodeRain');
-                    if (rain) rain.innerHTML = '';
-                } else if (typeof createMatrixRain === 'function') {
-                    var r = document.getElementById('matrixCodeRain');
-                    if (r && !r.firstChild) createMatrixRain();
-                }
-            };
-            window.cpToggleFx = function() {
-                var off = localStorage.getItem('cp-fx-off') === '1';
-                localStorage.setItem('cp-fx-off', off ? '0' : '1');
-                window.cpApplyFx();
-            };
-            (function() {
-                if (localStorage.getItem('cp-fx-off') === '1') {
-                    document.documentElement.classList.add('fx-off-preload');
-                    document.addEventListener('DOMContentLoaded', function() {
-                        document.body.classList.add('fx-off');
-                    });
-                }
-            })();
-
-            function createMatrixRain() {
-                if (document.body && document.body.classList.contains('fx-off')) return;
-                const matrixContainer = document.getElementById('matrixCodeRain');
-                if (!matrixContainer) return;
-                const cyberChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ$%#@!?<>+=ABCDEF';
-                const palette = ['#00f0ff', '#ff2bd6', '#a347ff', '#00ff9d'];
-                const columns = Math.floor(window.innerWidth / 20);
-
-                for (let i = 0; i < columns; i++) {
-                    const column = document.createElement('div');
-                    column.className = 'matrix-column';
-                    column.style.left = (i * 20) + 'px';
-                    column.style.animationDelay = (-Math.random() * 15) + 's';
-                    column.style.animationDuration = (Math.random() * 14 + 8) + 's';
-                    column.style.fontSize = (Math.random() * 4 + 12) + 'px';
-                    column.style.opacity = (Math.random() * 0.7 + 0.3).toFixed(2);
-
-                    let text = '';
-                    const charCount = Math.floor(Math.random() * 30 + 18);
-                    for (let j = 0; j < charCount; j++) {
-                        const char = cyberChars[Math.floor(Math.random() * cyberChars.length)];
-                        const useAccent = Math.random() > 0.85;
-                        const color = useAccent ? palette[Math.floor(Math.random() * palette.length)] : '';
-                        text += color
-                            ? ('<span style="color:' + color + ';text-shadow:0 0 8px ' + color + ';">' + char + '</span><br>')
-                            : ('<span>' + char + '</span><br>');
-                    }
-                    column.innerHTML = text;
-                    matrixContainer.appendChild(column);
-                }
-
-                setInterval(function() {
-                    const cols = matrixContainer.querySelectorAll('.matrix-column');
-                    cols.forEach(function(column) {
-                        if (Math.random() > 0.94) {
-                            const chars = column.querySelectorAll('span');
-                            if (chars.length > 0) {
-                                const target = chars[Math.floor(Math.random() * chars.length)];
-                                const prev = target.style.color;
-                                target.style.color = '#ffffff';
-                                target.style.textShadow = '0 0 10px #ffffff, 0 0 18px #00f0ff';
-                                setTimeout(function() {
-                                    target.style.color = prev;
-                                    target.style.textShadow = '';
-                                }, 200);
-                            }
-                        }
-                    });
-                }, 110);
-            }
 
             function isValidUUID(uuid) {
                 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -1407,7 +1211,7 @@
             });
 
             document.addEventListener('DOMContentLoaded', function() {
-                try { createMatrixRain(); } catch (e) {}
+                
                 const input = document.getElementById('uuidInput');
                 if (input) {
                     input.focus();
@@ -3626,19 +3430,19 @@
         <style>
             :root {
                 --cp-bg: #ffffff;
-                --cp-bg-2: #f5f5f5;
-                --cp-bg-3: #eeeeee;
-                --cp-cyan: #0066cc;
-                --cp-cyan-d: #004d99;
-                --cp-pink: #cc2277;
-                --cp-pink-d: #991155;
+                --cp-bg-2: #fffef8;
+                --cp-bg-3: #fafafa;
+                --cp-cyan: #6ab5d0;
+                --cp-cyan-d: #6ab5d0;
+                --cp-pink: #d47a9a;
+                --cp-pink-d: #b47a8a;
                 --cp-purple: #7733cc;
-                --cp-yellow: #cc9900;
+                --cp-yellow: #d4a85a;
                 --cp-mint: #009966;
-                --cp-amber: #cc8800;
-                --cp-red: #cc2244;
-                --cp-text: #1a1a1a;
-                --cp-text-dim: #555555;
+                --cp-amber: #d4a85a;
+                --cp-red: #d47a7a;
+                --cp-text: #4a4a4a;
+                --cp-text-dim: #b0b0b0;
                 --cp-border: rgba(0, 102, 204, 0.3);
                 --cp-border-pink: rgba(204, 34, 119, 0.3);
                 --cp-grid: rgba(0, 102, 204, 0.06);
@@ -3647,7 +3451,7 @@
             html, body { min-height: 100%; }
             body {
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                background: #ffffff;
+                background: #fffef8;
                 color: var(--cp-text);
                 min-height: 100vh;
                 overflow-x: hidden;
@@ -3655,36 +3459,6 @@
             }
             body::before { display: none; }
             body::after { display: none; }
-            @keyframes cp-grid-slide {
-                0% { background-position: 0 0, 0 0; }
-                100% { background-position: 48px 48px, 48px 48px; }
-            }
-            @keyframes cp-scan-flicker { }
-            .matrix-bg { display: none; }
-            .matrix-rain { display: none; }
-            .matrix-code-rain {
-                position: fixed; inset: 0;
-                pointer-events: none; z-index: -1;
-                overflow: hidden;
-            }
-            .matrix-column {
-                position: absolute; top: -120%; left: 0;
-                color: var(--cp-cyan);
-                font-family: "JetBrains Mono", "Courier New", monospace;
-                font-size: 14px; line-height: 1.25;
-                text-shadow: 0 0 6px var(--cp-cyan), 0 0 12px rgba(0,240,255,0.5);
-                animation: cp-drop linear infinite;
-            }
-            @keyframes cp-drop {
-                0%   { top: -120%; opacity: 0; }
-                10%  { opacity: 0.85; }
-                90%  { opacity: 0.4; }
-                100% { top: 110vh; opacity: 0; }
-            }
-            .matrix-column:nth-child(odd)  { animation-duration: 12s; }
-            .matrix-column:nth-child(even) { animation-duration: 18s; color: var(--cp-pink); text-shadow: 0 0 6px var(--cp-pink), 0 0 14px rgba(255,43,214,0.5); }
-            .matrix-column:nth-child(3n)   { animation-duration: 20s; color: var(--cp-purple); text-shadow: 0 0 6px var(--cp-purple); }
-            .matrix-column:nth-child(5n)   { animation-duration: 9s; opacity: 0.6; }
 
             ::selection { background: var(--cp-cyan); color: #fff; }
 
@@ -3796,7 +3570,7 @@
             .subscription-url,
             [class*='subscription-url'],
             [class*='c3Vic2NyaXB0aW9u'] {
-                background: rgba(0,0,0,0.7) !important;
+                background: rgba(250,248,242,0.85) !important;
                 border: 1px dashed var(--cp-pink) !important;
                 padding: 14px 16px !important;
                 word-break: break-all;
@@ -3814,109 +3588,11 @@
             }
             #clientSubscriptionUrl:empty { display: none !important; }
 
-            .cp-hud {
-                position: fixed; top: 18px; right: 22px;
-                color: var(--cp-cyan);
-                font-family: "JetBrains Mono", monospace;
-                font-size: 11px; letter-spacing: 0.2em;
-                text-transform: uppercase;
-                text-align: right;
-                opacity: 0.85;
-                z-index: 1000;
-            }
-            .cp-hud .cp-hud-label { color: var(--cp-pink); }
-            .cp-hud .cp-hud-line { display: block; }
-            .cp-lang-wrapper {
-                position: fixed; top: 18px; left: 22px; z-index: 1000;
-                display: flex; align-items: center; gap: 10px;
-            }
-            .cp-lang-tag {
-                color: var(--cp-pink); font-size: 11px;
-                letter-spacing: 0.25em; text-transform: uppercase;
-                text-shadow: 0 0 6px var(--cp-pink);
-            }
-            #languageSelector {
-                background: rgba(8,4,28,0.85);
-                border: 1px solid var(--cp-cyan);
-                color: var(--cp-cyan);
-                padding: 6px 12px;
-                font-family: inherit;
-                font-size: 12px;
-                cursor: pointer;
-                letter-spacing: 0.12em;
-                text-shadow: 0 0 6px var(--cp-cyan);
-                box-shadow: 0 0 12px rgba(0,240,255,0.35);
-                clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-            }
-            #languageSelector option { background: var(--cp-bg-2); color: var(--cp-cyan); }
-
-            /* FX toggle - 页面特效图形化开关 */
-            .cp-fx-toggle {
-                position: fixed; top: 68px; left: 22px; z-index: 1001;
-                background: rgba(8,4,28,0.85);
-                border: 1px solid var(--cp-mint);
-                color: var(--cp-mint);
-                padding: 6px 12px;
-                font-family: inherit;
-                font-size: 11px;
-                letter-spacing: 0.18em;
-                text-transform: uppercase;
-                cursor: pointer;
-                text-shadow: 0 0 6px var(--cp-mint);
-                box-shadow: 0 0 10px rgba(0,255,157,0.35);
-                clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
-                transition: all 0.2s ease;
-                display: inline-flex; align-items: center; gap: 6px;
-            }
-            .cp-fx-toggle:hover {
-                color: var(--cp-pink);
-                border-color: var(--cp-pink);
-                text-shadow: 0 0 8px var(--cp-pink);
-                box-shadow: 0 0 16px rgba(255,43,214,0.55);
-            }
-            .cp-fx-toggle .cp-fx-dot {
-                width: 6px; height: 6px;
-                background: var(--cp-mint);
-                border-radius: 50%;
-                box-shadow: 0 0 8px var(--cp-mint);
-                transition: all 0.2s;
-            }
-            body.fx-off .cp-fx-toggle {
-                color: var(--cp-text-dim);
-                border-color: var(--cp-text-dim);
-                text-shadow: none;
-                box-shadow: none;
-            }
-            body.fx-off .cp-fx-toggle .cp-fx-dot {
-                background: transparent;
-                border: 1px solid var(--cp-text-dim);
-                box-shadow: none;
-            }
-            /* FX OFF: 关闭所有装饰性特效，保留布局和配色 */
-            body.fx-off .matrix-bg,
-            body.fx-off .matrix-code-rain,
-            body.fx-off .matrix-column { display: none !important; }
-            body.fx-off::before,
-            body.fx-off::after { display: none !important; content: none !important; }
-            body.fx-off { background: var(--cp-bg) !important; }
-            body.fx-off * {
-                animation: none !important;
-                transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s !important;
-            }
-            body.fx-off .cp-glitch::before,
-            body.fx-off .cp-glitch::after { display: none !important; }
-            body.fx-off .terminal-cursor::after,
-            body.fx-off .cp-fab-save .cp-fab-dot { animation: none !important; }
-            body.fx-off .cp-fab-save:hover { transform: none !important; }
-            body.fx-off .cp-action-bar.cp-dirty::before { animation: none !important; }
-            body.fx-off .header::before { display: none !important; }
-            body.fx-off .card { backdrop-filter: none !important; }
-            body.fx-off select, body.fx-off input, body.fx-off textarea { backdrop-filter: none !important; }
 
             /* Status panel inside card */
             #systemStatus {
                 background: linear-gradient(135deg, rgba(0,240,255,0.05), rgba(255,43,214,0.05)) !important;
-                border: 1px solid var(--cp-border) !important;
+                border: 1px solid rgba(106,181,208,0.25) !important;
                 padding: 18px 20px !important;
                 margin: 14px 0 0 !important;
                 box-shadow: inset 0 0 16px rgba(0,240,255,0.12) !important;
@@ -3935,7 +3611,7 @@
                 color: var(--cp-pink) !important;
                 font-weight: 700 !important;
                 letter-spacing: 0.25em !important;
-                text-shadow: 0 0 6px var(--cp-pink) !important;
+                text-shadow: none !important;
                 margin-bottom: 14px !important;
                 text-transform: uppercase;
             }
@@ -3943,23 +3619,23 @@
             /* Force inputs / selects to cyberpunk */
             input[type="text"], input[type="number"], input[type="password"],
             select, textarea {
-                background: rgba(0,0,0,0.6) !important;
-                border: 1px solid var(--cp-border) !important;
+                background: rgba(250,248,245,0.9) !important;
+                border: 1px solid rgba(106,181,208,0.25) !important;
                 color: var(--cp-cyan) !important;
                 font-family: inherit !important;
                 font-size: 13px !important;
                 padding: 10px 12px !important;
                 outline: none;
                 transition: border-color 0.2s, box-shadow 0.2s;
-                box-shadow: inset 0 0 8px rgba(0,240,255,0.08) !important;
+                box-shadow: inset 0 1px 3px rgba(0,0,0,0.06) !important;
                 letter-spacing: 0.04em;
             }
             input::placeholder { color: var(--cp-text-dim) !important; opacity: 0.7; }
             input:focus, select:focus, textarea:focus {
                 border-color: var(--cp-pink) !important;
-                box-shadow: 0 0 0 1px var(--cp-pink), 0 0 14px rgba(255,43,214,0.4) !important;
+                box-shadow: 0 0 0 1px var(--cp-pink), 0 0 6px rgba(196,74,122,0.25) !important;
             }
-            select option { background: var(--cp-bg-2); color: var(--cp-cyan); }
+            select option { background: #fffef8; color: var(--cp-cyan); }
             input[type="checkbox"], input[type="radio"] {
                 accent-color: var(--cp-pink);
             }
@@ -3967,12 +3643,12 @@
             label {
                 color: var(--cp-cyan) !important;
                 letter-spacing: 0.05em;
-                text-shadow: 0 0 4px rgba(0,240,255,0.4);
+                text-shadow: none;
             }
             label[style*="font-weight"], label[style*="bold"] {
                 font-weight: 700 !important;
                 color: var(--cp-pink) !important;
-                text-shadow: 0 0 6px var(--cp-pink) !important;
+                text-shadow: none !important;
                 letter-spacing: 0.15em !important;
                 text-transform: uppercase;
                 font-size: 0.78rem !important;
@@ -3987,7 +3663,7 @@
             /* Buttons inside forms - global override */
             button, input[type="submit"] {
                 background: linear-gradient(135deg, rgba(0,240,255,0.15), rgba(255,43,214,0.15)) !important;
-                border: 1px solid var(--cp-border) !important;
+                border: 1px solid rgba(106,181,208,0.25) !important;
                 color: var(--cp-cyan) !important;
                 font-family: inherit !important;
                 font-weight: 700 !important;
@@ -4028,15 +3704,15 @@
             div[style*="background: rgba(15, 3, 40"],
             div[style*="background: rgba(20, 5, 50"] {
                 background: linear-gradient(135deg, rgba(0,240,255,0.04), rgba(255,43,214,0.04)) !important;
-                border: 1px solid var(--cp-border-pink) !important;
+                border: 1px solid rgba(196,74,122,0.3) !important;
                 box-shadow: inset 0 0 12px rgba(255,43,214,0.06) !important;
                 border-radius: 0 !important;
             }
 
             /* kvStatus / statusMessage / currentConfig / pathTypeInfo */
             #kvStatus, #statusMessage, #currentConfig, #pathTypeInfo {
-                background: rgba(0,0,0,0.55) !important;
-                border: 1px solid var(--cp-border) !important;
+                background: rgba(250,248,242,0.5) !important;
+                border: 1px solid rgba(106,181,208,0.25) !important;
                 color: var(--cp-cyan) !important;
                 font-family: inherit !important;
                 box-shadow: inset 0 0 10px rgba(0,240,255,0.10) !important;
@@ -4046,21 +3722,21 @@
             }
             #pathTypeInfo div:first-child {
                 color: var(--cp-pink) !important;
-                text-shadow: 0 0 6px var(--cp-pink) !important;
+                text-shadow: none !important;
                 letter-spacing: 0.2em !important;
             }
 
             /* Latency Result list */
             #latencyResultsList {
-                background: rgba(0,0,0,0.5) !important;
-                border: 1px solid var(--cp-border) !important;
+                background: rgba(250,248,242,0.5) !important;
+                border: 1px solid rgba(106,181,208,0.25) !important;
             }
             #latencyResultsList > div {
-                border-bottom: 1px dashed rgba(0,240,255,0.18) !important;
+                border-bottom: 1px dashed rgba(106,181,208,0.18) !important;
             }
             #cityFilterContainer {
-                background: rgba(0,0,0,0.55) !important;
-                border: 1px solid var(--cp-border-pink) !important;
+                background: rgba(250,248,242,0.5) !important;
+                border: 1px solid rgba(196,74,122,0.3) !important;
             }
 
             /* Related links area */
@@ -4083,7 +3759,7 @@
 
             /* Scrollbars */
             ::-webkit-scrollbar { width: 8px; height: 8px; }
-            ::-webkit-scrollbar-track { background: rgba(0,0,0,0.4); }
+            ::-webkit-scrollbar-track { background: rgba(230,228,225,0.4); }
             ::-webkit-scrollbar-thumb {
                 background: linear-gradient(180deg, var(--cp-pink), var(--cp-cyan));
             }
@@ -4204,7 +3880,7 @@
             /* Secondary mini buttons - icon-first */
             .cp-action-btn {
                 background: rgba(8,4,28,0.85) !important;
-                border: 1px solid var(--cp-border) !important;
+                border: 1px solid rgba(106,181,208,0.25) !important;
                 color: var(--cp-cyan) !important;
                 font-family: inherit !important;
                 font-weight: 700 !important;
@@ -4433,7 +4109,6 @@
                 .card { padding: 22px 18px; }
                 .header { padding: 22px 18px; }
                 .title { font-size: 2rem; }
-                .cp-hud { font-size: 9px; }
                 .cp-action-bar {
                     right: 50%;
                     bottom: 14px;
@@ -4453,24 +4128,12 @@
         </style>
     </head>
     <body>
-        <div class="matrix-bg"></div>
-        <div class="matrix-code-rain" id="matrixCodeRain"></div>
-            <div class="cp-hud">
-                <span class="cp-hud-line"><span class="cp-hud-label">SYS::</span> ${t.terminal}</span>
-                <span class="cp-hud-line"><span class="cp-hud-label">NODE::</span> NIGHT_CITY</span>
-                <span class="cp-hud-line"><span class="cp-hud-label">LINK::</span> SECURE / ENC</span>
-            </div>
-            <div class="cp-lang-wrapper">
-                <span class="cp-lang-tag">LANG_</span>
-                <select id="languageSelector" onchange="changeLanguage(this.value)">
+                    
+            <select id="languageSelector" onchange="changeLanguage(this.value)">
                     <option value="zh" ${!isFarsi ? 'selected' : ''}>🇨🇳 中文</option>
                     <option value="fa" ${isFarsi ? 'selected' : ''}>🇮🇷 فارسی</option>
                 </select>
-            </div>
-            <button type="button" id="cpFxToggle" class="cp-fx-toggle" onclick="cpToggleFx()" title="${isFarsi ? 'تغییر افکت‌های صفحه' : '切换页面特效'}" aria-label="FX toggle">
-                <span class="cp-fx-dot" aria-hidden="true"></span>
-                <span id="cpFxLabel">FX: ON</span>
-            </button>
+
         <div class="container">
             <div class="header">
                     <h1 class="title cp-glitch" data-text="${t.title}">${t.title}</h1>
@@ -4495,26 +4158,26 @@
             <div class="card">
                     <h2 class="card-title">${t.systemStatus}</h2>
                 <div id="systemStatus" style="margin: 20px 0; padding: 15px; background: #fff; border: 1px solid #ccc; box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 0 15px rgba(0, 240, 255, 0.1); position: relative; overflow: hidden;">
-                        <div style="color: #0066cc; margin-bottom: 15px; font-weight: bold; ">[ ${t.checking} ]</div>
-                        <div id="regionStatus" style="margin: 8px 0; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; ">${t.workerRegion}${t.checking}</div>
-                        <div id="geoInfo" style="margin: 8px 0; color: #555555; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 0.9rem; text-shadow: 0 0 3px #7aa9c4;">${t.detectionMethod}${t.checking}</div>
-                        <div id="backupStatus" style="margin: 8px 0; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; ">${t.proxyIPStatus}${t.checking}</div>
-                        <div id="currentIP" style="margin: 8px 0; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; ">${t.currentIP}${t.checking}</div>
-                        <div id="echStatus" style="margin: 8px 0; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif;  font-size: 0.9rem;">ECH状态: ${t.checking}</div>
-                        <div id="regionMatch" style="margin: 8px 0; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; ">${t.regionMatch}${t.checking}</div>
-                        <div id="selectionLogic" style="margin: 8px 0; color: #555555; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 0.9rem; text-shadow: 0 0 3px #7aa9c4;">${t.selectionLogic}${t.selectionLogicText}</div>
+                        <div style="color: #6ab5d0; margin-bottom: 15px; font-weight: bold; ">[ ${t.checking} ]</div>
+                        <div id="regionStatus" style="margin: 8px 0; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; ">${t.workerRegion}${t.checking}</div>
+                        <div id="geoInfo" style="margin: 8px 0; color: #b0b0b0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 0.9rem; text-shadow: 0 0 3px #7aa9c4;">${t.detectionMethod}${t.checking}</div>
+                        <div id="backupStatus" style="margin: 8px 0; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; ">${t.proxyIPStatus}${t.checking}</div>
+                        <div id="currentIP" style="margin: 8px 0; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; ">${t.currentIP}${t.checking}</div>
+                        <div id="echStatus" style="margin: 8px 0; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif;  font-size: 0.9rem;">ECH状态: ${t.checking}</div>
+                        <div id="regionMatch" style="margin: 8px 0; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; ">${t.regionMatch}${t.checking}</div>
+                        <div id="selectionLogic" style="margin: 8px 0; color: #b0b0b0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 0.9rem; text-shadow: 0 0 3px #7aa9c4;">${t.selectionLogic}${t.selectionLogicText}</div>
                 </div>
             </div>
             <div class="card" id="configCard" style="display: none;">
                     <h2 class="card-title">${t.configManagement}</h2>
-                <div id="kvStatus" style="margin-bottom: 20px; padding: 10px; background: #fff; border: 1px solid #ccc; color: #0066cc;">
+                <div id="kvStatus" style="margin-bottom: 20px; padding: 10px; background: #fff; border: 1px solid #ccc; color: #6ab5d0;">
                     ${t.kvStatusChecking}
                 </div>
                 <div id="configContent" style="display: none;">
                     <form id="regionForm" style="margin-bottom: 20px;">
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.specifyRegion}</label>
-                            <select id="wkRegion" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.specifyRegion}</label>
+                            <select id="wkRegion" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
                                     <option value="">${t.autoDetect}</option>
                                     <option value="HK">${t.regionNames.HK}</option>
                                     <option value="US">${t.regionNames.US}</option>
@@ -4535,293 +4198,293 @@
                                     <option value="IN">${t.regionNames.IN}</option>
                                     <option value="TW">${t.regionNames.TW}</option>
                             </select>
-                                <small id="wkRegionHint" style="color: #555555; font-size: 0.85rem; display: none;">⚠️ ${t.customIPDisabledHint}</small>
+                                <small id="wkRegionHint" style="color: #b0b0b0; font-size: 0.85rem; display: none;">⚠️ ${t.customIPDisabledHint}</small>
                         </div>
                     </form>
                     <form id="otherConfigForm" style="margin-bottom: 20px;">
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.protocolSelection}</label>
-                            <div style="padding: 15px; background: #f5f5f5; border: 1px solid #ccc; border-radius: 5px;">
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.protocolSelection}</label>
+                            <div style="padding: 15px; background: #fafafa; border: 1px solid #ccc; border-radius: 5px;">
                                 <div style="margin-bottom: 10px;">
-                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                         <input type="checkbox" id="ev" checked style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1.1rem;">${t.enableVLESS}</span>
                                     </label>
                                 </div>
                                 <div style="margin-bottom: 10px;">
-                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                         <input type="checkbox" id="et" style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1.1rem;">${t.enableTrojan}</span>
                                     </label>
                                 </div>
                                 <div style="margin-bottom: 10px;">
-                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                         <input type="checkbox" id="ex" style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1.1rem;">${t.enableXhttp}</span>
                                     </label>
                                 </div>
                                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 240, 255, 0.3);">
                                     <div style="margin-bottom: 10px;">
-                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                             <input type="checkbox" id="ech" style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                                 <span style="font-size: 1.1rem;">${t.enableECH}</span>
                                         </label>
-                                        <small style="color: #555555; font-size: 0.8rem; display: block; margin-top: 5px; margin-left: 26px;">${t.enableECHHint}</small>
+                                        <small style="color: #b0b0b0; font-size: 0.8rem; display: block; margin-top: 5px; margin-left: 26px;">${t.enableECHHint}</small>
                                     </div>
                                     <div style="margin-top: 15px; margin-bottom: 10px;">
-                                        <label style="display: block; margin-bottom: 8px; color: #0066cc; font-size: 0.95rem;">${t.customDNS}</label>
-                                        <input type="text" id="customDNS" placeholder="${t.customDNSPlaceholder}" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
-                                        <small style="color: #555555; font-size: 0.8rem; display: block; margin-top: 5px;">${t.customDNSHint}</small>
+                                        <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-size: 0.95rem;">${t.customDNS}</label>
+                                        <input type="text" id="customDNS" placeholder="${t.customDNSPlaceholder}" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
+                                        <small style="color: #b0b0b0; font-size: 0.8rem; display: block; margin-top: 5px;">${t.customDNSHint}</small>
                                     </div>
                                     <div style="margin-bottom: 10px;">
-                                        <label style="display: block; margin-bottom: 8px; color: #0066cc; font-size: 0.95rem;">${t.customECHDomain}</label>
-                                        <input type="text" id="customECHDomain" placeholder="${t.customECHDomainPlaceholder}" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
-                                        <small style="color: #555555; font-size: 0.8rem; display: block; margin-top: 5px;">${t.customECHDomainHint}</small>
+                                        <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-size: 0.95rem;">${t.customECHDomain}</label>
+                                        <input type="text" id="customECHDomain" placeholder="${t.customECHDomainPlaceholder}" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
+                                        <small style="color: #b0b0b0; font-size: 0.8rem; display: block; margin-top: 5px;">${t.customECHDomainHint}</small>
                                     </div>
                                 </div>
                                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 240, 255, 0.3);">
-                                        <label style="display: block; margin-bottom: 8px; color: #0066cc; font-size: 0.95rem;">${t.trojanPassword}</label>
-                                        <input type="text" id="tp" placeholder="${t.trojanPasswordPlaceholder}" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
-                                        <small style="color: #555555; font-size: 0.8rem; display: block; margin-top: 5px;">${t.trojanPasswordHint}</small>
+                                        <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-size: 0.95rem;">${t.trojanPassword}</label>
+                                        <input type="text" id="tp" placeholder="${t.trojanPasswordPlaceholder}" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
+                                        <small style="color: #b0b0b0; font-size: 0.8rem; display: block; margin-top: 5px;">${t.trojanPasswordHint}</small>
                                 </div>
-                                    <small style="color: #555555; font-size: 0.85rem; display: block; margin-top: 10px;">${t.protocolHint}</small>
+                                    <small style="color: #b0b0b0; font-size: 0.85rem; display: block; margin-top: 10px;">${t.protocolHint}</small>
                             </div>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.customHomepage}</label>
-                                <input type="text" id="customHomepage" placeholder="${t.customHomepagePlaceholder}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
-                                <small style="color: #555555; font-size: 0.85rem;">${t.customHomepageHint}</small>
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.customHomepage}</label>
+                                <input type="text" id="customHomepage" placeholder="${t.customHomepagePlaceholder}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${t.customHomepageHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.customPath}</label>
-                                <input type="text" id="customPath" placeholder="${isFarsi ? 'مثال: /mypath یا خالی بگذارید تا از UUID استفاده شود' : '例如: /mypath 或留空使用 UUID'}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
-                                <small style="color: #555555; font-size: 0.85rem;">${isFarsi ? 'مسیر اشتراک سفارشی. اگر خالی بگذارید از UUID به عنوان مسیر استفاده می‌شود.' : '自定义订阅路径。留空则使用 UUID 作为路径。'}</small>
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.customPath}</label>
+                                <input type="text" id="customPath" placeholder="${isFarsi ? 'مثال: /mypath یا خالی بگذارید تا از UUID استفاده شود' : '例如: /mypath 或留空使用 UUID'}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${isFarsi ? 'مسیر اشتراک سفارشی. اگر خالی بگذارید از UUID به عنوان مسیر استفاده می‌شود.' : '自定义订阅路径。留空则使用 UUID 作为路径。'}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.customIP}</label>
-                                <input type="text" id="customIP" placeholder="${isFarsi ? 'مثال: 1.2.3.4:443' : '例如: 1.2.3.4:443'}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
-                                <small style="color: #555555; font-size: 0.85rem;">${isFarsi ? 'آدرس و پورت ProxyIP سفارشی' : '自定义ProxyIP地址和端口'}</small>
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.customIP}</label>
+                                <input type="text" id="customIP" placeholder="${isFarsi ? 'مثال: 1.2.3.4:443' : '例如: 1.2.3.4:443'}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${isFarsi ? 'آدرس و پورت ProxyIP سفارشی' : '自定义ProxyIP地址和端口'}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.preferredIPs}</label>
-                                <input type="text" id="yx" placeholder="${isFarsi ? 'مثال: 1.2.3.4:443#گره هنگ‌کنگ,5.6.7.8:80#گره آمریکا,example.com:8443#گره سنگاپور' : '例如: 1.2.3.4:443#日本节点,5.6.7.8:80#美国节点,example.com:8443#新加坡节点'}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
-                                <small style="color: #555555; font-size: 0.85rem;">${isFarsi ? 'فرمت: IP:پورت#نام گره یا IP:پورت (بدون # از نام پیش‌فرض استفاده می‌شود). پشتیبانی از چندین مورد، با کاما جدا می‌شوند. <span style="color: #cc8800;">IP های اضافه شده از طریق API به طور خودکار در اینجا نمایش داده می‌شوند.</span>' : '格式: IP:端口#节点名称 或 IP:端口 (无#则使用默认名称)。支持多个，用逗号分隔。<span style="color: #cc8800;">API添加的IP会自动显示在这里。</span>'}</small>
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.preferredIPs}</label>
+                                <input type="text" id="yx" placeholder="${isFarsi ? 'مثال: 1.2.3.4:443#گره هنگ‌کنگ,5.6.7.8:80#گره آمریکا,example.com:8443#گره سنگاپور' : '例如: 1.2.3.4:443#日本节点,5.6.7.8:80#美国节点,example.com:8443#新加坡节点'}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${isFarsi ? 'فرمت: IP:پورت#نام گره یا IP:پورت (بدون # از نام پیش‌فرض استفاده می‌شود). پشتیبانی از چندین مورد، با کاما جدا می‌شوند. <span style="color: #d4a85a;">IP های اضافه شده از طریق API به طور خودکار در اینجا نمایش داده می‌شوند.</span>' : '格式: IP:端口#节点名称 或 IP:端口 (无#则使用默认名称)。支持多个，用逗号分隔。<span style="color: #d4a85a;">API添加的IP会自动显示在这里。</span>'}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.preferredIPsURL}</label>
-                                <input type="text" id="yxURL" placeholder="${isFarsi ? 'URL منبع لیست IP ترجیحی را وارد کنید' : '输入优选IP列表来源URL'}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
-                                <small style="color: #555555; font-size: 0.85rem;">${isFarsi ? 'URL منبع لیست IP ترجیحی سفارشی، اگر خالی بگذارید از آدرس پیش‌فرض استفاده می‌شود' : '自定义优选IP列表来源URL，留空则使用默认地址'}</small>
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.preferredIPsURL}</label>
+                                <input type="text" id="yxURL" placeholder="${isFarsi ? 'URL منبع لیست IP ترجیحی را وارد کنید' : '输入优选IP列表来源URL'}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${isFarsi ? 'URL منبع لیست IP ترجیحی سفارشی، اگر خالی بگذارید از آدرس پیش‌فرض استفاده می‌شود' : '自定义优选IP列表来源URL，留空则使用默认地址'}</small>
                         </div>
                         
-                        <div style="margin-bottom: 20px; padding: 15px; background: rgba(20, 5, 50, 0.6); border: 2px solid #7aa9c4; border-radius: 8px;">
-                            <h4 style="color: #0066cc; margin: 0 0 15px 0; font-size: 1.1rem; ">⚡ ${t.latencyTest}</h4>
+                        <div style="margin-bottom: 20px; padding: 15px; background: rgba(180, 195, 210, 0.25); border: 2px solid #7aa9c4; border-radius: 8px;">
+                            <h4 style="color: #6ab5d0; margin: 0 0 15px 0; font-size: 1.1rem; ">⚡ ${t.latencyTest}</h4>
                             <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;">
                                 <div style="min-width: 120px;">
-                                    <label style="display: block; margin-bottom: 5px; color: #0066cc; font-size: 0.9rem;">${t.ipSource}</label>
-                                    <select id="ipSourceSelect" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px; cursor: pointer;">
+                                    <label style="display: block; margin-bottom: 5px; color: #6ab5d0; font-size: 0.9rem;">${t.ipSource}</label>
+                                    <select id="ipSourceSelect" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px; cursor: pointer;">
                                         <option value="manual">${t.manualInput}</option>
                                         <option value="cfRandom">${t.cfRandomIP}</option>
                                         <option value="urlFetch">${t.urlFetch}</option>
                                     </select>
                                 </div>
                                 <div style="width: 100px;">
-                                    <label style="display: block; margin-bottom: 5px; color: #0066cc; font-size: 0.9rem;">${t.latencyTestPort}</label>
-                                    <input type="number" id="latencyTestPort" value="443" min="1" max="65535" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
+                                    <label style="display: block; margin-bottom: 5px; color: #6ab5d0; font-size: 0.9rem;">${t.latencyTestPort}</label>
+                                    <input type="number" id="latencyTestPort" value="443" min="1" max="65535" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
                                 </div>
                                 <div id="randomCountDiv" style="width: 100px; display: none;">
-                                    <label style="display: block; margin-bottom: 5px; color: #0066cc; font-size: 0.9rem;">${t.randomCount}</label>
-                                    <input type="number" id="randomIPCount" value="20" min="1" max="100" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
+                                    <label style="display: block; margin-bottom: 5px; color: #6ab5d0; font-size: 0.9rem;">${t.randomCount}</label>
+                                    <input type="number" id="randomIPCount" value="20" min="1" max="100" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
                                 </div>
                                 <div style="width: 80px;">
-                                    <label style="display: block; margin-bottom: 5px; color: #0066cc; font-size: 0.9rem;">${isFarsi ? 'رشته‌ها' : '线程'}</label>
-                                    <input type="number" id="testThreads" value="5" min="1" max="50" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
+                                    <label style="display: block; margin-bottom: 5px; color: #6ab5d0; font-size: 0.9rem;">${isFarsi ? 'رشته‌ها' : '线程'}</label>
+                                    <input type="number" id="testThreads" value="5" min="1" max="50" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
                                 </div>
                             </div>
                             <div id="manualInputDiv" style="margin-bottom: 10px;">
-                                <label style="display: block; margin-bottom: 5px; color: #0066cc; font-size: 0.9rem;">${t.latencyTestIP}</label>
-                                <input type="text" id="latencyTestInput" placeholder="${t.latencyTestIPPlaceholder}" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
+                                <label style="display: block; margin-bottom: 5px; color: #6ab5d0; font-size: 0.9rem;">${t.latencyTestIP}</label>
+                                <input type="text" id="latencyTestInput" placeholder="${t.latencyTestIPPlaceholder}" style="width: 100%; padding: 10px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
                             </div>
                             <div id="urlFetchDiv" style="margin-bottom: 10px; display: none;">
-                                <label style="display: block; margin-bottom: 5px; color: #0066cc; font-size: 0.9rem;">${t.fetchURL}</label>
+                                <label style="display: block; margin-bottom: 5px; color: #6ab5d0; font-size: 0.9rem;">${t.fetchURL}</label>
                                 <div style="display: flex; gap: 8px;">
-                                    <input type="text" id="fetchURLInput" placeholder="${t.fetchURLPlaceholder}" style="flex: 1; padding: 10px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
-                                    <button type="button" id="fetchIPBtn" style="background: rgba(0, 200, 255, 0.2); border: 1px solid #00aaff; padding: 8px 16px; color: #00aaff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; white-space: nowrap;">⬇ ${t.fetchIP}</button>
+                                    <input type="text" id="fetchURLInput" placeholder="${t.fetchURLPlaceholder}" style="flex: 1; padding: 10px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px;">
+                                    <button type="button" id="fetchIPBtn" style="background: rgba(90, 163, 196, 0.15); border: 1px solid #00aaff; padding: 8px 16px; color: #00aaff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; white-space: nowrap;">⬇ ${t.fetchIP}</button>
                                 </div>
                             </div>
                             <div id="cfRandomDiv" style="margin-bottom: 10px; display: none;">
-                                <button type="button" id="generateCFIPBtn" style="background: rgba(0, 240, 255, 0.15); border: 1px solid #ccc; padding: 10px 20px; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; width: 100%; transition: all 0.3s;">🎲 ${t.generateIP}</button>
+                                <button type="button" id="generateCFIPBtn" style="background: rgba(90, 163, 196, 0.12); border: 1px solid #ccc; padding: 10px 20px; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; width: 100%; transition: all 0.3s;">🎲 ${t.generateIP}</button>
                             </div>
                             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                                <button type="button" id="startLatencyTest" style="background: rgba(0, 240, 255, 0.2); border: 1px solid #ccc; padding: 8px 16px; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; transition: all 0.3s;">▶ ${t.startTest}</button>
-                                <button type="button" id="stopLatencyTest" style="background: rgba(255, 0, 0, 0.2); border: 1px solid #ff3860; padding: 8px 16px; color: #cc2244; font-family: -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; display: none; transition: all 0.3s;">⏹ ${t.stopTest}</button>
+                                <button type="button" id="startLatencyTest" style="background: rgba(0, 240, 255, 0.2); border: 1px solid #ccc; padding: 8px 16px; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; transition: all 0.3s;">▶ ${t.startTest}</button>
+                                <button type="button" id="stopLatencyTest" style="background: rgba(212, 122, 122, 0.2); border: 1px solid #ff3860; padding: 8px 16px; color: #d47a7a; font-family: -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; display: none; transition: all 0.3s;">⏹ ${t.stopTest}</button>
                             </div>
-                            <div id="latencyTestStatus" style="color: #555555; font-size: 0.9rem; margin-bottom: 10px; display: none;"></div>
+                            <div id="latencyTestStatus" style="color: #b0b0b0; font-size: 0.9rem; margin-bottom: 10px; display: none;"></div>
                             <div id="latencyTestResults" style="max-height: 250px; overflow-y: auto; display: none;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <span style="color: #0066cc; font-weight: bold;">${t.testResult}</span>
+                                    <span style="color: #6ab5d0; font-weight: bold;">${t.testResult}</span>
                                     <div style="display: flex; gap: 8px;">
-                                        <button type="button" id="selectAllResults" style="background: transparent; border: 1px solid #7aa9c4; padding: 4px 10px; color: #555555; font-size: 0.8rem; cursor: pointer;">${t.selectAll}</button>
-                                        <button type="button" id="deselectAllResults" style="background: transparent; border: 1px solid #7aa9c4; padding: 4px 10px; color: #555555; font-size: 0.8rem; cursor: pointer;">${t.deselectAll}</button>
+                                        <button type="button" id="selectAllResults" style="background: transparent; border: 1px solid #7aa9c4; padding: 4px 10px; color: #b0b0b0; font-size: 0.8rem; cursor: pointer;">${t.selectAll}</button>
+                                        <button type="button" id="deselectAllResults" style="background: transparent; border: 1px solid #7aa9c4; padding: 4px 10px; color: #b0b0b0; font-size: 0.8rem; cursor: pointer;">${t.deselectAll}</button>
                                     </div>
                                 </div>
-                                <div id="cityFilterContainer" style="margin-bottom: 10px; padding: 10px; background: #f5f5f5; border: 1px solid #7aa9c4; border-radius: 4px; display: none;">
+                                <div id="cityFilterContainer" style="margin-bottom: 10px; padding: 10px; background: #fafafa; border: 1px solid #7aa9c4; border-radius: 4px; display: none;">
                                     <div style="margin-bottom: 8px;">
-                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc; font-size: 0.9rem;">
+                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0; font-size: 0.9rem;">
                                             <input type="radio" name="cityFilterMode" value="all" checked style="margin-right: 6px; width: 16px; height: 16px; cursor: pointer;">
                                             <span>${isFarsi ? '全部城市' : '全部城市'}</span>
                                         </label>
-                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc; font-size: 0.9rem; margin-left: 15px;">
+                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0; font-size: 0.9rem; margin-left: 15px;">
                                             <input type="radio" name="cityFilterMode" value="fastest10" style="margin-right: 6px; width: 16px; height: 16px; cursor: pointer;">
                                             <span>${isFarsi ? '只选择最快的10个' : '只选择最快的10个'}</span>
                                         </label>
                                     </div>
                                     <div id="cityCheckboxesContainer" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 80px; overflow-y: auto; padding: 5px;"></div>
                                 </div>
-                                <div id="latencyResultsList" style="background: rgba(0, 0, 0, 0.5); border: 1px solid #004400; border-radius: 4px; padding: 10px;"></div>
+                                <div id="latencyResultsList" style="background: rgba(180, 195, 210, 0.2); border: 1px solid #004400; border-radius: 4px; padding: 10px;"></div>
                                 <div style="margin-top: 10px; display: flex; gap: 10px;">
-                                    <button type="button" id="overwriteSelectedToYx" style="flex: 1; background: rgba(0, 220, 130, 0.3); border: 1px solid #ccc; padding: 10px 20px; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-weight: bold; cursor: pointer; transition: all 0.3s;">${isFarsi ? '覆盖添加' : '覆盖添加'}</button>
-                                    <button type="button" id="appendSelectedToYx" style="flex: 1; background: rgba(0, 178, 110, 0.3); border: 1px solid #7aa9c4; padding: 10px 20px; color: #555555; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-weight: bold; cursor: pointer; transition: all 0.3s;">${isFarsi ? '追加添加' : '追加添加'}</button>
+                                    <button type="button" id="overwriteSelectedToYx" style="flex: 1; background: rgba(90, 163, 196, 0.2); border: 1px solid #ccc; padding: 10px 20px; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-weight: bold; cursor: pointer; transition: all 0.3s;">${isFarsi ? '覆盖添加' : '覆盖添加'}</button>
+                                    <button type="button" id="appendSelectedToYx" style="flex: 1; background: rgba(90, 163, 196, 0.15); border: 1px solid #7aa9c4; padding: 10px 20px; color: #b0b0b0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-weight: bold; cursor: pointer; transition: all 0.3s;">${isFarsi ? '追加添加' : '追加添加'}</button>
                                 </div>
                             </div>
                         </div>
 
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.socks5Config}</label>
-                                <input type="text" id="socksConfig" placeholder="${isFarsi ? 'مثال: user:pass@host:port یا host:port' : '例如: user:pass@host:port 或 host:port'}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
-                                <small style="color: #555555; font-size: 0.85rem;">${isFarsi ? 'آدرس پروکسی SOCKS5، برای انتقال تمام ترافیک خروجی استفاده می‌شود' : 'SOCKS5代理地址，用于转发所有出站流量'}</small>
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.socks5Config}</label>
+                                <input type="text" id="socksConfig" placeholder="${isFarsi ? 'مثال: user:pass@host:port یا host:port' : '例如: user:pass@host:port 或 host:port'}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${isFarsi ? 'آدرس پروکسی SOCKS5، برای انتقال تمام ترافیک خروجی استفاده می‌شود' : 'SOCKS5代理地址，用于转发所有出站流量'}</small>
                         </div>
                     </form>
 
-                    <h3 style="color: #0066cc; margin: 20px 0 15px 0; font-size: 1.2rem;">${t.advancedControl}</h3>
+                    <h3 style="color: #6ab5d0; margin: 20px 0 15px 0; font-size: 1.2rem;">${t.advancedControl}</h3>
                     <form id="advancedConfigForm" style="margin-bottom: 20px;">
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.subscriptionConverter}</label>
-                                <input type="text" id="scu" placeholder="${t.subscriptionConverterPlaceholder}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
-                                <small style="color: #555555; font-size: 0.85rem;">${t.subscriptionConverterHint}</small>
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.subscriptionConverter}</label>
+                                <input type="text" id="scu" placeholder="${t.subscriptionConverterPlaceholder}" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${t.subscriptionConverterHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.builtinPreferred}</label>
-                            <div style="padding: 15px; background: #f5f5f5; border: 1px solid #ccc; border-radius: 5px;">
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.builtinPreferred}</label>
+                            <div style="padding: 15px; background: #fafafa; border: 1px solid #ccc; border-radius: 5px;">
                                 <div style="margin-bottom: 10px;">
-                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                         <input type="checkbox" id="ena" style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1.1rem;">${t.enableNativeAddress}</span>
                                     </label>
                                 </div>
                                 <div style="margin-bottom: 10px;">
-                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                         <input type="checkbox" id="epd" style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1.1rem;">${t.enablePreferredDomain}</span>
                                     </label>
                                 </div>
                                 <div style="margin-bottom: 10px;">
-                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                         <input type="checkbox" id="epi" checked style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1.1rem;">${t.enablePreferredIP}</span>
                                     </label>
                                 </div>
                                 <div style="margin-bottom: 10px;">
-                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                    <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                         <input type="checkbox" id="egi" style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1.1rem;">${t.enableGitHubPreferred}</span>
                                     </label>
                                 </div>
-                                    <small style="color: #555555; font-size: 0.85rem; display: block; margin-top: 10px;">${t.builtinPreferredHint}</small>
+                                    <small style="color: #b0b0b0; font-size: 0.85rem; display: block; margin-top: 10px;">${t.builtinPreferredHint}</small>
                             </div>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">优选IP筛选设置</label>
-                            <div style="padding: 15px; background: #f5f5f5; border: 1px solid #ccc; border-radius: 5px;">
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">优选IP筛选设置</label>
+                            <div style="padding: 15px; background: #fafafa; border: 1px solid #ccc; border-radius: 5px;">
                                 <div style="margin-bottom: 15px;">
-                                    <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">IP版本选择</label>
+                                    <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">IP版本选择</label>
                                     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                             <input type="checkbox" id="ipv4Enabled" checked style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1rem;">IPv4</span>
                                         </label>
-                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                             <input type="checkbox" id="ipv6Enabled" checked style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1rem;">IPv6</span>
                                         </label>
                                     </div>
                                 </div>
                                 <div style="margin-bottom: 10px;">
-                                    <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">运营商选择</label>
+                                    <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">运营商选择</label>
                                     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                             <input type="checkbox" id="ispMobile" checked style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1rem;">移动</span>
                                         </label>
-                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                             <input type="checkbox" id="ispUnicom" checked style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1rem;">联通</span>
                                         </label>
-                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #0066cc;">
+                                        <label style="display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0;">
                                             <input type="checkbox" id="ispTelecom" checked style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
                                             <span style="font-size: 1rem;">电信</span>
                                         </label>
                                     </div>
                                 </div>
-                                    <small style="color: #555555; font-size: 0.85rem; display: block; margin-top: 10px;">选择要使用的IP版本和运营商，未选中的将被过滤</small>
+                                    <small style="color: #b0b0b0; font-size: 0.85rem; display: block; margin-top: 10px;">选择要使用的IP版本和运营商，未选中的将被过滤</small>
                             </div>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.allowAPIManagement}</label>
-                            <select id="apiEnabled" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.allowAPIManagement}</label>
+                            <select id="apiEnabled" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
                                     <option value="">${t.apiEnabledDefault}</option>
                                     <option value="yes">${t.apiEnabledYes}</option>
                             </select>
-                                <small style="color: #cc8800; font-size: 0.85rem;">${t.apiEnabledHint}</small>
+                                <small style="color: #d4a85a; font-size: 0.85rem;">${t.apiEnabledHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.regionMatching}</label>
-                            <select id="regionMatching" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.regionMatching}</label>
+                            <select id="regionMatching" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
                                     <option value="">${t.regionMatchingDefault}</option>
                                     <option value="no">${t.regionMatchingNo}</option>
                             </select>
-                                <small style="color: #555555; font-size: 0.85rem;">${t.regionMatchingHint}</small>
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${t.regionMatchingHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.downgradeControl}</label>
-                            <select id="downgradeControl" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.downgradeControl}</label>
+                            <select id="downgradeControl" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
                                     <option value="">${t.downgradeControlDefault}</option>
                                     <option value="no">${t.downgradeControlNo}</option>
                             </select>
-                                <small style="color: #555555; font-size: 0.85rem;">${t.downgradeControlHint}</small>
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${t.downgradeControlHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.tlsControl}</label>
-                            <select id="portControl" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.tlsControl}</label>
+                            <select id="portControl" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
                                     <option value="">${t.tlsControlDefault}</option>
                                     <option value="yes">${t.tlsControlYes}</option>
                             </select>
-                                <small style="color: #555555; font-size: 0.85rem;">${t.tlsControlHint}</small>
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${t.tlsControlHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #0066cc; font-weight: bold; ">${t.preferredControl}</label>
-                            <select id="preferredControl" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #0066cc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+                                <label style="display: block; margin-bottom: 8px; color: #6ab5d0; font-weight: bold; ">${t.preferredControl}</label>
+                            <select id="preferredControl" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; color: #6ab5d0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
                                     <option value="">${t.preferredControlDefault}</option>
                                     <option value="yes">${t.preferredControlYes}</option>
                             </select>
-                                <small style="color: #555555; font-size: 0.85rem;">${t.preferredControlHint}</small>
+                                <small style="color: #b0b0b0; font-size: 0.85rem;">${t.preferredControlHint}</small>
                         </div>
                     </form>
-                    <div id="currentConfig" style="background: #fff; border: 1px solid #ccc; padding: 15px; margin: 10px 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; color: #0066cc;">
+                    <div id="currentConfig" style="background: #fff; border: 1px solid #ccc; padding: 15px; margin: 10px 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; color: #6ab5d0;">
                             ${t.loading}
                     </div>
-                    <div id="pathTypeInfo" style="background: #f5f5f5; border: 1px solid #ccc; padding: 15px; margin: 10px 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; color: #0066cc;">
+                    <div id="pathTypeInfo" style="background: #fafafa; border: 1px solid #ccc; padding: 15px; margin: 10px 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; color: #6ab5d0;">
                             <div style="font-weight: bold; margin-bottom: 8px; color: #009966; ">${t.currentConfig}</div>
                             <div id="pathTypeStatus">${t.checking}</div>
                     </div>
                 </div>
-                <div id="statusMessage" style="display: none; padding: 10px; margin: 10px 0; border: 1px solid #ccc; background: #fff; color: #0066cc; "></div>
+                <div id="statusMessage" style="display: none; padding: 10px; margin: 10px 0; border: 1px solid #ccc; background: #fff; color: #6ab5d0; "></div>
             </div>
             
             <div class="card">
                     <h2 class="card-title">${t.relatedLinks}</h2>
                 <div style="text-align: center; margin: 20px 0;">
-                        <a href="https://github.com/byJoey/cfnew" target="_blank" style="color: #0066cc; text-decoration: none; margin: 0 20px; font-size: 1.2rem; ">${t.githubProject}</a>
-                    <a href="https://www.youtube.com/@joeyblog" target="_blank" style="color: #0066cc; text-decoration: none; margin: 0 20px; font-size: 1.2rem; ">YouTube @joeyblog</a>
+                        <a href="https://github.com/byJoey/cfnew" target="_blank" style="color: #6ab5d0; text-decoration: none; margin: 0 20px; font-size: 1.2rem; ">${t.githubProject}</a>
+                    <a href="https://www.youtube.com/@joeyblog" target="_blank" style="color: #6ab5d0; text-decoration: none; margin: 0 20px; font-size: 1.2rem; ">YouTube @joeyblog</a>
                 </div>
             </div>
         </div>
@@ -5108,85 +4771,6 @@
                 }
             }
 
-            // 页面特效图形化开关 (localStorage 持久化)
-            window.cpApplyFx = function() {
-                var off = localStorage.getItem('cp-fx-off') === '1';
-                document.body.classList.toggle('fx-off', off);
-                var lbl = document.getElementById('cpFxLabel');
-                if (lbl) lbl.textContent = off ? 'FX: OFF' : 'FX: ON';
-                if (off) {
-                    var rain = document.getElementById('matrixCodeRain');
-                    if (rain) rain.innerHTML = '';
-                } else if (typeof createMatrixRain === 'function') {
-                    var r = document.getElementById('matrixCodeRain');
-                    if (r && !r.firstChild) createMatrixRain();
-                }
-            };
-            window.cpToggleFx = function() {
-                var off = localStorage.getItem('cp-fx-off') === '1';
-                localStorage.setItem('cp-fx-off', off ? '0' : '1');
-                window.cpApplyFx();
-            };
-            (function() {
-                if (localStorage.getItem('cp-fx-off') === '1') {
-                    document.addEventListener('DOMContentLoaded', function() {
-                        document.body.classList.add('fx-off');
-                        var lbl = document.getElementById('cpFxLabel');
-                        if (lbl) lbl.textContent = 'FX: OFF';
-                    });
-                }
-            })();
-
-            function createMatrixRain() {
-                if (document.body && document.body.classList.contains('fx-off')) return;
-                const matrixContainer = document.getElementById('matrixCodeRain');
-                if (!matrixContainer) return;
-                const cyberChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ$%#@!?<>+=ABCDEF';
-                const palette = ['#00f0ff', '#ff2bd6', '#a347ff', '#00ff9d'];
-                const columns = Math.floor(window.innerWidth / 20);
-
-                for (let i = 0; i < columns; i++) {
-                    const column = document.createElement('div');
-                    column.className = 'matrix-column';
-                    column.style.left = (i * 20) + 'px';
-                    column.style.animationDelay = (-Math.random() * 15) + 's';
-                    column.style.animationDuration = (Math.random() * 14 + 8) + 's';
-                    column.style.fontSize = (Math.random() * 4 + 12) + 'px';
-                    column.style.opacity = (Math.random() * 0.7 + 0.3).toFixed(2);
-
-                    let text = '';
-                    const charCount = Math.floor(Math.random() * 30 + 18);
-                    for (let j = 0; j < charCount; j++) {
-                        const char = cyberChars[Math.floor(Math.random() * cyberChars.length)];
-                        const useAccent = Math.random() > 0.85;
-                        const color = useAccent ? palette[Math.floor(Math.random() * palette.length)] : '';
-                        text += color
-                            ? ('<span style="color:' + color + ';text-shadow:0 0 8px ' + color + ';">' + char + '</span><br>')
-                            : ('<span>' + char + '</span><br>');
-                    }
-                    column.innerHTML = text;
-                    matrixContainer.appendChild(column);
-                }
-
-                setInterval(function() {
-                    const cols = matrixContainer.querySelectorAll('.matrix-column');
-                    cols.forEach(function(column) {
-                        if (Math.random() > 0.94) {
-                            const chars = column.querySelectorAll('span');
-                            if (chars.length > 0) {
-                                const target = chars[Math.floor(Math.random() * chars.length)];
-                                const prev = target.style.color;
-                                target.style.color = '#ffffff';
-                                target.style.textShadow = '0 0 10px #ffffff, 0 0 18px #00f0ff';
-                                setTimeout(function() {
-                                    target.style.color = prev;
-                                    target.style.textShadow = '';
-                                }, 200);
-                            }
-                        }
-                    });
-                }, 110);
-            }
 
             async function checkSystemStatus() {
                 try {
@@ -5289,13 +4873,13 @@
 
                             // 获取自定义IP的详细信息
                             const customIPInfo = data.ci || t.unknown;
-                            geoInfo.innerHTML = t.detectionMethod + '<span style="color: #cc8800;">⚙️ ' + t.customIPMode + '</span>';
-                            regionStatus.innerHTML = t.workerRegion + '<span style="color: #cc8800;">🔧 ' + t.customIPModeDesc + '</span>';
+                            geoInfo.innerHTML = t.detectionMethod + '<span style="color: #d4a85a;">⚙️ ' + t.customIPMode + '</span>';
+                            regionStatus.innerHTML = t.workerRegion + '<span style="color: #d4a85a;">🔧 ' + t.customIPModeDesc + '</span>';
 
                             // 显示自定义IP配置状态，包含具体IP
-                            if (backupStatus) backupStatus.innerHTML = t.proxyIPStatus + '<span style="color: #cc8800;">🔧 ' + t.usingCustomProxyIP + customIPInfo + '</span>';
-                            if (currentIP) currentIP.innerHTML = t.currentIP + '<span style="color: #cc8800;">✅ ' + customIPInfo + t.customIPConfig + '</span>';
-                            if (regionMatch) regionMatch.innerHTML = t.regionMatch + '<span style="color: #cc8800;">⚠️ ' + t.customIPModeDisabled + '</span>';
+                            if (backupStatus) backupStatus.innerHTML = t.proxyIPStatus + '<span style="color: #d4a85a;">🔧 ' + t.usingCustomProxyIP + customIPInfo + '</span>';
+                            if (currentIP) currentIP.innerHTML = t.currentIP + '<span style="color: #d4a85a;">✅ ' + customIPInfo + t.customIPConfig + '</span>';
+                            if (regionMatch) regionMatch.innerHTML = t.regionMatch + '<span style="color: #d4a85a;">⚠️ ' + t.customIPModeDisabled + '</span>';
 
                             return; // 提前返回，不执行后续的地区匹配逻辑
                         } else if (data.detectionMethod === '手动指定地区' || data.detectionMethod === 'تعیین منطقه دستی') {
@@ -5318,7 +4902,7 @@
                     geoInfo.innerHTML = t.detectionMethod + '<span style="color: #009966;">' + t.cloudflareDetection + '</span>';
 
                     } catch (e) {
-                        geoInfo.innerHTML = t.detectionMethod + '<span style="color: #cc2244;">' + t.detectionFailed + '</span>';
+                        geoInfo.innerHTML = t.detectionMethod + '<span style="color: #d47a7a;">' + t.detectionFailed + '</span>';
                     }
 
                     regionStatus.innerHTML = t.workerRegion + '<span style="color: #009966;">✅ ' + t.regionNames[detectedRegion] + '</span>';
@@ -5374,11 +4958,11 @@
 
                     const t = translations[isFarsi ? 'fa' : 'zh'];
 
-                    document.getElementById('regionStatus').innerHTML = t.workerRegion + '<span style="color: #cc2244;">❌ ' + t.detectionFailed + '</span>';
-                    document.getElementById('geoInfo').innerHTML = t.detectionMethod + '<span style="color: #cc2244;">❌ ' + t.detectionFailed + '</span>';
-                    document.getElementById('backupStatus').innerHTML = t.proxyIPStatus + '<span style="color: #cc2244;">❌ ' + t.detectionFailed + '</span>';
-                    document.getElementById('currentIP').innerHTML = t.currentIP + '<span style="color: #cc2244;">❌ ' + t.detectionFailed + '</span>';
-                    document.getElementById('regionMatch').innerHTML = t.regionMatch + '<span style="color: #cc2244;">❌ ' + t.detectionFailed + '</span>';
+                    document.getElementById('regionStatus').innerHTML = t.workerRegion + '<span style="color: #d47a7a;">❌ ' + t.detectionFailed + '</span>';
+                    document.getElementById('geoInfo').innerHTML = t.detectionMethod + '<span style="color: #d47a7a;">❌ ' + t.detectionFailed + '</span>';
+                    document.getElementById('backupStatus').innerHTML = t.proxyIPStatus + '<span style="color: #d47a7a;">❌ ' + t.detectionFailed + '</span>';
+                    document.getElementById('currentIP').innerHTML = t.currentIP + '<span style="color: #d47a7a;">❌ ' + t.detectionFailed + '</span>';
+                    document.getElementById('regionMatch').innerHTML = t.regionMatch + '<span style="color: #d47a7a;">❌ ' + t.detectionFailed + '</span>';
                 }
             }
 
@@ -5505,7 +5089,7 @@
 
                     if (response.status === 503) {
                         // KV未配置
-                        document.getElementById('kvStatus').innerHTML = '<span style="color: #cc8800;">' + t.kvDisabled + '</span>';
+                        document.getElementById('kvStatus').innerHTML = '<span style="color: #d4a85a;">' + t.kvDisabled + '</span>';
                         document.getElementById('configCard').style.display = 'block';
                         document.getElementById('currentConfig').textContent = t.kvNotConfigured;
                     } else if (response.ok) {
@@ -5519,17 +5103,17 @@
                             document.getElementById('configCard').style.display = 'block';
                             await loadCurrentConfig();
                         } else {
-                            document.getElementById('kvStatus').innerHTML = '<span style="color: #cc8800;">' + t.kvDisabled + '</span>';
+                            document.getElementById('kvStatus').innerHTML = '<span style="color: #d4a85a;">' + t.kvDisabled + '</span>';
                             document.getElementById('configCard').style.display = 'block';
                             document.getElementById('currentConfig').textContent = t.kvNotEnabled;
                         }
                     } catch (jsonError) {
-                        document.getElementById('kvStatus').innerHTML = '<span style="color: #cc8800;">' + t.kvCheckFailed + '</span>';
+                        document.getElementById('kvStatus').innerHTML = '<span style="color: #d4a85a;">' + t.kvCheckFailed + '</span>';
                         document.getElementById('configCard').style.display = 'block';
                         document.getElementById('currentConfig').textContent = t.kvCheckFailedFormat;
                         }
                     } else {
-                        document.getElementById('kvStatus').innerHTML = '<span style="color: #cc8800;">' + t.kvDisabled + '</span>';
+                        document.getElementById('kvStatus').innerHTML = '<span style="color: #d4a85a;">' + t.kvDisabled + '</span>';
                         document.getElementById('configCard').style.display = 'block';
                         document.getElementById('currentConfig').textContent = t.kvCheckFailedStatus + response.status;
                     }
@@ -5564,7 +5148,7 @@
 
                     const t = translations[isFarsi ? 'fa' : 'zh'];
 
-                    document.getElementById('kvStatus').innerHTML = '<span style="color: #cc8800;">' + t.kvDisabled + '</span>';
+                    document.getElementById('kvStatus').innerHTML = '<span style="color: #d4a85a;">' + t.kvDisabled + '</span>';
                     document.getElementById('configCard').style.display = 'block';
                     document.getElementById('currentConfig').textContent = t.kvCheckFailedError + error.message;
                 }
@@ -5661,14 +5245,11 @@
                 if (cp && cp.trim()) {
                     // 使用自定义路径 (d)
                     pathTypeStatus.innerHTML = '<div style="color: #009966;">使用类型: <strong>自定义路径 (d)</strong></div>' +
-                        '<div style="margin-top: 5px; color: #0066cc;">当前路径: <span style="color: #cc8800;">' + cp + '</span></div>' +
-                        '<div style="margin-top: 5px; font-size: 0.9rem; color: #555555;">访问地址: ' + 
-                        (currentUrl.split('/')[0] + '//' + currentUrl.split('/')[2]) + cp + '/sub</div>';
+                        '<div style="margin-top: 5px; color: #6ab5d0;">当前路径: <span style="color: #d4a85a;">' + cp + '</span></div>';
                 } else {
                     // 使用 UUID (u)
                     pathTypeStatus.innerHTML = '<div style="color: #009966;">使用类型: <strong>UUID 路径 (u)</strong></div>' +
-                        '<div style="margin-top: 5px; color: #0066cc;">当前路径: <span style="color: #cc8800;">' + (currentPath || '(UUID)') + '</span></div>' +
-                        '<div style="margin-top: 5px; font-size: 0.9rem; color: #555555;">访问地址: ' + currentUrl.split('/sub')[0] + '/sub</div>';
+                        '<div style="margin-top: 5px; color: #6ab5d0;">当前路径: <span style="color: #d4a85a;">' + (currentPath || '(UUID)') + '</span></div>';
                 }
             }
 
@@ -5686,7 +5267,7 @@
                     if (hasCustomIP) {
                         wkRegion.style.opacity = '0.5';
                         wkRegion.style.cursor = 'not-allowed';
-                        wkRegion.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                        wkRegion.style.backgroundColor = 'rgba(180, 195, 210, 0.2)';
                         // 显示提示信息
                         if (wkRegionHint) {
                             wkRegionHint.style.display = 'block';
@@ -5838,7 +5419,7 @@
                     const currentUrl = window.location.href;
                     const subscriptionUrl = currentUrl + '/sub';
 
-                    echStatusEl.innerHTML = 'ECH状态: <span style="color: #cc8800;">检测中...</span>';
+                    echStatusEl.innerHTML = 'ECH状态: <span style="color: #d4a85a;">检测中...</span>';
 
                     const response = await fetch(subscriptionUrl, {
                         method: 'GET',
@@ -5853,15 +5434,14 @@
                     if (echStatusHeader === 'ENABLED') {
                         echStatusEl.innerHTML = 'ECH状态: <span style="color: #009966;">✅ 已启用' + (echConfigLength ? ' (配置长度: ' + echConfigLength + ')' : '') + '</span>';
                     } else {
-                        echStatusEl.innerHTML = 'ECH状态: <span style="color: #cc8800;">⚠️ 未启用</span>';
+                        echStatusEl.innerHTML = 'ECH状态: <span style="color: #d4a85a;">⚠️ 未启用</span>';
                     }
                 } catch (error) {
-                    echStatusEl.innerHTML = 'ECH状态: <span style="color: #cc2244;">❌ 检测失败: ' + error.message + '</span>';
+                    echStatusEl.innerHTML = 'ECH状态: <span style="color: #d47a7a;">❌ 检测失败: ' + error.message + '</span>';
                 }
             }
 
             document.addEventListener('DOMContentLoaded', function() {
-                createMatrixRain();
                 checkSystemStatus();
                 checkKVStatus();
                 checkECHStatus();
@@ -6293,7 +5873,7 @@
 
                             const coloName = result.colo ? getColoName(result.colo) : '';
                             const coloDisplay = coloName ? ' <span style="color: #00aaff;">[' + coloName + ']</span>' : '';
-                            info.innerHTML = '<span style="color: #0066cc;">' + result.host + ':' + result.port + '</span>' + coloDisplay + ' <span style="color: #ffff00;">' + result.latency + 'ms</span>';
+                            info.innerHTML = '<span style="color: #6ab5d0;">' + result.host + ':' + result.port + '</span>' + coloDisplay + ' <span style="color: #ffff00;">' + result.latency + 'ms</span>';
 
                             resultItem.appendChild(checkbox);
                             resultItem.appendChild(info);
@@ -6562,7 +6142,7 @@
 
                     cities.forEach(city => {
                         const label = document.createElement('label');
-                        label.style.cssText = 'display: inline-flex; align-items: center; cursor: pointer; color: #0066cc; font-size: 0.85rem; padding: 4px 8px; background: rgba(20, 5, 50, 0.4); border: 1px solid #7aa9c4; border-radius: 4px;';
+                        label.style.cssText = 'display: inline-flex; align-items: center; cursor: pointer; color: #6ab5d0; font-size: 0.85rem; padding: 4px 8px; background: rgba(20, 5, 50, 0.4); border: 1px solid #7aa9c4; border-radius: 4px;';
 
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';

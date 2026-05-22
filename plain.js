@@ -981,33 +981,6 @@ body {
   background: #E5E5EA;
 }
 
-.cp-hud {
-  position: fixed;
-  top: 16px;
-  right: 20px;
-  color: var(--ios-text-secondary);
-  font-size: 12px;
-  letter-spacing: 0;
-  text-transform: none;
-  text-align: right;
-  z-index: 1000;
-  background: var(--ios-card-bg);
-  padding: 8px 12px;
-  border-radius: var(--ios-radius);
-  box-shadow: var(--ios-shadow);
-  display: flex;
-  gap: 12px;
-}
-
-.cp-lang-wrapper {
-  position: fixed;
-  top: 16px;
-  left: 20px;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 #languageSelector {
   background: var(--ios-card-bg);
@@ -1027,10 +1000,6 @@ body {
   padding-right: 28px;
 }
 
-/* Remove matrix effects */
-.matrix-bg, .matrix-code-rain, body::before, body::after {
-  display: none !important;
-}
 
 .cp-glitch {
   color: var(--ios-text);
@@ -1043,20 +1012,10 @@ body {
         </style>
     </head>
     <body>
-        <div class="matrix-bg"></div>
-        <div class="matrix-code-rain" id="matrixCodeRain"></div>
-            <div class="cp-hud">
-                <span class="cp-hud-line"><span class="cp-hud-label">SYS::</span> ${t.terminal}</span>
-                <span class="cp-hud-line"><span class="cp-hud-label">NODE::</span> NIGHT_CITY</span>
-                <span class="cp-hud-line"><span class="cp-hud-label">LINK::</span> SECURE / ENC</span>
-            </div>
-            <div class="cp-lang-wrapper">
-                <span class="cp-lang-tag">LANG_</span>
-                <select id="languageSelector" onchange="changeLanguage(this.value)">
+                            <select id="languageSelector" onchange="changeLanguage(this.value)">
                     <option value="zh" ${!isFarsi ? 'selected' : ''}>🇨🇳 中文</option>
                     <option value="fa" ${isFarsi ? 'selected' : ''}>🇮🇷 فارسی</option>
                 </select>
-            </div>
         <div class="terminal">
             <div class="terminal-header">
                 <div class="terminal-buttons">
@@ -1087,55 +1046,6 @@ body {
             </div>
         </div>
         <script>
-            function createMatrixRain() {
-                const matrixContainer = document.getElementById('matrixCodeRain');
-                if (!matrixContainer) return;
-                const cyberChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ$%#@!?<>+=ABCDEF';
-                const palette = ['#00f0ff', '#ff2bd6', '#a347ff', '#00ff9d'];
-                const columns = Math.floor(window.innerWidth / 20);
-
-                for (let i = 0; i < columns; i++) {
-                    const column = document.createElement('div');
-                    column.className = 'matrix-column';
-                    column.style.left = (i * 20) + 'px';
-                    column.style.animationDelay = (-Math.random() * 15) + 's';
-                    column.style.animationDuration = (Math.random() * 14 + 8) + 's';
-                    column.style.fontSize = (Math.random() * 4 + 12) + 'px';
-                    column.style.opacity = (Math.random() * 0.7 + 0.3).toFixed(2);
-
-                    let text = '';
-                    const charCount = Math.floor(Math.random() * 30 + 18);
-                    for (let j = 0; j < charCount; j++) {
-                        const char = cyberChars[Math.floor(Math.random() * cyberChars.length)];
-                        const useAccent = Math.random() > 0.85;
-                        const color = useAccent ? palette[Math.floor(Math.random() * palette.length)] : '';
-                        text += color
-                            ? ('<span style="color:' + color + ';text-shadow:0 0 8px ' + color + ';">' + char + '</span><br>')
-                            : ('<span>' + char + '</span><br>');
-                    }
-                    column.innerHTML = text;
-                    matrixContainer.appendChild(column);
-                }
-
-                setInterval(function() {
-                    const cols = matrixContainer.querySelectorAll('.matrix-column');
-                    cols.forEach(function(column) {
-                        if (Math.random() > 0.94) {
-                            const chars = column.querySelectorAll('span');
-                            if (chars.length > 0) {
-                                const target = chars[Math.floor(Math.random() * chars.length)];
-                                const prev = target.style.color;
-                                target.style.color = '#ffffff';
-                                target.style.textShadow = '0 0 10px #ffffff, 0 0 18px #00f0ff';
-                                setTimeout(function() {
-                                    target.style.color = prev;
-                                    target.style.textShadow = '';
-                                }, 200);
-                            }
-                        }
-                    });
-                }, 110);
-            }
 
             function isValidUUID(uuid) {
                 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -1263,7 +1173,6 @@ body {
             });
 
             document.addEventListener('DOMContentLoaded', function() {
-                try { createMatrixRain(); } catch (e) {}
                 const input = document.getElementById('uuidInput');
                 if (input) {
                     input.focus();
@@ -3762,28 +3671,14 @@ hr {
   letter-spacing: 0 !important;
 }
 
-/* Matrix rain - remove for iOS look */
-.matrix-bg, .matrix-code-rain, .cp-hud, .cp-lang-wrapper {
-  display: none !important;
-}
 
         </style>
     </head>
     <body>
-        <div class="matrix-bg"></div>
-        <div class="matrix-code-rain" id="matrixCodeRain"></div>
-            <div class="cp-hud">
-                <span class="cp-hud-line"><span class="cp-hud-label">SYS::</span> ${t.terminal}</span>
-                <span class="cp-hud-line"><span class="cp-hud-label">NODE::</span> NIGHT_CITY</span>
-                <span class="cp-hud-line"><span class="cp-hud-label">LINK::</span> SECURE / ENC</span>
-            </div>
-            <div class="cp-lang-wrapper">
-                <span class="cp-lang-tag">LANG_</span>
-                <select id="languageSelector" onchange="changeLanguage(this.value)">
+                            <select id="languageSelector" onchange="changeLanguage(this.value)">
                     <option value="zh" ${!isFarsi ? 'selected' : ''}>🇨🇳 中文</option>
                     <option value="fa" ${isFarsi ? 'selected' : ''}>🇮🇷 فارسی</option>
                 </select>
-            </div>
         <div class="container">
             <div class="header">
                     <h1 class="title cp-glitch" data-text="${t.title}">${t.title}</h1>
@@ -4450,55 +4345,6 @@ hr {
                 }
             }
 
-            function createMatrixRain() {
-                const matrixContainer = document.getElementById('matrixCodeRain');
-                if (!matrixContainer) return;
-                const cyberChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ$%#@!?<>+=ABCDEF';
-                const palette = ['#00f0ff', '#ff2bd6', '#a347ff', '#00ff9d'];
-                const columns = Math.floor(window.innerWidth / 20);
-
-                for (let i = 0; i < columns; i++) {
-                    const column = document.createElement('div');
-                    column.className = 'matrix-column';
-                    column.style.left = (i * 20) + 'px';
-                    column.style.animationDelay = (-Math.random() * 15) + 's';
-                    column.style.animationDuration = (Math.random() * 14 + 8) + 's';
-                    column.style.fontSize = (Math.random() * 4 + 12) + 'px';
-                    column.style.opacity = (Math.random() * 0.7 + 0.3).toFixed(2);
-
-                    let text = '';
-                    const charCount = Math.floor(Math.random() * 30 + 18);
-                    for (let j = 0; j < charCount; j++) {
-                        const char = cyberChars[Math.floor(Math.random() * cyberChars.length)];
-                        const useAccent = Math.random() > 0.85;
-                        const color = useAccent ? palette[Math.floor(Math.random() * palette.length)] : '';
-                        text += color
-                            ? ('<span style="color:' + color + ';text-shadow:0 0 8px ' + color + ';">' + char + '</span><br>')
-                            : ('<span>' + char + '</span><br>');
-                    }
-                    column.innerHTML = text;
-                    matrixContainer.appendChild(column);
-                }
-
-                setInterval(function() {
-                    const cols = matrixContainer.querySelectorAll('.matrix-column');
-                    cols.forEach(function(column) {
-                        if (Math.random() > 0.94) {
-                            const chars = column.querySelectorAll('span');
-                            if (chars.length > 0) {
-                                const target = chars[Math.floor(Math.random() * chars.length)];
-                                const prev = target.style.color;
-                                target.style.color = '#ffffff';
-                                target.style.textShadow = '0 0 10px #ffffff, 0 0 18px #00f0ff';
-                                setTimeout(function() {
-                                    target.style.color = prev;
-                                    target.style.textShadow = '';
-                                }, 200);
-                            }
-                        }
-                    });
-                }, 110);
-            }
 
             async function checkSystemStatus() {
                 try {
@@ -5186,7 +5032,6 @@ hr {
             }
 
             document.addEventListener('DOMContentLoaded', function() {
-                createMatrixRain();
                 checkSystemStatus();
                 checkKVStatus();
                 checkECHStatus();
