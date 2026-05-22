@@ -82,6 +82,34 @@ function randomJsonKey(type) {
 /**
  * Generate all random mappings
  */
+/**
+ * Generate a random cache-control value
+ */
+function randomCacheControl() {
+    const options = [
+        'public, max-age=3600',
+        'private, max-age=1800',
+        'no-cache, no-store',
+        'public, max-age=7200',
+        'private, max-age=600',
+        'public, s-maxage=300'
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+}
+
+/**
+ * Generate a random fake header key (x-build, x-edge, x-runtime, server-timing variants)
+ */
+function randomFakeHeader() {
+    const prefixes = ['x-build', 'x-edge', 'x-runtime', 'server-timing'];
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const suffix = randomString(3, LOWERCASE);
+    return `${prefix}-${suffix}`;
+}
+
+/**
+ * Generate all random mappings
+ */
 function generateMappings() {
     const mappings = {
         timestamp: new Date().toISOString(),
@@ -89,7 +117,11 @@ function generateMappings() {
         constants: {},
         headers: {},
         wsPath: {},
-        jsonKeys: {}
+        jsonKeys: {},
+        cacheControl: {},
+        fakeHeaders: {},
+        queryParams: {},
+        routeAliases: {}
     };
 
     // Route mappings
@@ -97,6 +129,13 @@ function generateMappings() {
     mappings.routes['/api/config'] = '/' + randomString(3, LOWERCASE) + '/' + randomString(4, LOWERCASE);
     mappings.routes['/api/preferred-ips'] = '/' + randomString(3, LOWERCASE) + '/' + randomString(5, LOWERCASE);
     mappings.routes['/?ed=2048'] = randomWsPath() + '?ed=2048';
+
+    // Route aliases pool — multiple aliases for /sub
+    const subAliases = [];
+    for (let i = 0; i < 3; i++) {
+        subAliases.push(randomRoute());
+    }
+    mappings.routeAliases['/sub'] = subAliases;
 
     // Constant/Enum name mappings
     mappings.constants['vless'] = randomConstant(2);
@@ -124,6 +163,37 @@ function generateMappings() {
     // WS path base (without query)
     mappings.wsPath['/?ed=2048'] = randomWsPath() + '?ed=2048';
 
+    // Cache-Control options (weighted toward longer cache)
+    const cacheOptions = [
+        { value: 'public, max-age=3600', weight: 3 },
+        { value: 'private, max-age=1800', weight: 2 },
+        { value: 'no-cache, no-store', weight: 1 },
+        { value: 'public, max-age=7200', weight: 2 },
+        { value: 'private, max-age=600', weight: 1 }
+    ];
+    // Weighted random selection
+    const totalWeight = cacheOptions.reduce((sum, o) => sum + o.weight, 0);
+    let rand = Math.floor(Math.random() * totalWeight);
+    for (const opt of cacheOptions) {
+        rand -= opt.weight;
+        if (rand < 0) {
+            mappings.cacheControl['default'] = opt.value;
+            break;
+        }
+    }
+    if (!mappings.cacheControl['default']) mappings.cacheControl['default'] = cacheOptions[0].value;
+
+    // Fake headers (x-build, x-edge, x-runtime, server-timing)
+    const fakeHeaderKeys = ['x-build', 'x-edge', 'x-runtime', 'server-timing'];
+    for (const key of fakeHeaderKeys) {
+        mappings.fakeHeaders[key] = randomFakeHeader();
+    }
+
+    // Query param aliases: target→?, token→?, wk→?
+    mappings.queryParams['target'] = randomString(3, LOWERCASE);
+    mappings.queryParams['token'] = randomString(4, LOWERCASE);
+    mappings.queryParams['wk'] = randomString(3, LOWERCASE);
+
     return mappings;
 }
 
@@ -131,6 +201,8 @@ function generateMappings() {
  * Patch worker.js with randomized routes:
  * 1. Update RANDOMIZED_ROUTES constant (line ~24)
  * 2. Update browser-side sub-path literal in terminalHtml (lines ~5217, ~5953)
+ * 3. Update FAKE_RESPONSE_HEADERS constant
+ * 4. Patch query param aliases (target, token, wk)
  */
 function patchWorkerJs(mappings) {
     if (!fs.existsSync(WORKER_JS_PATH)) {
@@ -143,12 +215,45 @@ function patchWorkerJs(mappings) {
     const configPath = mappings.routes['/api/config'];
     const preferredPath = mappings.routes['/api/preferred-ips'];
     const wsPath = mappings.routes['/?ed=2048'];
+    const subAliases = mappings.routeAliases['/sub'] || [];
 
     // 1. Update RANDOMIZED_ROUTES constant in worker.js
     const rrPattern = /const RANDOMIZED_ROUTES = \{[^}]+\};/;
     const newRr = `const RANDOMIZED_ROUTES = { '/sub': '${subPath}', '/api/config': '${configPath}', '/api/preferred-ips': '${preferredPath}', '/?ed=2048': '${wsPath}' };`;
     workerSource = workerSource.replace(rrPattern, newRr);
     console.log(`  Updated RANDOMIZED_ROUTES constant`);
+
+    // 1b. Update ROUTE_ALIASES pool in worker.js (if present) or add it after RANDOMIZED_ROUTES
+    const fakeHdrKeys = Object.entries(mappings.fakeHeaders).map(([k, v]) => `'${k}': '${v}'`).join(', ');
+    const newFakeHeaders = `const FAKE_RESPONSE_HEADERS = { ${fakeHdrKeys} };`;
+    const fakeHdrPattern = /const FAKE_RESPONSE_HEADERS = \{[^}]+\};/;
+    if (fakeHdrPattern.test(workerSource)) {
+        workerSource = workerSource.replace(fakeHdrPattern, newFakeHeaders);
+        console.log(`  Updated FAKE_RESPONSE_HEADERS constant`);
+    } else {
+        // Insert after RANDOMIZED_ROUTES line
+        workerSource = workerSource.replace(
+            /const RANDOMIZED_ROUTES = \{[^}]+\};\n/,
+            `const RANDOMIZED_ROUTES = { '/sub': '${subPath}', '/api/config': '${configPath}', '/api/preferred-ips': '${preferredPath}', '/?ed=2048': '${wsPath}' };\n${newFakeHeaders}\n`
+        );
+        console.log(`  Inserted FAKE_RESPONSE_HEADERS constant`);
+    }
+
+    // 1c. Update ROUTE_ALIASES pool (multiple aliases for /sub)
+    const routeAliasesPattern = /const ROUTE_ALIASES = \[[^\]]*\];/;
+    const newRouteAliases = `const ROUTE_ALIASES = [${subAliases.map(a => `'${a}'`).join(', ')}];`;
+    if (routeAliasesPattern.test(workerSource)) {
+        workerSource = workerSource.replace(routeAliasesPattern, newRouteAliases);
+        console.log(`  Updated ROUTE_ALIASES constant`);
+    }
+
+    // 1d. Update QUERY_PARAM_ALIASES (target, token, wk)
+    const qpaPattern = /const QUERY_PARAM_ALIASES = \{[^}]+\};/;
+    const newQpa = `const QUERY_PARAM_ALIASES = { 'target': '${mappings.queryParams['target']}', 'token': '${mappings.queryParams['token']}', 'wk': '${mappings.queryParams['wk']}' };`;
+    if (qpaPattern.test(workerSource)) {
+        workerSource = workerSource.replace(qpaPattern, newQpa);
+        console.log(`  Updated QUERY_PARAM_ALIASES constant`);
+    }
 
     // 2. Update browser-side hardcoded sub path (e.g. '/qktzh') in terminalHtml
     // Matches: currentUrl + '/qktzh'  or  currentUrl + "/qktzh"
@@ -290,6 +395,20 @@ function build() {
     console.log('   JSON Keys:');
     for (const [k, v] of Object.entries(mappings.jsonKeys)) {
         console.log(`      ${k} → ${v}`);
+    }
+    console.log('   Cache Control:');
+    console.log(`      default → ${mappings.cacheControl['default']}`);
+    console.log('   Fake Headers:');
+    for (const [k, v] of Object.entries(mappings.fakeHeaders)) {
+        console.log(`      ${k} → ${v}`);
+    }
+    console.log('   Query Params:');
+    for (const [k, v] of Object.entries(mappings.queryParams)) {
+        console.log(`      ${k} → ${v}`);
+    }
+    console.log('   Route Aliases (/sub):');
+    for (const alias of (mappings.routeAliases['/sub'] || [])) {
+        console.log(`      → ${alias}`);
     }
 
     // Apply replacements to plain.js

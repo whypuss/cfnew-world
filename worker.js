@@ -25,6 +25,33 @@
     const ENUM_MAPPING = { 'vless': 'ft', 'trojan': 'jo', 'ws': 'iq', 'clash': 'ob', 'base64': 'ew', 'surge': 'gk', 'singbox': 'th', 'quantumult': 'cl' };
     const HEADER_MAPPING = { 'Content-Type': 'cf-ab', 'X-Real-IP': 'cfx-rh', 'CF-Connecting-IP': 'xk-kt' };
     const RESPONSE_KEY_MAPPING = { 'ip': 'a', 'port': 'svc', 'region': 'loc', 'server': 'node' };
+    const FAKE_RESPONSE_HEADERS = { 'x-build': 'cfx-bld', 'x-edge': 'cfx-edg', 'x-runtime': 'cfx-run', 'server-timing': 'cfx-tmg' };
+    const ROUTE_ALIASES = ['/knlg', '/xqrp', '/zmjy'];
+    const QUERY_PARAM_ALIASES = { 'target': 'tgt', 'token': 'tk', 'wk': 'wk' };
+    const MAX_NODES_PER_REGION = 3;
+
+    // P2-2: Helper - check if path contains any sub route alias
+    function hasSubRoute(path) {
+        return ROUTE_ALIASES.some(alias => path.includes(alias));
+    }
+    function extractSubAlias(path) {
+        return ROUTE_ALIASES.find(alias => path.includes(alias)) || '';
+    }
+
+    // P2-1: Cache-Control randomization for traffic normalization
+    const CACHE_CONTROL_OPTIONS = [
+        'public, max-age=3600',      // 30%
+        'public, max-age=7200',      // 30%
+        'public, max-age=300, stale-while-revalidate=600', // 20%
+        'no-cache'                   // 20%
+    ];
+    function getRandomCacheControl() {
+        const rand = Math.random();
+        if (rand < 0.30) return CACHE_CONTROL_OPTIONS[0];
+        if (rand < 0.60) return CACHE_CONTROL_OPTIONS[1];
+        if (rand < 0.80) return CACHE_CONTROL_OPTIONS[2];
+        return CACHE_CONTROL_OPTIONS[3];
+    }
 
     // Layer 1 - Static content for normal website appearance
     const STATIC_HTML = `<!DOCTYPE html>
@@ -335,6 +362,78 @@ Sitemap: https://example.com/sitemap.xml
     async function isNodeQuarantined(ip, port) {
         const record = await getNodeRecord(ip, port);
         return record ? record.quarantined : false;
+    }
+
+    // P2-3: Check quarantine using dedicated quarantine:{ip} key (IP-only, no port)
+    async function isIPQuarantined(ip) {
+        if (!kvStore) return false;
+        try {
+            const key = `quarantine:${ip}`;
+            const data = await kvStore.get(key);
+            if (data) {
+                const info = JSON.parse(data);
+                return info.quarantined === true;
+            }
+        } catch (_) {}
+        return false;
+    }
+
+    // P2-3: Mark an IP as quarantined using dedicated quarantine:{ip} key
+    async function setIPQuarantined(ip, quarantined, reason = null) {
+        if (!kvStore) return;
+        try {
+            const key = `quarantine:${ip}`;
+            const info = {
+                quarantined: quarantined,
+                reason: reason,
+                timestamp: Date.now()
+            };
+            await kvStore.put(key, JSON.stringify(info));
+        } catch (_) {}
+    }
+
+    // P2-3: Garbage IP rejection - reject IPs starting with '0.' or '127.' or invalid ports
+    function isGarbageIP(ip, port) {
+        if (!ip) return true;
+        // Reject IPs starting with 0. or 127.
+        if (ip.startsWith('0.') || ip.startsWith('127.')) {
+            return true;
+        }
+        // Reject invalid ports
+        if (!port || port === 0 || port > 65535) {
+            return true;
+        }
+        return false;
+    }
+
+    // P2-3: Rate limiter for subscription requests - 30 seconds per IP
+    const RATE_LIMIT_WINDOW = 30 * 1000; // 30 seconds
+    const RATE_LIMIT_TTL = 60; // 60 seconds TTL in KV
+
+    async function checkRateLimit(ip) {
+        if (!kvStore || !ip) return { allowed: true };
+        try {
+            const key = `rl:${ip}`;
+            const data = await kvStore.get(key);
+            if (data) {
+                const info = JSON.parse(data);
+                const elapsed = Date.now() - info.timestamp;
+                if (elapsed < RATE_LIMIT_WINDOW) {
+                    const retryAfter = Math.ceil((RATE_LIMIT_WINDOW - elapsed) / 1000);
+                    return { allowed: false, retryAfter };
+                }
+            }
+        } catch (_) {}
+        return { allowed: true };
+    }
+
+    async function setRateLimit(ip) {
+        if (!kvStore || !ip) return;
+        try {
+            const key = `rl:${ip}`;
+            const info = { timestamp: Date.now() };
+            await kvStore.put(key, JSON.stringify(info), { expirationTtl: RATE_LIMIT_TTL });
+        } catch (_) {}
     }
 
     // P1-2: Get all quarantined nodes (for logging/monitoring)
@@ -805,7 +904,7 @@ Sitemap: https://example.com/sitemap.xml
                     if (pathname === '/robots.txt') {
                         return new Response(STATIC_ROBOTS, {
                             status: 200,
-                            headers: { 'Content-Type': 'text/plain' }
+                            headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'text/plain', 'Cache-Control': getRandomCacheControl() }
                         });
                     }
 
@@ -814,7 +913,72 @@ Sitemap: https://example.com/sitemap.xml
                         const faviconData = atob(STATIC_FAVICON_B64);
                         return new Response(faviconData, {
                             status: 200,
-                            headers: { 'Content-Type': 'image/x-icon' }
+                            headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'image/x-icon', 'Cache-Control': getRandomCacheControl() }
+                        });
+                    }
+
+                    // P2-1: Fake API endpoints for traffic normalization
+                    // GET /api/posts → return blog posts JSON
+                    if (pathname === '/api/posts') {
+                        const posts = [
+                            { id: 1, title: 'Getting Started with Cloudflare Workers', excerpt: 'Learn how to deploy serverless functions at the edge.', date: '2024-01-15', author: 'Admin' },
+                            { id: 2, title: 'Best Practices for API Design', excerpt: 'Tips and tricks for building robust REST APIs.', date: '2024-01-20', author: 'Admin' },
+                            { id: 3, title: 'Understanding Edge Computing', excerpt: 'How edge computing is changing the web landscape.', date: '2024-02-01', author: 'Admin' }
+                        ];
+                        return new Response(JSON.stringify(posts), {
+                            status: 200,
+                            headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json', 'Cache-Control': getRandomCacheControl() }
+                        });
+                    }
+
+                    // GET /api/status → return status JSON
+                    if (pathname === '/api/status') {
+                        const status = {
+                            version: 'v2.9.8',
+                            uptime: Math.floor(Date.now() / 1000) - 1700000000,
+                            activeUsers: Math.floor(Math.random() * 100) + 50,
+                            status: 'operational'
+                        };
+                        return new Response(JSON.stringify(status), {
+                            status: 200,
+                            headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json', 'Cache-Control': getRandomCacheControl() }
+                        });
+                    }
+
+                    // P2-1: PWA manifest and Windows tile config
+                    if (pathname === '/manifest.json') {
+                        const manifest = {
+                            name: 'CFnew Terminal',
+                            short_name: 'CFnew',
+                            start_url: '/',
+                            display: 'standalone',
+                            background_color: '#fffef8',
+                            theme_color: '#6ab5d0',
+                            icons: [
+                                { src: '/favicon.ico', sizes: 'any', type: 'image/x-icon' }
+                            ]
+                        };
+                        return new Response(JSON.stringify(manifest), {
+                            status: 200,
+                            headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=86400' }
+                        });
+                    }
+
+                    if (pathname === '/browserconfig.xml') {
+                        const browserconfig = `<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+    <msapplication>
+        <tile>
+            <square70x70logo src="/favicon.ico"/>
+            <square150x150logo src="/favicon.ico"/>
+            <square310x310logo src="/favicon.ico"/>
+            <TileColor>#6ab5d0</TileColor>
+        </tile>
+    </msapplication>
+</browserconfig>`;
+                        return new Response(browserconfig, {
+                            status: 200,
+                            headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/xml', 'Cache-Control': 'public, max-age=86400' }
                         });
                     }
 
@@ -825,7 +989,7 @@ Sitemap: https://example.com/sitemap.xml
 
                     // For other GET requests that look like scanning/probing, return 404
                     // This makes the worker look like a normal site, not a proxy
-                    if (!pathname.includes(RANDOMIZED_ROUTES['/sub']) && !pathname.includes('/' + (env.u || env.U || '').toLowerCase()) && pathname !== '/') {
+                    if (!hasSubRoute(pathname) && !pathname.includes('/' + (env.u || env.U || '').toLowerCase()) && pathname !== '/') {
                         return new Response('Not Found', { status: 404 });
                     }
                 }
@@ -1039,14 +1203,14 @@ Sitemap: https://example.com/sitemap.xml
                         } else {
                             return new Response(JSON.stringify({ error: '路径验证失败' }), { 
                                 status: 403,
-                                headers: { 'Content-Type': 'application/json' }
+                                headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                             });
                         }
                     }
 
                     return new Response(JSON.stringify({ error: '无效的API路径' }), { 
                         status: 404,
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                     });
                 }
 
@@ -1070,14 +1234,14 @@ Sitemap: https://example.com/sitemap.xml
                         } else {
                             return new Response(JSON.stringify({ error: '路径验证失败' }), { 
                                 status: 403,
-                                headers: { 'Content-Type': 'application/json' }
+                                headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                             });
                         }
                     }
 
                     return new Response(JSON.stringify({ error: '无效的API路径' }), { 
                         status: 404,
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                     });
                 }
 
@@ -1087,6 +1251,7 @@ Sitemap: https://example.com/sitemap.xml
                     ctx.waitUntil(r.closed);
                     return new Response(r.readable, {
                         headers: {
+                            ...FAKE_RESPONSE_HEADERS,
                             'X-Accel-Buffering': 'no',
                             'Cache-Control': 'no-store',
                             Connection: 'keep-alive',
@@ -1095,7 +1260,7 @@ Sitemap: https://example.com/sitemap.xml
                         },
                     });
                 }
-                return new Response('Internal Server Error', { status: 500 });
+                return new Response('Internal Server Error', { status: 500, headers: { ...FAKE_RESPONSE_HEADERS } });
             }
 
             if (request.headers.get('Upgrade') === atob('d2Vic29ja2V0')) {
@@ -1131,7 +1296,7 @@ Sitemap: https://example.com/sitemap.xml
                                         manualRegion: manualRegion.trim().toUpperCase(),
                                         timestamp: new Date().toISOString()
                                     }), {
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                     });
                                 } else if (ci && ci.trim()) {
                                     return new Response(JSON.stringify({
@@ -1139,7 +1304,7 @@ Sitemap: https://example.com/sitemap.xml
                                         detectionMethod: '自定义ProxyIP模式', ci: ci,
                                         timestamp: new Date().toISOString()
                                     }), {
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                     });
                                 } else {
                                     const detectedRegion = await detectWorkerRegion(request);
@@ -1148,7 +1313,7 @@ Sitemap: https://example.com/sitemap.xml
                                         detectionMethod: 'API检测',
                                         timestamp: new Date().toISOString()
                                     }), {
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                     });
                                 }
                             } else {
@@ -1157,7 +1322,7 @@ Sitemap: https://example.com/sitemap.xml
                                     message: '路径验证失败'
                                 }), { 
                                     status: 403,
-                                    headers: { 'Content-Type': 'application/json' }
+                                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                 });
                             }
                         }
@@ -1188,7 +1353,7 @@ Sitemap: https://example.com/sitemap.xml
                                         message: 'API测试完成',
                                         timestamp: new Date().toISOString()
                                     }), {
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                     });
                                 } catch (error) {
                                     return new Response(JSON.stringify({
@@ -1196,7 +1361,7 @@ Sitemap: https://example.com/sitemap.xml
                                         message: 'API测试失败'
                                     }), {
                                         status: 500,
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                     });
                                 }
                             } else {
@@ -1205,7 +1370,7 @@ Sitemap: https://example.com/sitemap.xml
                                     message: '路径验证失败'
                                 }), { 
                                     status: 403,
-                                    headers: { 'Content-Type': 'application/json' }
+                                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                 });
                             }
                         }
@@ -1236,6 +1401,7 @@ Sitemap: https://example.com/sitemap.xml
                                     return new Response(content, {
                                         status: homepageResponse.status,
                                         headers: {
+                                            ...FAKE_RESPONSE_HEADERS,
                                             'Content-Type': contentType,
                                             'Cache-Control': 'no-cache, no-store, must-revalidate',
                                         }
@@ -1320,6 +1486,12 @@ Sitemap: https://example.com/sitemap.xml
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>${t.title}</title>
+        <meta property="og:title" content="${t.title}">
+        <meta property="og:description" content="CFnew 终端 - 快速访问节点订阅">
+        <meta property="og:type" content="website">
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:title" content="${t.title}">
+        <meta name="twitter:description" content="CFnew 终端 - 快速访问节点订阅">
         <style>
             :root {
                 --cp-bg: #fffef8;
@@ -1563,7 +1735,7 @@ Sitemap: https://example.com/sitemap.xml
         </script>
     </body>
     </html>`;
-            return new Response(terminalHtml, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+            return new Response(terminalHtml, { status: 200, headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'text/html; charset=utf-8' } });
         }
             if (cp && cp.trim()) {
                 const cleanCustomPath = cp.trim().startsWith('/') ? cp.trim() : '/' + cp.trim();
@@ -1574,33 +1746,36 @@ Sitemap: https://example.com/sitemap.xml
                         return await handleSubscriptionPage(request, at);
                     }
 
-                    if (normalizedPath === normalizedCustomPath + RANDOMIZED_ROUTES['/sub']) {
+                    // P2-2: Match any route alias for subscription
+                    const isSubPath = ROUTE_ALIASES.some(alias => normalizedPath === normalizedCustomPath + alias);
+                    if (isSubPath) {
                         return await handleSubscriptionRequest(request, at, url);
                     }
 
                     if (url.pathname.length > 1 && url.pathname !== '/') {
-                        const user = url.pathname.replace(/\/$/, '').replace(RANDOMIZED_ROUTES['/sub'], '').substring(1);
+                        const usedAlias = extractSubAlias(url.pathname);
+                        const user = url.pathname.replace(/\\/$/, '').replace(usedAlias, '').substring(1);
                         if (isValidFormat(user)) {
                             return new Response(JSON.stringify({ 
                                 error: '访问被拒绝',
                                 message: '当前 Worker 已启用自定义路径模式，UUID 访问已禁用'
                             }), { 
                                 status: 403,
-                                headers: { 'Content-Type': 'application/json' }
+                                headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                             });
                         }
                     }
                 } else {
                     
-                    if (url.pathname.length > 1 && url.pathname !== '/' && !url.pathname.includes(RANDOMIZED_ROUTES['/sub'])) {
-                        const user = url.pathname.replace(/\/$/, '').substring(1);
+                    if (url.pathname.length > 1 && url.pathname !== '/' && !hasSubRoute(url.pathname)) {
+                        const user = url.pathname.replace(/\\/$/, '').substring(1);
                         if (isValidFormat(user)) {
                             if (user === at) {
                                 return await handleSubscriptionPage(request, user);
                             } else {
                                 return new Response(JSON.stringify({ error: 'UUID错误 请注意变量名称是u不是uuid' }), { 
                                     status: 403,
-                                    headers: { 'Content-Type': 'application/json' }
+                                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                 });
                             }
                         }
@@ -1614,13 +1789,14 @@ Sitemap: https://example.com/sitemap.xml
                             const cacheKey = `sub:${await hashFingerprint(cacheFingerprint)}`;
                             if (kvStore) await kvStore.delete(cacheKey);
                             return new Response(JSON.stringify({ success: true, message: 'Cache invalidated, regenerating...' }), {
-                                headers: { 'Content-Type': 'application/json' }
+                                headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                             });
                         }
                     }
-                    if (url.pathname.includes(RANDOMIZED_ROUTES['/sub'])) {
+                    if (hasSubRoute(url.pathname)) {
                         const pathParts = url.pathname.split('/');
-                        if (pathParts.length === 2 && pathParts[1] === RANDOMIZED_ROUTES['/sub'].substring(1)) {
+                        const matchedAlias = extractSubAlias(url.pathname);
+                        if (pathParts.length === 2 && pathParts[1] === matchedAlias.substring(1)) {
                             const user = pathParts[0].substring(1);
                             if (isValidFormat(user)) {
                                 if (user === at) {
@@ -1628,7 +1804,7 @@ Sitemap: https://example.com/sitemap.xml
                                 } else {
                                     return new Response(JSON.stringify({ error: 'UUID错误' }), { 
                                         status: 403,
-                                        headers: { 'Content-Type': 'application/json' }
+                                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                     });
                                 }
                                 }
@@ -1647,10 +1823,10 @@ Sitemap: https://example.com/sitemap.xml
                 }
                 return new Response(JSON.stringify({ error: 'Not Found' }), { 
                     status: 404,
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                 });
             } catch (err) {
-                return new Response(err.toString(), { status: 500 });
+                return new Response(err.toString(), { status: 500, headers: { ...FAKE_RESPONSE_HEADERS } });
             }
         },
         async scheduled(controller, env, ctx) {
@@ -2719,6 +2895,21 @@ Sitemap: https://example.com/sitemap.xml
     async function handleSubscriptionRequest(request, user, url = null) {
         if (!url) url = new URL(request.url);
 
+        // P2-3: Rate limit check - 30 seconds per IP for subscription requests
+        const clientIP = request.headers.get('CF-Connecting-IP') || request.headers.get('X-Real-IP') || url.hostname;
+        const rateLimitCheck = await checkRateLimit(clientIP);
+        if (!rateLimitCheck.allowed) {
+            return new Response('Rate limit exceeded. Please try again later.', {
+                status: 429,
+                headers: {
+                    ...FAKE_RESPONSE_HEADERS,
+                    'Content-Type': 'text/plain; charset=utf-8',
+                    'Retry-After': String(rateLimitCheck.retryAfter)
+                }
+            });
+        }
+        await setRateLimit(clientIP);
+
         let finalLinks = [];
         const workerDomain = url.hostname;
         const target = url.searchParams.get('target') || 'base64';
@@ -2743,6 +2934,7 @@ Sitemap: https://example.com/sitemap.xml
                 if (cached) {
                     const cachedData = JSON.parse(cached);
                     const responseHeaders = {
+                        ...FAKE_RESPONSE_HEADERS,
                         'Content-Type': cachedData.contentType || 'text/plain; charset=utf-8',
                         'Cache-Control': 'public, max-age=900',
                     };
@@ -2773,6 +2965,7 @@ Sitemap: https://example.com/sitemap.xml
         }
 
         // P1-2: Filter quarantined nodes from finalLinks before generating subscription
+        // P2-3: Also check dedicated quarantine:{ip} key
         async function filterQuarantinedNodes() {
             if (!kvStore || finalLinks.length === 0) {
                 return;
@@ -2781,8 +2974,10 @@ Sitemap: https://example.com/sitemap.xml
                 if (typeof linkData !== 'object' || !linkData.ip) {
                     return true; // Keep string links or old format as-is
                 }
-                const quarantined = await isNodeQuarantined(linkData.ip, linkData.port);
-                return !quarantined;
+                // Check both node record quarantine flag and dedicated quarantine:{ip} key
+                const quarantinedByRecord = await isNodeQuarantined(linkData.ip, linkData.port);
+                const quarantinedByKey = await isIPQuarantined(linkData.ip);
+                return !(quarantinedByRecord || quarantinedByKey);
             });
             const keepFlags = await Promise.all(quarantinePromises);
             // Filter in-place
@@ -2922,6 +3117,28 @@ Sitemap: https://example.com/sitemap.xml
                 (n) => n !== null && n.record.successRate > 0.8
             );
 
+            // P2-4: Weighted shuffle - randomize order before filtering
+            // This ensures we don't always prioritize the same sources
+            for (let i = validNodes.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [validNodes[i], validNodes[j]] = [validNodes[j], validNodes[i]];
+            }
+
+            // P2-4: Region diversification - limit to MAX_NODES_PER_REGION per region
+            const regionMap = new Map();
+            const regionFiltered = [];
+            for (const node of validNodes) {
+                const region = node.record.region || node.linkData.region || 'unknown';
+                if (!regionMap.has(region)) {
+                    regionMap.set(region, 0);
+                }
+                if (regionMap.get(region) < MAX_NODES_PER_REGION) {
+                    regionFiltered.push(node);
+                    regionMap.set(region, regionMap.get(region) + 1);
+                }
+            }
+            validNodes = regionFiltered;
+
             // P1-2: Deduplicate by ASN (keep lowest latencyScore = highest latency score is better)
             const asnMap = new Map();
             for (const node of validNodes) {
@@ -3022,6 +3239,15 @@ Sitemap: https://example.com/sitemap.xml
                 subscriptionContent = btoa(linkStrings.join('\n'));
         }
 
+        // P2-1: Subscription MIME polymorphism - check Accept header
+        const acceptHeader = request.headers.get('Accept') || '';
+        if (acceptHeader.includes('application/json')) {
+            contentType = 'application/json';
+            subscriptionContent = JSON.stringify({ nodes: linkStrings, count: linkStrings.length });
+        } else if (acceptHeader.includes('octet-stream')) {
+            contentType = 'application/octet-stream';
+        }
+
         // P1-1: KV subscription cache WRITE after content generation (15min TTL)
         if (kvStore) {
             try {
@@ -3034,7 +3260,8 @@ Sitemap: https://example.com/sitemap.xml
             } catch (_) {}
         }
 
-        const responseHeaders = { 
+        const responseHeaders = {
+            ...FAKE_RESPONSE_HEADERS,
             'Content-Type': contentType,
             'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
         };
@@ -5825,7 +6052,7 @@ Sitemap: https://example.com/sitemap.xml
                 try {
                     const response = await fetch(apiUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' },
                         body: JSON.stringify(configData)
                     });
 
@@ -5890,7 +6117,7 @@ Sitemap: https://example.com/sitemap.xml
                     try {
                         const response = await fetch(window.location.pathname + '/api/config', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
                                 wk: '',
                                 d: '',
@@ -6855,7 +7082,7 @@ Sitemap: https://example.com/sitemap.xml
     </html>`;
         return new Response(pageHtml, { 
             status: 200, 
-            headers: { 'Content-Type': 'text/html; charset=utf-8' } 
+            headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'text/html; charset=utf-8' } 
         });
     }
 
@@ -7399,7 +7626,7 @@ Sitemap: https://example.com/sitemap.xml
 
     async function handle_xhttp_client(body, uuid) {
         if (ACTIVE_CONNECTIONS >= MAX_CONCURRENT) {
-            return new Response('Too many connections', { status: 429 });
+            return new Response('Too many connections', { status: 429, headers: { ...FAKE_RESPONSE_HEADERS } });
         }
 
         ACTIVE_CONNECTIONS++;
@@ -7495,10 +7722,14 @@ Sitemap: https://example.com/sitemap.xml
                 for (const item of apiResults) {
                     const match = item.match(regex);
                     if (match) {
+                        const ip = match[1];
+                        const port = parseInt(match[2] || '443', 10);
+                        // P2-3: Reject garbage IPs immediately without connection attempt
+                        if (isGarbageIP(ip, port)) continue;
                         results.push({
-                            ip: match[1],
-                            port: parseInt(match[2] || '443', 10),
-                            name: match[3]?.trim() || match[1]
+                            ip: ip,
+                            port: port,
+                            name: match[3]?.trim() || ip
                         });
                     }
                 }
@@ -7517,10 +7748,14 @@ Sitemap: https://example.com/sitemap.xml
                 if (!trimmedLine) continue;
                 const match = trimmedLine.match(simpleRegex);
                 if (match) {
+                    const ip = match[1];
+                    const port = parseInt(match[2], 10);
+                    // P2-3: Reject garbage IPs immediately without connection attempt
+                    if (isGarbageIP(ip, port)) continue;
                     results.push({
-                        ip: match[1],
-                        port: parseInt(match[2], 10),
-                        name: match[3].trim() || match[1]
+                        ip: ip,
+                        port: port,
+                        name: match[3].trim() || ip
                     });
                 }
             }
@@ -7714,7 +7949,7 @@ Sitemap: https://example.com/sitemap.xml
                     kvEnabled: false
                 }), {
                     status: 503,
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                 });
             }
 
@@ -7722,7 +7957,7 @@ Sitemap: https://example.com/sitemap.xml
                 ...kvConfig,
                 kvEnabled: true
             }), {
-                headers: { 'Content-Type': 'application/json' }
+                headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
             });
         } else if (request.method === 'POST') {
             
@@ -7732,7 +7967,7 @@ Sitemap: https://example.com/sitemap.xml
                     message: 'KV存储未配置，无法保存配置'
                 }), {
                     status: 503,
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                 });
             }
 
@@ -7760,7 +7995,7 @@ Sitemap: https://example.com/sitemap.xml
                     message: '配置已保存',
                     config: kvConfig
                 }), {
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                 });
             } catch (error) {
                 return new Response(JSON.stringify({
@@ -7768,14 +8003,14 @@ Sitemap: https://example.com/sitemap.xml
                     message: '保存配置失败: ' + error.message
                 }), {
                     status: 500,
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                 });
             }
         }
 
         return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
             status: 405,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
         });
     }
 
@@ -7787,7 +8022,7 @@ Sitemap: https://example.com/sitemap.xml
                 message: '需要配置KV存储才能使用此功能'
             }), {
                 status: 503,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
             });
         }
 
@@ -7799,7 +8034,7 @@ Sitemap: https://example.com/sitemap.xml
                 message: '出于安全考虑，优选IP API功能默认关闭。请在配置管理页面开启"允许API管理"选项后使用。'
             }), {
                 status: 403,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
             });
         }
 
@@ -7814,7 +8049,7 @@ Sitemap: https://example.com/sitemap.xml
                     count: pi.length,
                     data: pi
                 }), {
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                 });
             } else if (request.method === 'POST') {
                 const body = await request.json();
@@ -7827,7 +8062,7 @@ Sitemap: https://example.com/sitemap.xml
                         message: '请提供IP数据'
                     }), {
                         status: 400,
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                     });
                 }
 
@@ -7890,7 +8125,7 @@ Sitemap: https://example.com/sitemap.xml
                         errors: errors.length > 0 ? errors : undefined
                     }
                 }), {
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                 });
             } else if (request.method === 'DELETE') {
                 const body = await request.json();
@@ -7908,7 +8143,7 @@ Sitemap: https://example.com/sitemap.xml
                         message: `已清空所有优选IP，共删除 ${deletedCount} 个`,
                         deletedCount: deletedCount
                     }), {
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                     });
                 }
 
@@ -7919,7 +8154,7 @@ Sitemap: https://example.com/sitemap.xml
                         message: '请提供要删除的ip字段，或使用 {"all": true} 清空所有'
                     }), {
                         status: 400,
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                     });
                 }
 
@@ -7940,7 +8175,7 @@ Sitemap: https://example.com/sitemap.xml
                         message: `${body.ip}:${port} 未找到`
                     }), {
                         status: 404,
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                     });
                 }
 
@@ -7953,7 +8188,7 @@ Sitemap: https://example.com/sitemap.xml
                     message: '优选IP已删除',
                     deleted: { ip: body.ip, port: port }
                 }), {
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                 });
             } else {
                 return new Response(JSON.stringify({
@@ -7962,7 +8197,7 @@ Sitemap: https://example.com/sitemap.xml
                     message: '支持的方法: GET, POST, DELETE'
                 }), {
                     status: 405,
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                 });
             }
         } catch (error) {
@@ -7972,7 +8207,7 @@ Sitemap: https://example.com/sitemap.xml
                 message: error.message
             }), {
                 status: 500,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
             });
         }
     }
