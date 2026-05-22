@@ -135,39 +135,55 @@ Sitemap: https://example.com/sitemap.xml
         'Multacom': ['Multacom', 'Multacom']
     };
 
-    let backupIPs = [
-        { domain: 'ProxyIP.HK.CMLiussss.net', region: 'HK', regionCode: 'HK', port: 443 },
-        { domain: 'ProxyIP.US.CMLiussss.net', region: 'US', regionCode: 'US', port: 443 },
-        { domain: 'ProxyIP.SG.CMLiussss.net', region: 'SG', regionCode: 'SG', port: 443 },
-        { domain: 'ProxyIP.JP.CMLiussss.net', region: 'JP', regionCode: 'JP', port: 443 },
-        { domain: 'ProxyIP.KR.CMLiussss.net', region: 'KR', regionCode: 'KR', port: 443 },
-        { domain: 'ProxyIP.DE.CMLiussss.net', region: 'DE', regionCode: 'DE', port: 443 },
-        { domain: 'ProxyIP.SE.CMLiussss.net', region: 'SE', regionCode: 'SE', port: 443 },
-        { domain: 'ProxyIP.NL.CMLiussss.net', region: 'NL', regionCode: 'NL', port: 443 },
-        { domain: 'ProxyIP.FI.CMLiussss.net', region: 'FI', regionCode: 'FI', port: 443 },
-        { domain: 'ProxyIP.GB.CMLiussss.net', region: 'GB', regionCode: 'GB', port: 443 },
-        { domain: 'ProxyIP.AU.CMLiussss.net', region: 'AU', regionCode: 'AU', port: 443 },
-        { domain: 'ProxyIP.BR.CMLiussss.net', region: 'BR', regionCode: 'BR', port: 443 },
-        { domain: 'ProxyIP.CA.CMLiussss.net', region: 'CA', regionCode: 'CA', port: 443 },
-        { domain: 'ProxyIP.FR.CMLiussss.net', region: 'FR', regionCode: 'FR', port: 443 },
-        { domain: 'ProxyIP.CH.CMLiussss.net', region: 'CH', regionCode: 'CH', port: 443 },
-        { domain: 'ProxyIP.RU.CMLiussss.net', region: 'RU', regionCode: 'RU', port: 443 },
-        { domain: 'ProxyIP.IN.CMLiussss.net', region: 'IN', regionCode: 'IN', port: 443 },
-        { domain: 'ProxyIP.TW.CMLiussss.net', region: 'TW', regionCode: 'TW', port: 443 },
-        { domain: 'ProxyIP.Oracle.cmliussss.net', region: 'Oracle', regionCode: 'Oracle', port: 443 },
-        { domain: 'ProxyIP.DigitalOcean.CMLiussss.net', region: 'DigitalOcean', regionCode: 'DigitalOcean', port: 443 },
-        { domain: 'ProxyIP.Vultr.CMLiussss.net', region: 'Vultr', regionCode: 'Vultr', port: 443 },
-        { domain: 'ProxyIP.Multacom.CMLiussss.net', region: 'Multacom', regionCode: 'Multacom', port: 443 }
-    ];
+    // P2: Lazy-loaded backup IPs - cold start optimization
+    let _cachedBackupIPs = null;
+    function getBackupIPs() {
+        if (!_cachedBackupIPs) {
+            _cachedBackupIPs = [
+                { domain: 'ProxyIP.HK.CMLiussss.net', region: 'HK', regionCode: 'HK', port: 443 },
+                { domain: 'ProxyIP.US.CMLiussss.net', region: 'US', regionCode: 'US', port: 443 },
+                { domain: 'ProxyIP.SG.CMLiussss.net', region: 'SG', regionCode: 'SG', port: 443 },
+                { domain: 'ProxyIP.JP.CMLiussss.net', region: 'JP', regionCode: 'JP', port: 443 },
+                { domain: 'ProxyIP.KR.CMLiussss.net', region: 'KR', regionCode: 'KR', port: 443 },
+                { domain: 'ProxyIP.DE.CMLiussss.net', region: 'DE', regionCode: 'DE', port: 443 },
+                { domain: 'ProxyIP.SE.CMLiussss.net', region: 'SE', regionCode: 'SE', port: 443 },
+                { domain: 'ProxyIP.NL.CMLiussss.net', region: 'NL', regionCode: 'NL', port: 443 },
+                { domain: 'ProxyIP.FI.CMLiussss.net', region: 'FI', regionCode: 'FI', port: 443 },
+                { domain: 'ProxyIP.GB.CMLiussss.net', region: 'GB', regionCode: 'GB', port: 443 },
+                { domain: 'ProxyIP.AU.CMLiussss.net', region: 'AU', regionCode: 'AU', port: 443 },
+                { domain: 'ProxyIP.BR.CMLiussss.net', region: 'BR', regionCode: 'BR', port: 443 },
+                { domain: 'ProxyIP.CA.CMLiussss.net', region: 'CA', regionCode: 'CA', port: 443 },
+                { domain: 'ProxyIP.FR.CMLiussss.net', region: 'FR', regionCode: 'FR', port: 443 },
+                { domain: 'ProxyIP.CH.CMLiussss.net', region: 'CH', regionCode: 'CH', port: 443 },
+                { domain: 'ProxyIP.RU.CMLiussss.net', region: 'RU', regionCode: 'RU', port: 443 },
+                { domain: 'ProxyIP.IN.CMLiussss.net', region: 'IN', regionCode: 'IN', port: 443 },
+                { domain: 'ProxyIP.TW.CMLiussss.net', region: 'TW', regionCode: 'TW', port: 443 },
+                { domain: 'ProxyIP.Oracle.cmliussss.net', region: 'Oracle', regionCode: 'Oracle', port: 443 },
+                { domain: 'ProxyIP.DigitalOcean.CMLiussss.net', region: 'DigitalOcean', regionCode: 'DigitalOcean', port: 443 },
+                { domain: 'ProxyIP.Vultr.CMLiussss.net', region: 'Vultr', regionCode: 'Vultr', port: 443 },
+                { domain: 'ProxyIP.Multacom.CMLiussss.net', region: 'Multacom', regionCode: 'Multacom', port: 443 }
+            ];
+        }
+        return _cachedBackupIPs;
+    }
+    // Backward compatibility alias
+    let backupIPs = null;
 
-    const directDomains = [
-        { name: "cloudflare.182682.xyz", domain: "cloudflare.182682.xyz" }, { name: "speed.marisalnc.com", domain: "speed.marisalnc.com" },
-        { domain: "freeyx.cloudflare88.eu.org" }, { domain: "bestcf.top" }, { domain: "cdn.2020111.xyz" }, { domain: "cfip.cfcdn.vip" },
-        { domain: "cf.0sm.com" }, { domain: "cf.090227.xyz" }, { domain: "cf.zhetengsha.eu.org" }, { domain: "cloudflare.9jy.cc" },
-        { domain: "cf.zerone-cdn.pp.ua" }, { domain: "cfip.1323123.xyz" }, { domain: "cnamefuckxxs.yuchen.icu" }, { domain: "cloudflare-ip.mofashi.ltd" },
-        { domain: "115155.xyz" }, { domain: "cname.xirancdn.us" }, { domain: "f3058171cad.002404.xyz" }, { domain: "8.889288.xyz" },
-        { domain: "cdn.tzpro.xyz" }, { domain: "cf.877771.xyz" }, { domain: "xn--b6gac.eu.org" }
-    ];
+    // P2: Lazy-loaded direct domains - cold start optimization
+    let _cachedDirectDomains = null;
+    function getDirectDomains() {
+        if (!_cachedDirectDomains) {
+            _cachedDirectDomains = [
+                { name: "cloudflare.182682.xyz", domain: "cloudflare.182682.xyz" }, { name: "speed.marisalnc.com", domain: "speed.marisalnc.com" },
+                { domain: "freeyx.cloudflare88.eu.org" }, { domain: "bestcf.top" }, { domain: "cdn.2020111.xyz" }, { domain: "cfip.cfcdn.vip" },
+                { domain: "cf.0sm.com" }, { domain: "cf.090227.xyz" }, { domain: "cf.zhetengsha.eu.org" }, { domain: "cloudflare.9jy.cc" },
+                { domain: "cf.zerone-cdn.pp.ua" }, { domain: "cfip.1323123.xyz" }, { domain: "cnamefuckxxs.yuchen.icu" }, { domain: "cloudflare-ip.mofashi.ltd" },
+                { domain: "115155.xyz" }, { domain: "cname.xirancdn.us" }, { domain: "f3058171cad.002404.xyz" }, { domain: "8.889288.xyz" },
+                { domain: "cdn.tzpro.xyz" }, { domain: "cf.877771.xyz" }, { domain: "xn--b6gac.eu.org" }
+            ];
+        }
+        return _cachedDirectDomains;
+    }
 
     // P1-2: Source weight table for node reputation system
     const SOURCE_WEIGHTS = {
@@ -456,7 +472,7 @@ Sitemap: https://example.com/sitemap.xml
             }
 
             // Also check backupIPs that may not have KV records yet
-            for (const node of backupIPs) {
+            for (const node of getBackupIPs()) {
                 if (!node.domain) continue;
 
                 // Try to resolve domain to IP (skip if domain)
@@ -680,11 +696,11 @@ Sitemap: https://example.com/sitemap.xml
     }
 
     async function getBestBackupIP(workerRegion = '', useRegionMatching = enableRegionMatching) {
-        if (backupIPs.length === 0) {
+        if (getBackupIPs().length === 0) {
             return null;
         }
 
-        const availableIPs = backupIPs.map(ip => ({ ...ip, available: true }));
+        const availableIPs = getBackupIPs().map(ip => ({ ...ip, available: true }));
 
         if (useRegionMatching && workerRegion) {
             const sortedIPs = getSmartRegionSelection(workerRegion, availableIPs, useRegionMatching);
@@ -698,28 +714,32 @@ Sitemap: https://example.com/sitemap.xml
         return selectedIP;
     }
 
+    // P2: Lazy-loaded nearby regions map - cold start optimization
+    let _cachedNearbyMap = null;
     function getNearbyRegions(region) {
-        const nearbyMap = {
-            'US': ['SG', 'JP', 'KR', 'AU', 'CA'], 
-            'SG': ['JP', 'KR', 'US', 'AU', 'IN'], 
-            'JP': ['SG', 'KR', 'US', 'AU', 'TW'], 
-            'KR': ['JP', 'SG', 'US', 'AU', 'TW'], 
-            'DE': ['NL', 'GB', 'SE', 'FI', 'FR', 'CH'], 
-            'SE': ['DE', 'NL', 'FI', 'GB', 'FR', 'CH'], 
-            'NL': ['DE', 'GB', 'SE', 'FI', 'FR', 'CH'], 
-            'FI': ['SE', 'DE', 'NL', 'GB', 'FR', 'CH'], 
-            'GB': ['DE', 'NL', 'SE', 'FI', 'FR', 'CH'],
-            'AU': ['SG', 'JP', 'KR', 'US', 'CA', 'IN', 'TW'],
-            'BR': ['US', 'CA', 'IN'],
-            'CA': ['US', 'AU', 'BR', 'IN'],
-            'FR': ['DE', 'NL', 'SE', 'FI', 'GB', 'CH'],
-            'CH': ['DE', 'NL', 'SE', 'FI', 'GB', 'FR'],
-            'RU': ['DE', 'SE', 'FI'],
-            'IN': ['SG', 'AU', 'US', 'CA', 'BR', 'TW'],
-            'TW': ['SG', 'JP', 'KR', 'AU', 'IN']
-        };
+        if (!_cachedNearbyMap) {
+            _cachedNearbyMap = {
+                'US': ['SG', 'JP', 'KR', 'AU', 'CA'],
+                'SG': ['JP', 'KR', 'US', 'AU', 'IN'],
+                'JP': ['SG', 'KR', 'US', 'AU', 'TW'],
+                'KR': ['JP', 'SG', 'US', 'AU', 'TW'],
+                'DE': ['NL', 'GB', 'SE', 'FI', 'FR', 'CH'],
+                'SE': ['DE', 'NL', 'FI', 'GB', 'FR', 'CH'],
+                'NL': ['DE', 'GB', 'SE', 'FI', 'FR', 'CH'],
+                'FI': ['SE', 'DE', 'NL', 'GB', 'FR', 'CH'],
+                'GB': ['DE', 'NL', 'SE', 'FI', 'FR', 'CH'],
+                'AU': ['SG', 'JP', 'KR', 'US', 'CA', 'IN', 'TW'],
+                'BR': ['US', 'CA', 'IN'],
+                'CA': ['US', 'AU', 'BR', 'IN'],
+                'FR': ['DE', 'NL', 'SE', 'FI', 'GB', 'CH'],
+                'CH': ['DE', 'NL', 'SE', 'FI', 'GB', 'FR'],
+                'RU': ['DE', 'SE', 'FI'],
+                'IN': ['SG', 'AU', 'US', 'CA', 'BR', 'TW'],
+                'TW': ['SG', 'JP', 'KR', 'AU', 'IN']
+            };
+        }
 
-        return nearbyMap[region] || [];
+        return _cachedNearbyMap[region] || [];
     }
 
     function getAllRegionsByPriority(region) {
@@ -2799,7 +2819,7 @@ Sitemap: https://example.com/sitemap.xml
             }
         } else {
             if (epd) {
-            const domainList = directDomains.map(d => ({ ip: d.domain, isp: d.name || d.domain }));
+            const domainList = getDirectDomains().map(d => ({ ip: d.domain, isp: d.name || d.domain }));
                 await addNodesFromList(domainList, 'direct-domains');
             }
 
