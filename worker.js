@@ -918,6 +918,17 @@ Sitemap: https://example.com/sitemap.xml
                     }
 
                     // P2-1: Fake API endpoints for traffic normalization
+                    // P2-0: Debug endpoint for route diagnosis
+                    if (pathname === '/__route_debug') {
+                        return new Response(JSON.stringify({
+                            pathname: pathname,
+                            hasSubRoute: hasSubRoute(pathname),
+                            extractSubAlias: extractSubAlias(pathname),
+                            RANDOMIZED_ROUTES_sub: RANDOMIZED_ROUTES['/sub'],
+                            ROUTE_ALIASES: ROUTE_ALIASES
+                        }, null, 2), { status: 200, headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' } });
+                    }
+
                     // GET /api/posts → return blog posts JSON
                     if (pathname === '/api/posts') {
                         const posts = [
@@ -1003,7 +1014,9 @@ Sitemap: https://example.com/sitemap.xml
                     const tmpCp = (env.d || env.D || '').toLowerCase();
                     const firstSeg = pathSegments[0] || '';
                     const cleanCp = tmpCp.startsWith('/') ? tmpCp.substring(1) : tmpCp;
-                    if (firstSeg !== tmpAt && (cleanCp ? firstSeg !== cleanCp : false)) {
+                    // P2-0: Allow sub route aliases without UUID prefix
+                    const isSubAlias = hasSubRoute(reqUrl.pathname);
+                    if (firstSeg !== tmpAt && (cleanCp ? firstSeg !== cleanCp : !isSubAlias)) {
                         return new Response('Not Found', { status: 404 });
                     }
                 }
