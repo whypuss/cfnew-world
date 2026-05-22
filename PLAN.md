@@ -704,21 +704,21 @@ Layer 2（隱藏入口 — 真正功能）：
 
 > 這些是真正有效提高存活率的改動，比任何混淆選項都重要。
 
-- [ ] `build/build.js`：實現 route 隨機化（每次 build 生成不同 route mapping）
-- [ ] `build/build.js`：實現 enum / constant name 隨機化（build 時全局替換 vless/clash/trojan 等關鍵字符串）
-- [ ] `build/build.js`：實現 response key 隨機化（JSON field name 每次不同）
-- [ ] `build/build.js`：實現 header key 隨機化（X-Real-IP 等替換）
-- [ ] Worker 增加 static/ 目錄（正常首頁、robots.txt、favicon）
-- [ ] 實現雙層入口（Layer 1 正常站、Layer 2 隱藏 proxy）
+- [x] `build/build.js`：實現 route 隨機化（每次 build 生成不同 route mapping）
+- [x] `build/build.js`：實現 enum / constant name 隨機化（build 時全局替換 vless/clash/trojan 等關鍵字符串）
+- [x] `build/build.js`：實現 response key 隨機化（JSON field name 每次不同）
+- [x] `build/build.js`：實現 header key 隨機化（X-Real-IP 等替換）
+- [x] Worker 增加 static/ 目錄（正常首頁、robots.txt、favicon）
+- [x] 實現雙層入口（Layer 1 正常站、Layer 2 隱藏 proxy）
 
 ### P1（重要 — 提升節點質量）
 
-- [ ] `health-layer.js`：三段式健康檢查（TCP → TLS → WS 三層）
-- [ ] `health-layer.js`：metadata KV schema
-- [ ] `health-layer.js`：quarantine 邏輯 + source_weight 評分
-- [ ] 訂閱輸出過濾（最多 20 節點、success > 80%、去重）
-- [ ] KV 預編譯 cache（15 分鐘 TTL）
-- [ ] `obfuscate.js`：輕量配置更新（移除死碼/平坦化/selfDefending）
+- [x] `health-layer.js`：三段式健康檢查（TCP → TLS → WS 三層）
+- [x] `health-layer.js`：metadata KV schema
+- [x] `health-layer.js`：quarantine 邏輯 + source_weight 評分
+- [x] 訂閱輸出過濾（最多 20 節點、success > 80%、去重）
+- [x] KV 預編譯 cache（15 分鐘 TTL）
+- [x] `obfuscate.js`：輕量配置更新（移除死碼/平坦化/selfDefending）
 
 ### P2（可選）
 
@@ -762,3 +762,37 @@ Layer 2（隱藏入口 — 真正功能）：
 
 *計劃更新時間：2026-05-22*
 *整合用戶高階反饋：從「清理」升級為「多態商用架構」*
+
+---
+
+## 九、2026-05-22 工作階段完成記錄
+
+### 完成項目
+
+**P0（已全部完成 ✓）**
+- Route 隨機化實作
+- Enum/constant name 隨機化實作
+- Response key 隨機化實作
+- Header key 隨機化實作
+- Worker static/ 目錄增加（首頁、robots.txt、favicon）
+- 雙層入口架構實作（正常站 + 隱藏 proxy）
+
+**P1-1 KV Cache（已完成 ✓）**
+- KV 預編譯 cache（15 分鐘 TTL）
+
+**P1-2 健康檢查與訂閱過濾（已全部完成 ✓）**
+- 三段式健康檢查（TCP → TLS → WS）
+- Metadata KV schema
+- Quarantine 邏輯 + source_weight 評分
+- 訂閱輸出過濾（最多 20 節點、success > 80%、去重）
+
+**obfuscate.js（已完成 ✓）**
+- 輕量配置更新（移除死碼/平坦化/selfDefending）
+
+### 狀態：P2 項目（未完成）
+- 結構拆分、P2 端點、cold start 優化、同 ASN/IP 段去重
+
+### Git 操作
+- `git add PLAN.md`
+- `git commit -m 'docs: update PLAN.md completed items'`
+- `git push origin dev`
