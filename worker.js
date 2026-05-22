@@ -52,18 +52,18 @@
         'NL': ['🇳🇱 荷兰', 'NL', 'Netherlands'],
         'FI': ['🇫🇮 芬兰', 'FI', 'Finland'],
         'GB': ['🇬🇧 英国', 'GB', 'United Kingdom'],
-        'Oracle': ['甲骨文', 'Oracle'],
-        'DigitalOcean': ['数码海', 'DigitalOcean'],
-        'Vultr': ['Vultr', 'Vultr'],
-        'Multacom': ['Multacom', 'Multacom'],
         'AU': ['🇦🇺 澳洲', 'AU', 'Australia'],
         'BR': ['🇧🇷 巴西', 'BR', 'Brazil'],
         'CA': ['🇨🇦 加拿大', 'CA', 'Canada'],
         'FR': ['🇫🇷 法国', 'FR', 'France'],
         'CH': ['🇨🇭 瑞士', 'CH', 'Switzerland'],
-        'RU': ['🇷🇺 俄罗斯', 'RU', 'Russia'],
+        'RU': ['🇷🇺 俄国', 'RU', 'Russia'],
         'IN': ['🇮🇳 印度', 'IN', 'India'],
-        'TW': ['🇹🇼 台湾', 'TW', 'Taiwan']
+        'TW': ['🇹🇼 台湾', 'TW', 'Taiwan'],
+        'Oracle': ['甲骨文', 'Oracle'],
+        'DigitalOcean': ['数码海', 'DigitalOcean'],
+        'Vultr': ['Vultr', 'Vultr'],
+        'Multacom': ['Multacom', 'Multacom']
     };
 
     let backupIPs = [
@@ -303,23 +303,23 @@
 
     function getNearbyRegions(region) {
         const nearbyMap = {
-            'US': ['SG', 'JP', 'KR'], 
-            'SG': ['JP', 'KR', 'US'], 
-            'JP': ['SG', 'KR', 'US'], 
-            'KR': ['JP', 'SG', 'US'], 
-            'DE': ['NL', 'GB', 'SE', 'FI'], 
-            'SE': ['DE', 'NL', 'FI', 'GB'], 
-            'NL': ['DE', 'GB', 'SE', 'FI'], 
-            'FI': ['SE', 'DE', 'NL', 'GB'], 
-            'GB': ['DE', 'NL', 'SE', 'FI'],
-            'AU': ['SG', 'JP', 'IN'],
-            'BR': ['US', 'CA', 'AU'],
-            'CA': ['US', 'BR', 'AU'],
-            'FR': ['DE', 'NL', 'GB', 'CH'],
-            'CH': ['FR', 'DE', 'NL', 'IT'],
-            'RU': ['FI', 'SE', 'DE', 'IN'],
-            'IN': ['SG', 'AU', 'TW'],
-            'TW': ['SG', 'JP', 'HK', 'IN']
+            'US': ['SG', 'JP', 'KR', 'AU', 'CA'], 
+            'SG': ['JP', 'KR', 'US', 'AU', 'IN'], 
+            'JP': ['SG', 'KR', 'US', 'AU', 'TW'], 
+            'KR': ['JP', 'SG', 'US', 'AU', 'TW'], 
+            'DE': ['NL', 'GB', 'SE', 'FI', 'FR', 'CH'], 
+            'SE': ['DE', 'NL', 'FI', 'GB', 'FR', 'CH'], 
+            'NL': ['DE', 'GB', 'SE', 'FI', 'FR', 'CH'], 
+            'FI': ['SE', 'DE', 'NL', 'GB', 'FR', 'CH'], 
+            'GB': ['DE', 'NL', 'SE', 'FI', 'FR', 'CH'],
+            'AU': ['SG', 'JP', 'KR', 'US', 'CA', 'IN', 'TW'],
+            'BR': ['US', 'CA', 'IN'],
+            'CA': ['US', 'AU', 'BR', 'IN'],
+            'FR': ['DE', 'NL', 'SE', 'FI', 'GB', 'CH'],
+            'CH': ['DE', 'NL', 'SE', 'FI', 'GB', 'FR'],
+            'RU': ['DE', 'SE', 'FI'],
+            'IN': ['SG', 'AU', 'US', 'CA', 'BR', 'TW'],
+            'TW': ['SG', 'JP', 'KR', 'AU', 'IN']
         };
 
         return nearbyMap[region] || [];
@@ -870,176 +870,290 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>${t.title}</title>
         <style>
-/* iOS Style - Terminal Admin UI */
-:root {
-  --ios-blue: #007AFF;
-  --ios-blue-light: #0A84FF;
-  --ios-green: #34C759;
-  --ios-red: #FF3B30;
-  --ios-orange: #FF9500;
-  --ios-purple: #AF52DE;
-  --ios-bg: #F2F2F7;
-  --ios-card-bg: #FFFFFF;
-  --ios-separator: rgba(60, 60, 67, 0.12);
-  --ios-text: #000000;
-  --ios-text-secondary: #3C3C43;
-  --ios-text-tertiary: #8E8E93;
-  --ios-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --ios-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --ios-radius: 12px;
-  --ios-radius-lg: 16px;
-  --ios-font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
-}
+            :root {
+                --cp-bg: #05030e;
+                --cp-bg-2: #0a0820;
+                --cp-cyan: #00f0ff;
+                --cp-cyan-d: #00b8c4;
+                --cp-pink: #ff2bd6;
+                --cp-pink-d: #d1239f;
+                --cp-purple: #a347ff;
+                --cp-yellow: #fff200;
+                --cp-mint: #00ff9d;
+                --cp-red: #ff3860;
+                --cp-text: #e6f5ff;
+                --cp-text-dim: #7aa9c4;
+                --cp-border: rgba(0, 240, 255, 0.55);
+                --cp-grid: rgba(255, 43, 214, 0.16);
+            }
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            html, body { height: 100%; }
+            body {
+                font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+                background: radial-gradient(ellipse at 20% 10%, #2a0040 0%, var(--cp-bg) 55%, #000 100%);
+                color: var(--cp-text);
+                min-height: 100vh;
+                overflow-x: hidden;
+                position: relative;
+                display: flex; justify-content: center; align-items: center;
+            }
+            body::before {
+                content: ""; position: fixed; inset: 0;
+                background-image:
+                    linear-gradient(var(--cp-grid) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--cp-grid) 1px, transparent 1px);
+                background-size: 48px 48px;
+                mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+                z-index: -3;
+                animation: cp-grid-slide 18s linear infinite;
+            }
+            body::after {
+                content: ""; position: fixed; inset: 0;
+                background: repeating-linear-gradient(
+                    180deg,
+                    rgba(255,255,255,0.04) 0,
+                    rgba(255,255,255,0.04) 1px,
+                    transparent 1px,
+                    transparent 3px
+                );
+                pointer-events: none;
+                z-index: 5;
+                mix-blend-mode: overlay;
+                animation: cp-scan-flicker 6s infinite;
+            }
+            @keyframes cp-grid-slide {
+                0% { background-position: 0 0, 0 0; }
+                100% { background-position: 48px 48px, 48px 48px; }
+            }
+            @keyframes cp-scan-flicker {
+                0%, 100% { opacity: 0.6; }
+                50% { opacity: 0.9; }
+            }
+            .matrix-bg {
+                position: fixed; inset: 0;
+                background:
+                    radial-gradient(circle at 80% 90%, rgba(255,43,214,0.18) 0%, transparent 45%),
+                    radial-gradient(circle at 10% 80%, rgba(0,240,255,0.18) 0%, transparent 45%);
+                z-index: -2;
+                pointer-events: none;
+            }
+            .matrix-rain { display: none; }
+            .matrix-code-rain {
+                position: fixed; inset: 0;
+                pointer-events: none; z-index: -1;
+                overflow: hidden;
+            }
+            .matrix-column {
+                position: absolute; top: -120%; left: 0;
+                color: var(--cp-cyan);
+                font-family: "JetBrains Mono", "Courier New", monospace;
+                font-size: 14px; line-height: 1.25;
+                text-shadow: 0 0 6px var(--cp-cyan), 0 0 12px rgba(0,240,255,0.5);
+                animation: cp-drop linear infinite;
+            }
+            @keyframes cp-drop {
+                0%   { top: -120%; opacity: 0; }
+                10%  { opacity: 0.85; }
+                90%  { opacity: 0.4; }
+                100% { top: 110vh; opacity: 0; }
+            }
+            .matrix-column:nth-child(odd)  { animation-duration: 12s; }
+            .matrix-column:nth-child(even) { animation-duration: 18s; color: var(--cp-pink); text-shadow: 0 0 6px var(--cp-pink), 0 0 14px rgba(255,43,214,0.5); }
+            .matrix-column:nth-child(3n)   { animation-duration: 20s; color: var(--cp-purple); text-shadow: 0 0 6px var(--cp-purple); }
+            .matrix-column:nth-child(5n)   { animation-duration: 9s; opacity: 0.6; }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+            .terminal {
+                width: 92%; max-width: 860px; height: 540px;
+                background:
+                    linear-gradient(180deg, rgba(8,4,28,0.92) 0%, rgba(15,3,40,0.92) 100%);
+                border: 1px solid var(--cp-border);
+                border-radius: 0;
+                box-shadow:
+                    0 0 0 1px rgba(255,43,214,0.25),
+                    0 0 28px rgba(0,240,255,0.35),
+                    0 0 80px rgba(255,43,214,0.18),
+                    inset 0 0 30px rgba(0,240,255,0.06);
+                clip-path: polygon(
+                    0 18px, 18px 0,
+                    calc(100% - 60px) 0, calc(100% - 42px) 18px,
+                    100% 18px, 100% calc(100% - 14px),
+                    calc(100% - 14px) 100%, 42px 100%,
+                    24px calc(100% - 14px), 0 calc(100% - 14px)
+                );
+                position: relative; z-index: 1;
+                overflow: hidden;
+            }
+            .terminal::before {
+                content: ""; position: absolute; inset: 0;
+                background: repeating-linear-gradient(180deg, rgba(0,240,255,0.06) 0 1px, transparent 1px 4px);
+                pointer-events: none;
+                animation: cp-scan-flicker 5s infinite;
+            }
+            .terminal-header {
+                background: linear-gradient(90deg, rgba(255,43,214,0.18), rgba(0,240,255,0.18));
+                padding: 12px 18px;
+                border-bottom: 1px solid rgba(0,240,255,0.5);
+                display: flex; align-items: center; gap: 16px;
+                position: relative;
+            }
+            .terminal-header::after {
+                content: ""; position: absolute; left: 18px; right: 18px; bottom: -1px;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, var(--cp-pink), var(--cp-cyan), transparent);
+                animation: cp-scan-line 4s linear infinite;
+            }
+            @keyframes cp-scan-line {
+                0% { transform: translateX(-30%); opacity: 0.4; }
+                50% { opacity: 1; }
+                100% { transform: translateX(30%); opacity: 0.4; }
+            }
+            .terminal-buttons {
+                display: flex; gap: 8px;
+            }
+            .terminal-button {
+                width: 12px; height: 12px;
+                background: var(--cp-pink);
+                box-shadow: 0 0 8px var(--cp-pink);
+                border: none; transform: rotate(45deg);
+            }
+            .terminal-button:nth-child(2) { background: var(--cp-yellow); box-shadow: 0 0 8px var(--cp-yellow); }
+            .terminal-button:nth-child(3) { background: var(--cp-mint); box-shadow: 0 0 8px var(--cp-mint); }
+            .terminal-title {
+                color: var(--cp-cyan);
+                font-size: 13px; font-weight: 700;
+                letter-spacing: 0.25em;
+                text-transform: uppercase;
+                text-shadow: 0 0 6px var(--cp-cyan);
+            }
+            .terminal-title::before { content: "// "; color: var(--cp-pink); }
+            .terminal-body {
+                padding: 24px; height: calc(100% - 52px);
+                overflow-y: auto; font-size: 14px;
+                line-height: 1.6;
+                position: relative;
+            }
+            .terminal-body::-webkit-scrollbar { width: 6px; }
+            .terminal-body::-webkit-scrollbar-thumb {
+                background: linear-gradient(180deg, var(--cp-pink), var(--cp-cyan));
+            }
+            .terminal-line {
+                margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+                flex-wrap: wrap;
+            }
+            .terminal-prompt {
+                color: var(--cp-pink);
+                font-weight: 700;
+                text-shadow: 0 0 6px var(--cp-pink);
+                letter-spacing: 0.05em;
+            }
+            .terminal-prompt::before { content: "▍"; color: var(--cp-cyan); margin-right: 4px; }
+            .terminal-input {
+                background: transparent; border: none; outline: none;
+                color: var(--cp-cyan);
+                font-family: inherit;
+                font-size: 14px; flex: 1; min-width: 0;
+                caret-color: var(--cp-pink);
+                text-shadow: 0 0 4px var(--cp-cyan);
+            }
+            .terminal-input::placeholder { color: var(--cp-text-dim); opacity: 0.75; }
+            .terminal-cursor {
+                display: inline-block; width: 9px; height: 16px;
+                background: var(--cp-pink);
+                margin-left: 2px;
+                box-shadow: 0 0 8px var(--cp-pink);
+                animation: cp-blink 1s steps(2, end) infinite;
+            }
+            @keyframes cp-blink {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0; }
+            }
+            .terminal-output { color: var(--cp-cyan); margin: 4px 0; }
+            .terminal-error  { color: var(--cp-red); margin: 4px 0; text-shadow: 0 0 6px var(--cp-red); }
+            .terminal-success{ color: var(--cp-mint); margin: 4px 0; text-shadow: 0 0 6px var(--cp-mint); }
 
-html, body {
-  height: 100%;
-  font-family: var(--ios-font);
-  background: var(--ios-bg);
-  color: var(--ios-text);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+            .cp-hud {
+                position: fixed; top: 18px; right: 22px;
+                color: var(--cp-cyan);
+                font-family: "JetBrains Mono", monospace;
+                font-size: 11px; letter-spacing: 0.2em;
+                text-transform: uppercase;
+                text-align: right;
+                opacity: 0.85;
+                z-index: 1000;
+            }
+            .cp-hud .cp-hud-label { color: var(--cp-pink); }
+            .cp-hud .cp-hud-line { display: block; }
+            .cp-lang-wrapper {
+                position: fixed; top: 18px; left: 22px; z-index: 1000;
+                display: flex; align-items: center; gap: 10px;
+            }
+            .cp-lang-tag {
+                color: var(--cp-pink); font-size: 11px;
+                letter-spacing: 0.25em; text-transform: uppercase;
+                text-shadow: 0 0 6px var(--cp-pink);
+            }
+            #languageSelector {
+                background: rgba(8,4,28,0.85);
+                border: 1px solid var(--cp-cyan);
+                color: var(--cp-cyan);
+                padding: 6px 12px;
+                font-family: inherit;
+                font-size: 12px;
+                cursor: pointer;
+                letter-spacing: 0.12em;
+                text-shadow: 0 0 6px var(--cp-cyan);
+                box-shadow: 0 0 12px rgba(0,240,255,0.35);
+                clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            }
+            #languageSelector option { background: var(--cp-bg-2); color: var(--cp-cyan); }
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
+            /* FX toggle - 页面特效图形化开关 */
+            .cp-fx-toggle {
+                position: fixed; top: 68px; left: 22px; z-index: 1001;
+                background: rgba(8,4,28,0.85);
+                border: 1px solid var(--cp-mint);
+                color: var(--cp-mint);
+                padding: 6px 12px;
+                font-family: inherit;
+                font-size: 11px;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                cursor: pointer;
+                text-shadow: 0 0 6px var(--cp-mint);
+                box-shadow: 0 0 10px rgba(0,255,157,0.35);
+                clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+                transition: all 0.2s ease;
+                display: inline-flex; align-items: center; gap: 6px;
+            }
+            .cp-fx-toggle:hover { color: var(--cp-pink); border-color: var(--cp-pink); text-shadow: 0 0 8px var(--cp-pink); box-shadow: 0 0 16px rgba(255,43,214,0.55); }
+            .cp-fx-toggle .cp-fx-dot { width: 6px; height: 6px; background: var(--cp-mint); border-radius: 50%; box-shadow: 0 0 8px var(--cp-mint); transition: all 0.2s; }
+            body.fx-off .cp-fx-toggle { color: var(--cp-text-dim); border-color: var(--cp-text-dim); text-shadow: none; box-shadow: none; }
+            body.fx-off .cp-fx-toggle .cp-fx-dot { background: transparent; border: 1px solid var(--cp-text-dim); box-shadow: none; }
+            body.fx-off .matrix-bg,
+            body.fx-off .matrix-code-rain,
+            body.fx-off .matrix-column { display: none !important; }
+            body.fx-off::before,
+            body.fx-off::after { display: none !important; content: none !important; }
+            body.fx-off { background: var(--cp-bg) !important; }
+            body.fx-off * {
+                animation: none !important;
+                transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s !important;
+            }
+            body.fx-off .cp-glitch::before,
+            body.fx-off .cp-glitch::after { display: none !important; }
+            body.fx-off .terminal-cursor::after { animation: none !important; }
 
-.terminal {
-  width: 92%;
-  max-width: 600px;
-  background: var(--ios-card-bg);
-  border-radius: var(--ios-radius-lg);
-  box-shadow: var(--ios-shadow-lg);
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-}
-
-.terminal-header {
-  background: var(--ios-bg);
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--ios-separator);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.terminal-title {
-  color: var(--ios-text);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
-  text-shadow: none;
-}
-
-.terminal-body {
-  padding: 24px;
-  overflow-y: auto;
-  font-size: 15px;
-  line-height: 1.6;
-}
-
-.terminal-line {
-  margin-bottom: 12px;
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  flex-wrap: wrap;
-  color: var(--ios-text);
-}
-
-.terminal-prompt {
-  color: var(--ios-blue);
-  font-weight: 600;
-  letter-spacing: 0;
-  text-shadow: none;
-  font-size: 15px;
-}
-
-.terminal-input {
-  background: var(--ios-bg);
-  border: none;
-  outline: none;
-  color: var(--ios-text);
-  font-family: var(--ios-font);
-  font-size: 15px;
-  flex: 1;
-  min-width: 0;
-  padding: 10px 14px;
-  border-radius: var(--ios-radius);
-  caret-color: var(--ios-blue);
-}
-
-.terminal-input:focus {
-  background: #E5E5EA;
-}
-
-.cp-hud {
-  position: fixed;
-  top: 16px;
-  right: 20px;
-  color: var(--ios-text-secondary);
-  font-size: 12px;
-  letter-spacing: 0;
-  text-transform: none;
-  text-align: right;
-  z-index: 1000;
-  background: var(--ios-card-bg);
-  padding: 8px 12px;
-  border-radius: var(--ios-radius);
-  box-shadow: var(--ios-shadow);
-  display: flex;
-  gap: 12px;
-}
-
-.cp-lang-wrapper {
-  position: fixed;
-  top: 16px;
-  left: 20px;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-#languageSelector {
-  background: var(--ios-card-bg);
-  border: 1px solid var(--ios-separator);
-  color: var(--ios-text);
-  padding: 8px 12px;
-  font-size: 13px;
-  cursor: pointer;
-  border-radius: var(--ios-radius);
-  font-family: var(--ios-font);
-  box-shadow: var(--ios-shadow);
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238E8E93' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  padding-right: 28px;
-}
-
-/* Remove matrix effects */
-.matrix-bg, .matrix-code-rain, body::before, body::after {
-  display: none !important;
-}
-
-.cp-glitch {
-  color: var(--ios-text);
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
-  text-shadow: none;
-}
-
+            .cp-glitch {
+                font-family: "JetBrains Mono", monospace;
+                font-weight: 700;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                color: var(--cp-cyan);
+                text-shadow:
+                    0 0 8px var(--cp-cyan),
+                    -2px 0 var(--cp-pink),
+                    2px 0 var(--cp-mint);
+            }
         </style>
     </head>
     <body>
@@ -1057,6 +1171,10 @@ body {
                     <option value="fa" ${isFarsi ? 'selected' : ''}>🇮🇷 فارسی</option>
                 </select>
             </div>
+            <button type="button" id="cpFxToggle" class="cp-fx-toggle" onclick="cpToggleFx()" title="${isFarsi ? 'تغییر افکت‌های صفحه' : '切换页面特效'}" aria-label="FX toggle">
+                <span class="cp-fx-dot" aria-hidden="true"></span>
+                <span id="cpFxLabel">FX: ON</span>
+            </button>
         <div class="terminal">
             <div class="terminal-header">
                 <div class="terminal-buttons">
@@ -1087,7 +1205,36 @@ body {
             </div>
         </div>
         <script>
+            // 页面特效图形化开关 (localStorage 持久化)
+            window.cpApplyFx = function() {
+                var off = localStorage.getItem('cp-fx-off') === '1';
+                document.body.classList.toggle('fx-off', off);
+                var lbl = document.getElementById('cpFxLabel');
+                if (lbl) lbl.textContent = off ? 'FX: OFF' : 'FX: ON';
+                if (off) {
+                    var rain = document.getElementById('matrixCodeRain');
+                    if (rain) rain.innerHTML = '';
+                } else if (typeof createMatrixRain === 'function') {
+                    var r = document.getElementById('matrixCodeRain');
+                    if (r && !r.firstChild) createMatrixRain();
+                }
+            };
+            window.cpToggleFx = function() {
+                var off = localStorage.getItem('cp-fx-off') === '1';
+                localStorage.setItem('cp-fx-off', off ? '0' : '1');
+                window.cpApplyFx();
+            };
+            (function() {
+                if (localStorage.getItem('cp-fx-off') === '1') {
+                    document.documentElement.classList.add('fx-off-preload');
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.body.classList.add('fx-off');
+                    });
+                }
+            })();
+
             function createMatrixRain() {
+                if (document.body && document.body.classList.contains('fx-off')) return;
                 const matrixContainer = document.getElementById('matrixCodeRain');
                 if (!matrixContainer) return;
                 const cyberChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ$%#@!?<>+=ABCDEF';
@@ -1371,7 +1518,7 @@ body {
                 const path = params.get('path') || '/?ed=2048';
                 const host = params.get('host') || server;
                 const servername = params.get('sni') || host;
-                const alpn = params.get('alpn') || 'h3';
+                const alpnRaw = params.get('alpn') || '';
                 const fingerprint = params.get('fp') || params.get('client-fingerprint') || 'chrome';
                 const ech = params.get('ech');
 
@@ -1388,7 +1535,7 @@ body {
 
                 if (tls) {
                     node.servername = servername;
-                    node.alpn = alpn.split(',').map(a => a.trim());
+                    if (alpnRaw) node.alpn = alpnRaw.split(',').map(a => a.trim()).filter(Boolean);
                     node['skip-cert-verify'] = false;
                 }
 
@@ -1425,7 +1572,7 @@ body {
                 const path = params.get('path') || '/?ed=2048';
                 const host = params.get('host') || server;
                 const sni = params.get('sni') || host;
-                const alpn = params.get('alpn') || 'h3';
+                const alpnRaw = params.get('alpn') || '';
                 const ech = params.get('ech');
 
                 const node = {
@@ -1436,9 +1583,9 @@ body {
                     password: password,
                     network: network,
                     sni: sni,
-                    alpn: alpn.split(',').map(a => a.trim()),
                     'skip-cert-verify': false
                 };
+                if (alpnRaw) node.alpn = alpnRaw.split(',').map(a => a.trim()).filter(Boolean);
 
                 if (network === 'ws') {
                     node['ws-opts'] = {
@@ -1465,69 +1612,792 @@ body {
         return null;
     }
 
-    // 生成 Clash 配置
-    async function generateClashConfig(links, request, user) {
-        // 先通过订阅转换服务获取 Clash 配置
-        const subscriptionUrl = new URL(request.url);
-        subscriptionUrl.pathname = subscriptionUrl.pathname.replace(/\/sub$/, '') + '/sub';
-        subscriptionUrl.searchParams.set('target', 'base64');
-        const encodedUrl = encodeURIComponent(subscriptionUrl.toString());
-        const converterUrl = `${scu}?target=clash&url=${encodedUrl}&insert=false&emoji=true&list=false&xudp=false&udp=false&tfo=false&expand=true&scv=false&fdn=false&new_name=true`;
+    // ============================================================
+    // 内部订阅转换器 - 不依赖外部 sub-converter
+    // ============================================================
 
-        try {
-            const response = await fetch(converterUrl);
-            if (!response.ok) {
-                throw new Error('订阅转换服务失败');
-            }
-
-            let clashConfig = await response.text();
-
-            // 如果 ECH 开启，为所有节点添加 ECH 参数
-            if (enableECH) {
-                // 处理单行格式的节点：  - {name: ..., server: ..., ...}
-                // 需要正确处理嵌套的花括号（如 ws-opts: {path: "...", headers: {Host: ...}}）
-                clashConfig = clashConfig.split('\n').map(line => {
-                    // 检查是否是节点行（以 "  - {" 开头，且包含 name: 和 server:）
-                    if (/^\s*-\s*\{/.test(line) && line.includes('name:') && line.includes('server:')) {
-                        // 检查是否已经有 ech-opts
-                        if (line.includes('ech-opts')) {
-                            return line; // 已有 ech-opts，不修改
-                        }
-                        // 找到最后一个 } 的位置（从右往左查找，处理嵌套花括号）
-                        const lastBraceIndex = line.lastIndexOf('}');
-                        if (lastBraceIndex > 0) {
-                            // 检查最后一个 } 之前是否有内容，确保格式正确
-                            const beforeBrace = line.substring(0, lastBraceIndex).trim();
-                            if (beforeBrace.length > 0) {
-                                // 在最后一个 } 之前添加 , ech-opts: {enable: true, query-server-name: ...}
-                                // 确保在逗号前有空格
-                                const echDomain = customECHDomain || 'cloudflare-ech.com';
-                                const needsComma = !beforeBrace.endsWith(',') && !beforeBrace.endsWith('{');
-                                return line.substring(0, lastBraceIndex) + (needsComma ? ', ' : ' ') + `ech-opts: {enable: true, query-server-name: ${echDomain}}` + line.substring(lastBraceIndex);
-                            }
-                        }
-                    }
-                    return line;
-                }).join('\n');
-
-                // 处理多行格式的节点（如果存在）
-                // 只处理单行格式，多行格式由订阅转换服务处理，不需要额外修改
-                // 如果订阅转换服务返回多行格式，通常已经是正确的格式
-            }
-
-            // 替换 DNS nameserver 为阿里的加密 DNS
-            clashConfig = clashConfig.replace(/^(\s*nameserver:\s*\n)((?:\s*-\s*[^\n]+\n)*)/m, (match, header, items) => {
-                // 替换所有 nameserver 项为阿里的加密 DNS
-                const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
-                return header + `    - ${dnsServer}\n`;
-            });
-
-            return clashConfig;
-        } catch (e) {
-            // 如果订阅转换失败，返回错误
-            throw new Error('无法获取 Clash 配置: ' + e.message);
-        }
+    // 用于 YAML 引号包裹（避免 IPv6 方括号、逗号等被解析为数组）
+    function yq(v) {
+        if (v == null) return '""';
+        const s = String(v);
+        return '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
     }
+
+    // URL.hostname 对 IPv6 会带方括号，直接写入 YAML 会被当成数组
+    function normalizeServerHost(hostname) {
+        if (!hostname) return hostname;
+        const h = String(hostname);
+        if (h.startsWith('[') && h.endsWith(']')) return h.slice(1, -1);
+        return h;
+    }
+
+    // Clash 策略组 proxies：策略组 + 全部节点（避免分组里只有「节点选择」没有具体节点）
+    function clashSelectProxies(names, opts = {}) {
+        const { directFirst = false, extraGroups = [] } = opts;
+        const nodeLines = names.length
+            ? names.map(n => `      - ${yq(n)}`).join('\n')
+            : '      - DIRECT';
+        const lines = [];
+        if (directFirst) {
+            lines.push('      - "🎯 全球直连"', '      - "🚀 节点选择"');
+        } else {
+            lines.push('      - "🚀 节点选择"', '      - "🎯 全球直连"');
+        }
+        for (const g of extraGroups) lines.push(`      - ${yq(g)}`);
+        lines.push(nodeLines);
+        return lines.join('\n');
+    }
+
+    // Surge / Loon 策略组列表：策略组 + 全部节点
+    function iniPolicyList(names, opts = {}) {
+        const { directFirst = false, extraGroups = [], compact = false } = opts;
+        const sep = compact ? ',' : ', ';
+        const list = names.length ? names.join(sep) : 'DIRECT';
+        const parts = [];
+        if (directFirst) parts.push('🎯 全球直连', '🚀 节点选择');
+        else parts.push('🚀 节点选择', '🎯 全球直连');
+        parts.push(...extraGroups);
+        if (names.length) parts.push(list);
+        return parts.join(sep);
+    }
+
+    // 解析任意分享链接为通用节点对象 (vless / trojan / vless-xhttp)
+    function parseShareLink(link) {
+        try {
+            if (link.startsWith('vless://')) {
+                const url = new URL(link);
+                const p = new URLSearchParams(url.search);
+                return {
+                    proto: 'vless',
+                    name: decodeURIComponent(url.hash.substring(1)) || (url.hostname + ':' + url.port),
+                    uuid: url.username,
+                    server: normalizeServerHost(url.hostname),
+                    port: parseInt(url.port) || 443,
+                    tls: p.get('security') === 'tls' || p.get('security') === 'reality',
+                    network: p.get('type') || 'ws',
+                    path: p.get('path') || '/?ed=2048',
+                    host: normalizeServerHost(p.get('host') || url.hostname),
+                    sni: normalizeServerHost(p.get('sni') || p.get('host') || url.hostname),
+                    alpn: (p.get('alpn') || '').split(',').map(s => s.trim()).filter(Boolean),
+                    fp: p.get('fp') || 'chrome',
+                    flow: p.get('flow') || '',
+                    encryption: p.get('encryption') || 'none',
+                    mode: p.get('mode') || '',
+                    ech: p.get('ech') || ''
+                };
+            }
+            if (link.startsWith('trojan://')) {
+                const url = new URL(link);
+                const p = new URLSearchParams(url.search);
+                return {
+                    proto: 'trojan',
+                    name: decodeURIComponent(url.hash.substring(1)) || (url.hostname + ':' + url.port),
+                    password: decodeURIComponent(url.username),
+                    server: normalizeServerHost(url.hostname),
+                    port: parseInt(url.port) || 443,
+                    tls: true,
+                    network: p.get('type') || 'ws',
+                    path: p.get('path') || '/?ed=2048',
+                    host: normalizeServerHost(p.get('host') || url.hostname),
+                    sni: normalizeServerHost(p.get('sni') || p.get('host') || url.hostname),
+                    alpn: (p.get('alpn') || '').split(',').map(s => s.trim()).filter(Boolean),
+                    fp: p.get('fp') || 'chrome',
+                    ech: p.get('ech') || ''
+                };
+            }
+        } catch (e) {}
+        return null;
+    }
+
+    // 单个节点 → Clash 块级 YAML（避免 flow style 解析错误）
+    function buildClashNodeLine(n) {
+        const lines = [];
+        const server = normalizeServerHost(n.server);
+        const host = normalizeServerHost(n.host) || server;
+        const sni = normalizeServerHost(n.sni) || host;
+
+        lines.push(`  - name: ${yq(n.name)}`);
+        lines.push(`    type: ${n.proto}`);
+        lines.push(`    server: ${yq(server)}`);
+        lines.push(`    port: ${n.port}`);
+        if (n.proto === 'vless') {
+            lines.push(`    uuid: ${n.uuid}`);
+            lines.push(`    udp: true`);
+            lines.push(`    tls: ${n.tls ? 'true' : 'false'}`);
+            if (n.flow) lines.push(`    flow: ${yq(n.flow)}`);
+            lines.push(`    client-fingerprint: ${yq(n.fp || 'chrome')}`);
+        } else if (n.proto === 'trojan') {
+            lines.push(`    password: ${yq(n.password)}`);
+            lines.push(`    udp: true`);
+            lines.push(`    client-fingerprint: ${yq(n.fp || 'chrome')}`);
+        }
+        if (n.tls) {
+            lines.push(`    servername: ${yq(sni)}`);
+            if (n.alpn && n.alpn.length) {
+                lines.push(`    alpn: [${n.alpn.map(a => yq(a)).join(', ')}]`);
+            }
+            lines.push(`    skip-cert-verify: false`);
+        }
+        if (n.network === 'ws' || n.network === 'xhttp') {
+            lines.push(`    network: ws`);
+            lines.push(`    ws-opts:`);
+            lines.push(`      path: ${yq(n.path)}`);
+            lines.push(`      headers:`);
+            lines.push(`        Host: ${yq(host)}`);
+        } else if (n.network === 'grpc') {
+            lines.push(`    network: grpc`);
+            lines.push(`    grpc-opts:`);
+            lines.push(`      grpc-service-name: ${yq(n.path)}`);
+        }
+        if (n.ech) {
+            const echDomain = customECHDomain || 'cloudflare-ech.com';
+            lines.push(`    ech-opts:`);
+            lines.push(`      enable: true`);
+            lines.push(`      query-server-name: ${yq(echDomain)}`);
+        }
+        return lines.join('\n');
+    }
+
+    // 内部生成 Clash YAML（完整规则集：Loyalsoldier rule-providers）
+    function generateClashYaml(links, opts = {}) {
+        const nodes = links.map(parseShareLink).filter(n => n && (n.proto === 'vless' || n.proto === 'trojan'));
+        const names = nodes.map(n => n.name);
+        const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
+
+        const head = [
+            'mixed-port: 7890',
+            'allow-lan: true',
+            'mode: rule',
+            'log-level: info',
+            'ipv6: true',
+            'external-controller: 127.0.0.1:9090',
+            'unified-delay: true',
+            'tcp-concurrent: true',
+            'geodata-mode: true',
+            'geo-auto-update: true',
+            'geo-update-interval: 24',
+            'geox-url:',
+            '  geoip: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"',
+            '  geosite: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"',
+            '  mmdb: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"',
+            '  asn: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb"',
+            'sniffer:',
+            '  enable: true',
+            '  force-dns-mapping: true',
+            '  parse-pure-ip: true',
+            '  sniff:',
+            '    HTTP:',
+            '      ports: [80, 8080-8880]',
+            '      override-destination: true',
+            '    TLS:',
+            '      ports: [443, 8443]',
+            '    QUIC:',
+            '      ports: [443, 8443]',
+            'dns:',
+            '  enable: true',
+            '  listen: 0.0.0.0:1053',
+            '  ipv6: true',
+            '  enhanced-mode: fake-ip',
+            '  fake-ip-range: 198.18.0.1/16',
+            '  fake-ip-filter:',
+            '    - "*.lan"',
+            '    - "+.local"',
+            '    - "+.market.xiaomi.com"',
+            '    - "+.msftconnecttest.com"',
+            '    - "+.msftncsi.com"',
+            '    - "localhost.ptlogin2.qq.com"',
+            '    - "+.srv.nintendo.net"',
+            '    - "+.stun.playstation.net"',
+            '    - "+.xboxlive.com"',
+            '  default-nameserver:',
+            '    - 223.5.5.5',
+            '    - 119.29.29.29',
+            '  nameserver:',
+            `    - ${dnsServer}`,
+            '    - https://119.29.29.29/dns-query',
+            '  fallback:',
+            '    - https://1.1.1.1/dns-query',
+            '    - https://8.8.8.8/dns-query',
+            '  fallback-filter:',
+            '    geoip: true',
+            '    geoip-code: CN',
+            '    ipcidr:',
+            '      - 240.0.0.0/4',
+            ''
+        ];
+
+        const proxiesBlock = ['proxies:'];
+        for (const n of nodes) proxiesBlock.push(buildClashNodeLine(n));
+
+        const nodeOnly = names.length ? names.map(n => `      - ${yq(n)}`).join('\n') : '      - DIRECT';
+        const proxyGroups = [
+            'proxy-groups:',
+            '  - name: "🚀 节点选择"',
+            '    type: select',
+            '    proxies:',
+            '      - "🎯 全球直连"',
+            nodeOnly,
+            '  - name: "🌍 国外媒体"',
+            '    type: select',
+            '    proxies:',
+            clashSelectProxies(names),
+            '  - name: "📺 哔哩哔哩"',
+            '    type: select',
+            '    proxies:',
+            clashSelectProxies(names, { directFirst: true }),
+            '  - name: "📹 油管视频"',
+            '    type: select',
+            '    proxies:',
+            clashSelectProxies(names, { extraGroups: ['🌍 国外媒体'] }),
+            '  - name: "🎬 奈飞视频"',
+            '    type: select',
+            '    proxies:',
+            clashSelectProxies(names, { extraGroups: ['🌍 国外媒体'] }),
+            '  - name: "📲 电报信息"',
+            '    type: select',
+            '    proxies:',
+            clashSelectProxies(names),
+            '  - name: "🌐 谷歌服务"',
+            '    type: select',
+            '    proxies:',
+            clashSelectProxies(names),
+            '  - name: "🤖 OpenAI"',
+            '    type: select',
+            '    proxies:',
+            clashSelectProxies(names),
+            '  - name: "Ⓜ️ 微软服务"',
+            '    type: select',
+            '    proxies:',
+            clashSelectProxies(names, { directFirst: true }),
+            '  - name: "🍎 苹果服务"',
+            '    type: select',
+            '    proxies:',
+            clashSelectProxies(names, { directFirst: true }),
+            '  - name: "🎯 全球直连"',
+            '    type: select',
+            '    proxies:',
+            '      - DIRECT',
+            '  - name: "🛑 全球拦截"',
+            '    type: select',
+            '    proxies:',
+            '      - REJECT',
+            '      - DIRECT',
+            '  - name: "🍃 应用净化"',
+            '    type: select',
+            '    proxies:',
+            '      - REJECT',
+            '      - DIRECT',
+            '  - name: "🐟 漏网之鱼"',
+            '    type: select',
+            '    proxies:',
+            clashSelectProxies(names),
+            ''
+        ];
+
+        // Loyalsoldier rule-providers (Clash 经典格式) - CDN: jsDelivr
+        const RP_BASE = 'https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release';
+        const provider = (name, behavior) => [
+            `  ${name}:`,
+            `    type: http`,
+            `    behavior: ${behavior}`,
+            `    url: "${RP_BASE}/${name}.yaml"`,
+            `    path: ./rulesets/loyalsoldier/${name}.yaml`,
+            `    interval: 86400`
+        ].join('\n');
+
+        const ruleProviders = [
+            'rule-providers:',
+            provider('reject', 'domain'),
+            provider('icloud', 'domain'),
+            provider('apple', 'domain'),
+            provider('google', 'domain'),
+            provider('proxy', 'domain'),
+            provider('direct', 'domain'),
+            provider('private', 'domain'),
+            provider('gfw', 'domain'),
+            provider('greatfire', 'domain'),
+            provider('tld-not-cn', 'domain'),
+            provider('telegramcidr', 'ipcidr'),
+            provider('cncidr', 'ipcidr'),
+            provider('lancidr', 'ipcidr'),
+            provider('applications', 'classical'),
+            ''
+        ];
+
+        const rules = [
+            'rules:',
+            '  - DOMAIN-SUFFIX,acl4.ssr,🎯 全球直连',
+            '  - DOMAIN-SUFFIX,local,🎯 全球直连',
+            '  - DOMAIN,clash.razord.top,🎯 全球直连',
+            '  - DOMAIN,yacd.haishan.me,🎯 全球直连',
+            '  - DOMAIN,yacd.metacubex.one,🎯 全球直连',
+            '  - DOMAIN,d.metacubex.one,🎯 全球直连',
+            '  - DOMAIN-SUFFIX,googleapis.cn,🌐 谷歌服务',
+            '  - DOMAIN-SUFFIX,gstatic.com,🌐 谷歌服务',
+            '  - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,🌐 谷歌服务',
+            '  - DOMAIN-SUFFIX,googlevideo.com,📹 油管视频',
+            '  - DOMAIN-SUFFIX,googleusercontent.com,🌐 谷歌服务',
+            '  - DOMAIN-KEYWORD,youtube,📹 油管视频',
+            '  - DOMAIN-SUFFIX,youtube.com,📹 油管视频',
+            '  - DOMAIN-SUFFIX,youtu.be,📹 油管视频',
+            '  - DOMAIN-KEYWORD,netflix,🎬 奈飞视频',
+            '  - DOMAIN-SUFFIX,nflxext.com,🎬 奈飞视频',
+            '  - DOMAIN-SUFFIX,nflxso.net,🎬 奈飞视频',
+            '  - DOMAIN-SUFFIX,nflxvideo.net,🎬 奈飞视频',
+            '  - DOMAIN-SUFFIX,nflximg.com,🎬 奈飞视频',
+            '  - DOMAIN-SUFFIX,nflximg.net,🎬 奈飞视频',
+            '  - DOMAIN-SUFFIX,netflix.com,🎬 奈飞视频',
+            '  - DOMAIN-SUFFIX,netflix.net,🎬 奈飞视频',
+            '  - DOMAIN-SUFFIX,bilibili.com,📺 哔哩哔哩',
+            '  - DOMAIN-SUFFIX,bilivideo.com,📺 哔哩哔哩',
+            '  - DOMAIN-SUFFIX,hdslb.com,📺 哔哩哔哩',
+            '  - DOMAIN-KEYWORD,openai,🤖 OpenAI',
+            '  - DOMAIN-KEYWORD,chatgpt,🤖 OpenAI',
+            '  - DOMAIN-SUFFIX,openai.com,🤖 OpenAI',
+            '  - DOMAIN-SUFFIX,chatgpt.com,🤖 OpenAI',
+            '  - DOMAIN-SUFFIX,oaistatic.com,🤖 OpenAI',
+            '  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 OpenAI',
+            '  - DOMAIN-SUFFIX,anthropic.com,🤖 OpenAI',
+            '  - DOMAIN-SUFFIX,claude.ai,🤖 OpenAI',
+            '  - DOMAIN-SUFFIX,perplexity.ai,🤖 OpenAI',
+            '  - DOMAIN-SUFFIX,gemini.google.com,🤖 OpenAI',
+            '  - RULE-SET,applications,🎯 全球直连',
+            '  - RULE-SET,private,🎯 全球直连',
+            '  - RULE-SET,reject,🛑 全球拦截',
+            '  - RULE-SET,icloud,🍎 苹果服务',
+            '  - RULE-SET,apple,🍎 苹果服务',
+            '  - RULE-SET,google,🌐 谷歌服务',
+            '  - RULE-SET,proxy,🚀 节点选择',
+            '  - RULE-SET,gfw,🚀 节点选择',
+            '  - RULE-SET,greatfire,🚀 节点选择',
+            '  - RULE-SET,tld-not-cn,🚀 节点选择',
+            '  - RULE-SET,direct,🎯 全球直连',
+            '  - RULE-SET,lancidr,🎯 全球直连,no-resolve',
+            '  - RULE-SET,cncidr,🎯 全球直连,no-resolve',
+            '  - RULE-SET,telegramcidr,📲 电报信息,no-resolve',
+            '  - GEOIP,LAN,🎯 全球直连,no-resolve',
+            '  - GEOIP,CN,🎯 全球直连,no-resolve',
+            '  - MATCH,🐟 漏网之鱼'
+        ];
+
+        return [head.join('\n'), proxiesBlock.join('\n'), '', proxyGroups.join('\n'), ruleProviders.join('\n'), rules.join('\n'), ''].join('\n');
+    }
+
+    // 内部生成 Sing-box JSON 配置（完整规则集：MetaCubeX 镜像 rule-set）
+    function generateSingBoxJson(links) {
+        const nodes = links.map(parseShareLink).filter(n => n && (n.proto === 'vless' || n.proto === 'trojan'));
+        const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
+        const outboundTags = nodes.map(n => n.name);
+
+        function nodeToOutbound(n) {
+            const out = {
+                type: n.proto,
+                tag: n.name,
+                server: normalizeServerHost(n.server),
+                server_port: n.port
+            };
+            if (n.proto === 'vless') {
+                out.uuid = n.uuid;
+                if (n.flow) out.flow = n.flow;
+            } else {
+                out.password = n.password;
+            }
+            if (n.tls) {
+                out.tls = {
+                    enabled: true,
+                    server_name: n.sni,
+                    insecure: false,
+                    utls: { enabled: true, fingerprint: n.fp || 'chrome' }
+                };
+                if (n.alpn && n.alpn.length) out.tls.alpn = n.alpn;
+                if (n.ech) {
+                    out.tls.ech = { enabled: true, pq_signature_schemes_enabled: false, dynamic_record_sizing_disabled: false };
+                }
+            }
+            if (n.network === 'ws' || n.network === 'xhttp') {
+                out.transport = {
+                    type: 'ws',
+                    path: n.path,
+                    headers: { Host: n.host },
+                    max_early_data: 2048,
+                    early_data_header_name: 'Sec-WebSocket-Protocol'
+                };
+            } else if (n.network === 'grpc') {
+                out.transport = { type: 'grpc', service_name: n.path };
+            }
+            return out;
+        }
+
+        // sing-box rule-set 远端 SRS 文件（CDN：jsDelivr 镜像 MetaCubeX 转换的 SagerNet 数据）
+        const SRS_BASE_SITE = 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite';
+        const SRS_BASE_IP = 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip';
+        const siteRule = (tag) => ({ tag: `geosite-${tag}`, type: 'remote', format: 'binary', url: `${SRS_BASE_SITE}/${tag}.srs`, download_detour: 'direct' });
+        const ipRule = (tag) => ({ tag: `geoip-${tag}`, type: 'remote', format: 'binary', url: `${SRS_BASE_IP}/${tag}.srs`, download_detour: 'direct' });
+
+        const config = {
+            log: { level: 'info', timestamp: true },
+            dns: {
+                servers: [
+                    { tag: 'remote', address: dnsServer, detour: 'select' },
+                    { tag: 'local', address: '223.5.5.5', detour: 'direct' },
+                    { tag: 'fakeip', address: 'fakeip' },
+                    { tag: 'block', address: 'rcode://success' }
+                ],
+                rules: [
+                    { outbound: 'any', server: 'local' },
+                    { rule_set: 'geosite-category-ads-all', server: 'block' },
+                    { rule_set: 'geosite-cn', server: 'local' },
+                    { query_type: ['A', 'AAAA'], server: 'fakeip' }
+                ],
+                fakeip: { enabled: true, inet4_range: '198.18.0.0/15', inet6_range: 'fc00::/18' },
+                independent_cache: true,
+                strategy: 'ipv4_only'
+            },
+            inbounds: [
+                {
+                    type: 'mixed',
+                    tag: 'mixed-in',
+                    listen: '127.0.0.1',
+                    listen_port: 2080,
+                    sniff: true,
+                    sniff_override_destination: true
+                },
+                {
+                    type: 'tun',
+                    tag: 'tun-in',
+                    interface_name: 'sing-box',
+                    address: ['172.19.0.1/30', 'fdfe:dcba:9876::1/126'],
+                    mtu: 9000,
+                    auto_route: true,
+                    strict_route: true,
+                    stack: 'mixed',
+                    sniff: true,
+                    sniff_override_destination: true
+                }
+            ],
+            outbounds: [
+                { type: 'selector', tag: 'select', outbounds: ['direct', ...outboundTags], default: outboundTags[0] || 'direct' },
+                { type: 'selector', tag: '🌍 国外媒体', outbounds: ['select', 'direct', ...outboundTags] },
+                { type: 'selector', tag: '📲 电报信息', outbounds: ['select', 'direct', ...outboundTags] },
+                { type: 'selector', tag: '🌐 谷歌服务', outbounds: ['select', 'direct', ...outboundTags] },
+                { type: 'selector', tag: '🤖 OpenAI', outbounds: ['select', 'direct', ...outboundTags] },
+                { type: 'selector', tag: 'Ⓜ️ 微软服务', outbounds: ['direct', 'select', ...outboundTags] },
+                { type: 'selector', tag: '🍎 苹果服务', outbounds: ['direct', 'select', ...outboundTags] },
+                { type: 'selector', tag: '📺 哔哩哔哩', outbounds: ['direct', 'select', ...outboundTags] },
+                { type: 'selector', tag: '📹 油管视频', outbounds: ['select', '🌍 国外媒体', 'direct', ...outboundTags] },
+                { type: 'selector', tag: '🎬 奈飞视频', outbounds: ['select', '🌍 国外媒体', 'direct', ...outboundTags] },
+                { type: 'selector', tag: '🎯 全球直连', outbounds: ['direct'] },
+                { type: 'selector', tag: '🐟 漏网之鱼', outbounds: ['select', 'direct', ...outboundTags] },
+                ...nodes.map(nodeToOutbound),
+                { type: 'direct', tag: 'direct' },
+                { type: 'block', tag: 'block' },
+                { type: 'dns', tag: 'dns-out' }
+            ],
+            route: {
+                rule_set: [
+                    siteRule('cn'),
+                    siteRule('private'),
+                    siteRule('apple'),
+                    siteRule('apple-cn'),
+                    siteRule('microsoft'),
+                    siteRule('microsoft@cn'),
+                    siteRule('google'),
+                    siteRule('telegram'),
+                    siteRule('openai'),
+                    siteRule('anthropic'),
+                    siteRule('youtube'),
+                    siteRule('netflix'),
+                    siteRule('disney'),
+                    siteRule('spotify'),
+                    siteRule('tiktok'),
+                    siteRule('twitter'),
+                    siteRule('facebook'),
+                    siteRule('github'),
+                    siteRule('geolocation-!cn'),
+                    siteRule('category-ads-all'),
+                    ipRule('cn'),
+                    ipRule('private'),
+                    ipRule('telegram')
+                ],
+                rules: [
+                    { protocol: 'dns', outbound: 'dns-out' },
+                    { ip_is_private: true, outbound: 'direct' },
+                    { rule_set: 'geosite-category-ads-all', outbound: 'block' },
+                    { rule_set: 'geosite-private', outbound: 'direct' },
+                    { rule_set: 'geosite-apple-cn', outbound: 'direct' },
+                    { rule_set: 'geosite-microsoft@cn', outbound: 'direct' },
+                    { rule_set: 'geosite-apple', outbound: '🍎 苹果服务' },
+                    { rule_set: 'geosite-microsoft', outbound: 'Ⓜ️ 微软服务' },
+                    { rule_set: 'geosite-openai', outbound: '🤖 OpenAI' },
+                    { rule_set: 'geosite-anthropic', outbound: '🤖 OpenAI' },
+                    { rule_set: 'geosite-telegram', outbound: '📲 电报信息' },
+                    { rule_set: 'geoip-telegram', outbound: '📲 电报信息' },
+                    { rule_set: 'geosite-google', outbound: '🌐 谷歌服务' },
+                    { rule_set: 'geosite-youtube', outbound: '🌍 国外媒体' },
+                    { rule_set: 'geosite-netflix', outbound: '🌍 国外媒体' },
+                    { rule_set: 'geosite-disney', outbound: '🌍 国外媒体' },
+                    { rule_set: 'geosite-spotify', outbound: '🌍 国外媒体' },
+                    { rule_set: 'geosite-tiktok', outbound: '🌍 国外媒体' },
+                    { rule_set: 'geosite-twitter', outbound: '🌍 国外媒体' },
+                    { rule_set: 'geosite-facebook', outbound: '🌍 国外媒体' },
+                    { rule_set: 'geosite-github', outbound: 'select' },
+                    { rule_set: 'geosite-geolocation-!cn', outbound: 'select' },
+                    { rule_set: 'geosite-cn', outbound: 'direct' },
+                    { rule_set: 'geoip-cn', outbound: 'direct' },
+                    { ip_is_private: true, outbound: 'direct' }
+                ],
+                final: '🐟 漏网之鱼',
+                auto_detect_interface: true
+            },
+            experimental: {
+                cache_file: { enabled: true, store_fakeip: true },
+                clash_api: { external_controller: '127.0.0.1:9090' }
+            }
+        };
+        return JSON.stringify(config, null, 2);
+    }
+
+    // ACL4SSR 规则源（CDN：jsDelivr 镜像 GitHub）
+    const ACL_BASE = 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash';
+    const aclRule = (name) => `${ACL_BASE}/${name}.list`;
+
+    // 内部生成 Surge ini (完整 ACL4SSR 规则集；仅 Trojan，Surge 不原生支持 VLESS)
+    function generateSurgeIni(links) {
+        const nodes = links.map(parseShareLink).filter(n => n && n.proto === 'trojan');
+        const dnsServer = customDNS || '223.5.5.5';
+        const names = nodes.map(n => n.name);
+        const lines = [
+            '[General]',
+            'loglevel = notify',
+            'internet-test-url = http://www.apple.com/library/test/success.html',
+            'proxy-test-url = http://www.gstatic.com/generate_204',
+            'test-timeout = 3',
+            `dns-server = ${dnsServer.replace(/^https?:\/\//, '').replace(/\/.*$/, '')}, 119.29.29.29, system`,
+            'encrypted-dns-server = https://223.5.5.5/dns-query, https://1.12.12.12/dns-query',
+            'ipv6 = true',
+            'allow-wifi-access = false',
+            'wifi-access-http-port = 6152',
+            'wifi-access-socks5-port = 6153',
+            'skip-proxy = 127.0.0.1, 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, localhost, *.local, captive.apple.com',
+            'exclude-simple-hostnames = true',
+            'show-error-page-for-reject = true',
+            '',
+            '[Proxy]',
+        ];
+        for (const n of nodes) {
+            const sni = n.sni;
+            lines.push(`${n.name} = trojan, ${n.server}, ${n.port}, password=${n.password}, sni=${sni}, ws=true, ws-path=${n.path}, ws-headers=Host:${n.host}, skip-cert-verify=false, tfo=true`);
+        }
+        if (!nodes.length) {
+            lines.push('Direct = direct');
+        }
+        lines.push('');
+        lines.push('[Proxy Group]');
+        const list = names.length ? names.join(', ') : 'DIRECT';
+        lines.push(`🚀 节点选择 = select, 🎯 全球直连, ${list}`);
+        lines.push(`🌍 国外媒体 = select, ${iniPolicyList(names)}`);
+        lines.push(`📺 哔哩哔哩 = select, ${iniPolicyList(names, { directFirst: true })}`);
+        lines.push(`📹 油管视频 = select, ${iniPolicyList(names, { extraGroups: ['🌍 国外媒体'] })}`);
+        lines.push(`🎬 奈飞视频 = select, ${iniPolicyList(names, { extraGroups: ['🌍 国外媒体'] })}`);
+        lines.push(`📲 电报信息 = select, ${iniPolicyList(names)}`);
+        lines.push(`🌐 谷歌服务 = select, ${iniPolicyList(names)}`);
+        lines.push(`🤖 OpenAI = select, ${iniPolicyList(names)}`);
+        lines.push(`Ⓜ️ 微软服务 = select, ${iniPolicyList(names, { directFirst: true })}`);
+        lines.push(`🍎 苹果服务 = select, ${iniPolicyList(names, { directFirst: true })}`);
+        lines.push(`🎯 全球直连 = select, DIRECT`);
+        lines.push(`🛑 全球拦截 = select, REJECT, DIRECT`);
+        lines.push(`🐟 漏网之鱼 = select, ${iniPolicyList(names)}`);
+        lines.push('');
+        lines.push('[Rule]');
+        lines.push(`RULE-SET,${aclRule('LocalAreaNetwork')},🎯 全球直连`);
+        lines.push(`RULE-SET,${aclRule('UnBan')},🎯 全球直连`);
+        lines.push(`RULE-SET,${aclRule('BanAD')},🛑 全球拦截`);
+        lines.push(`RULE-SET,${aclRule('BanProgramAD')},🛑 全球拦截`);
+        lines.push(`RULE-SET,${aclRule('GoogleFCM')},🌐 谷歌服务`);
+        lines.push(`RULE-SET,${aclRule('GoogleCN')},🎯 全球直连`);
+        lines.push(`RULE-SET,${aclRule('SteamCN')},🎯 全球直连`);
+        lines.push(`RULE-SET,${aclRule('Microsoft')},Ⓜ️ 微软服务`);
+        lines.push(`RULE-SET,${aclRule('Apple')},🍎 苹果服务`);
+        lines.push(`RULE-SET,${aclRule('Telegram')},📲 电报信息`);
+        lines.push(`RULE-SET,${aclRule('OpenAi')},🤖 OpenAI`);
+        lines.push(`RULE-SET,${aclRule('Claude')},🤖 OpenAI`);
+        lines.push(`RULE-SET,${aclRule('Copilot')},🤖 OpenAI`);
+        lines.push(`RULE-SET,${aclRule('Netflix')},🌍 国外媒体`);
+        lines.push(`RULE-SET,${aclRule('YouTube')},🌍 国外媒体`);
+        lines.push(`RULE-SET,${aclRule('Disney')},🌍 国外媒体`);
+        lines.push(`RULE-SET,${aclRule('Spotify')},🌍 国外媒体`);
+        lines.push(`RULE-SET,${aclRule('TikTok')},🌍 国外媒体`);
+        lines.push(`RULE-SET,${aclRule('BiliBili')},📺 哔哩哔哩`);
+        lines.push(`RULE-SET,${aclRule('ProxyMedia')},🌍 国外媒体`);
+        lines.push(`RULE-SET,${aclRule('ProxyGFWlist')},🚀 节点选择`);
+        lines.push(`RULE-SET,${aclRule('ChinaDomain')},🎯 全球直连`);
+        lines.push(`RULE-SET,${aclRule('ChinaCompanyIp')},🎯 全球直连`);
+        lines.push(`RULE-SET,${aclRule('ChinaIp')},🎯 全球直连`);
+        lines.push('GEOIP,CN,🎯 全球直连');
+        lines.push('FINAL,🐟 漏网之鱼,dns-failed');
+        return lines.join('\n');
+    }
+
+    // 内部生成 Loon ini (完整 ACL4SSR 规则集；vless + trojan)
+    function generateLoonIni(links) {
+        const nodes = links.map(parseShareLink).filter(n => n && (n.proto === 'vless' || n.proto === 'trojan'));
+        const names = nodes.map(n => n.name);
+        const lines = [
+            '[General]',
+            'ip-mode = dual',
+            `dns-server = ${(customDNS || '223.5.5.5').replace(/^https?:\/\//, '').replace(/\/.*$/, '')},119.29.29.29,system`,
+            'doh-server = https://223.5.5.5/dns-query, https://1.12.12.12/dns-query',
+            'allow-udp-proxy = true',
+            'allow-wifi-access = false',
+            'sni-sniffing = true',
+            'skip-proxy = 127.0.0.1,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,localhost,*.local,captive.apple.com',
+            'bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192.0.0.0/24,192.0.2.0/24,192.88.99.0/24,192.168.0.0/16,198.51.100.0/24,203.0.113.0/24,224.0.0.0/4,255.255.255.255/32',
+            '',
+            '[Proxy]'
+        ];
+        for (const n of nodes) {
+            if (n.proto === 'vless') {
+                const parts = [`${n.server}`, `${n.port}`, `udp=true`, `username=${n.uuid}`, `transport=ws`, `path=${n.path}`, `host=${n.host}`, `over-tls=${n.tls ? 'true' : 'false'}`];
+                if (n.tls) {
+                    parts.push(`tls-name=${n.sni}`);
+                    if (n.alpn && n.alpn.length) parts.push(`alpn=${n.alpn.join(':')}`);
+                    parts.push(`skip-cert-verify=false`);
+                }
+                lines.push(`${n.name} = vless,${parts.join(',')}`);
+            } else {
+                const parts = [`${n.server}`, `${n.port}`, `password=${n.password}`, `transport=ws`, `path=${n.path}`, `host=${n.host}`, `over-tls=true`, `tls-name=${n.sni}`];
+                if (n.alpn && n.alpn.length) parts.push(`alpn=${n.alpn.join(':')}`);
+                parts.push(`skip-cert-verify=false`);
+                lines.push(`${n.name} = trojan,${parts.join(',')}`);
+            }
+        }
+        lines.push('');
+        lines.push('[Proxy Group]');
+        const list = names.length ? names.join(',') : 'DIRECT';
+        lines.push(`🚀 节点选择 = select,🎯 全球直连,${list}`);
+        lines.push(`🌍 国外媒体 = select,${iniPolicyList(names, { compact: true })}`);
+        lines.push(`📺 哔哩哔哩 = select,${iniPolicyList(names, { directFirst: true, compact: true })}`);
+        lines.push(`📹 油管视频 = select,${iniPolicyList(names, { extraGroups: ['🌍 国外媒体'], compact: true })}`);
+        lines.push(`🎬 奈飞视频 = select,${iniPolicyList(names, { extraGroups: ['🌍 国外媒体'], compact: true })}`);
+        lines.push(`📲 电报信息 = select,${iniPolicyList(names, { compact: true })}`);
+        lines.push(`🌐 谷歌服务 = select,${iniPolicyList(names, { compact: true })}`);
+        lines.push(`🤖 OpenAI = select,${iniPolicyList(names, { compact: true })}`);
+        lines.push(`Ⓜ️ 微软服务 = select,${iniPolicyList(names, { directFirst: true, compact: true })}`);
+        lines.push(`🍎 苹果服务 = select,${iniPolicyList(names, { directFirst: true, compact: true })}`);
+        lines.push(`🎯 全球直连 = select,DIRECT`);
+        lines.push(`🛑 全球拦截 = select,REJECT,DIRECT`);
+        lines.push(`🐟 漏网之鱼 = select,${iniPolicyList(names, { compact: true })}`);
+        lines.push('');
+        lines.push('[Remote Rule]');
+        lines.push(`${aclRule('LocalAreaNetwork')}, policy=🎯 全球直连, tag=局域网, enabled=true`);
+        lines.push(`${aclRule('BanAD')}, policy=🛑 全球拦截, tag=广告拦截, enabled=true`);
+        lines.push(`${aclRule('BanProgramAD')}, policy=🛑 全球拦截, tag=应用广告, enabled=true`);
+        lines.push(`${aclRule('GoogleCN')}, policy=🎯 全球直连, tag=GoogleCN, enabled=true`);
+        lines.push(`${aclRule('SteamCN')}, policy=🎯 全球直连, tag=SteamCN, enabled=true`);
+        lines.push(`${aclRule('Microsoft')}, policy=Ⓜ️ 微软服务, tag=微软, enabled=true`);
+        lines.push(`${aclRule('Apple')}, policy=🍎 苹果服务, tag=苹果, enabled=true`);
+        lines.push(`${aclRule('Telegram')}, policy=📲 电报信息, tag=电报, enabled=true`);
+        lines.push(`${aclRule('OpenAi')}, policy=🤖 OpenAI, tag=OpenAI, enabled=true`);
+        lines.push(`${aclRule('Netflix')}, policy=🌍 国外媒体, tag=Netflix, enabled=true`);
+        lines.push(`${aclRule('YouTube')}, policy=🌍 国外媒体, tag=YouTube, enabled=true`);
+        lines.push(`${aclRule('Disney')}, policy=🌍 国外媒体, tag=Disney, enabled=true`);
+        lines.push(`${aclRule('Spotify')}, policy=🌍 国外媒体, tag=Spotify, enabled=true`);
+        lines.push(`${aclRule('TikTok')}, policy=🌍 国外媒体, tag=TikTok, enabled=true`);
+        lines.push(`${aclRule('BiliBili')}, policy=📺 哔哩哔哩, tag=哔哩哔哩, enabled=true`);
+        lines.push(`${aclRule('ProxyMedia')}, policy=🌍 国外媒体, tag=代理媒体, enabled=true`);
+        lines.push(`${aclRule('ProxyGFWlist')}, policy=🚀 节点选择, tag=代理列表, enabled=true`);
+        lines.push(`${aclRule('ChinaDomain')}, policy=🎯 全球直连, tag=中国域名, enabled=true`);
+        lines.push(`${aclRule('ChinaIp')}, policy=🎯 全球直连, tag=中国IP, enabled=true`);
+        lines.push('');
+        lines.push('[Rule]');
+        lines.push('GEOIP,CN,🎯 全球直连');
+        lines.push('FINAL,🐟 漏网之鱼');
+        return lines.join('\n');
+    }
+
+    // 内部生成 Quantumult X 配置（完整 ACL4SSR 远端 filter 资源）
+    function generateQuanxConf(links) {
+        const nodes = links.map(parseShareLink).filter(n => n && (n.proto === 'vless' || n.proto === 'trojan'));
+        const names = nodes.map(n => n.name);
+        const QX_BASE = 'https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/QuantumultX';
+        const lines = [
+            '[general]',
+            'network_check_url=http://www.gstatic.com/generate_204',
+            'server_check_url=http://www.gstatic.com/generate_204',
+            'profile_img_url=https://fastly.jsdelivr.net/gh/byJoey/cfnew@main/snippets/logo.png',
+            'dns_exclusion_list=*.cmpassport.com, *.jegotrip.com.cn, *.icloud.com, *.icloud.com.cn, *.apple.com, *.weibo.com, *.qq.com',
+            'running_mode_trigger=filter',
+            '',
+            '[dns]',
+            `server=${(customDNS || '223.5.5.5').replace(/^https?:\/\//, '').replace(/\/.*$/, '')}`,
+            'server=119.29.29.29',
+            'server=https://223.5.5.5/dns-query',
+            'server=https://1.12.12.12/dns-query',
+            '',
+            '[server_local]'
+        ];
+        for (const n of nodes) {
+            if (n.proto === 'vless') {
+                const parts = [`${n.server}:${n.port}`, `method=none`, `password=${n.uuid}`, `obfs=${n.tls ? 'wss' : 'ws'}`, `obfs-host=${n.host}`, `obfs-uri=${n.path}`];
+                if (n.tls) parts.push(`tls-verification=true`, `tls13=true`);
+                parts.push(`tag=${n.name}`);
+                lines.push(`vless=${parts.join(', ')}`);
+            } else {
+                const parts = [`${n.server}:${n.port}`, `password=${n.password}`, `over-tls=true`, `tls-host=${n.sni}`, `obfs=wss`, `obfs-host=${n.host}`, `obfs-uri=${n.path}`, `tls-verification=true`, `tag=${n.name}`];
+                lines.push(`trojan=${parts.join(', ')}`);
+            }
+        }
+        lines.push('');
+        lines.push('[policy]');
+        const list = names.length ? names.join(', ') : 'direct';
+        lines.push(`static=🚀 节点选择, ${list}, direct, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png`);
+        lines.push(`static=🌍 国外媒体, ${iniPolicyList(names)}, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png`);
+        lines.push(`static=📺 哔哩哔哩, ${iniPolicyList(names, { directFirst: true })}, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/bilibili.png`);
+        lines.push(`static=📹 油管视频, ${iniPolicyList(names, { extraGroups: ['🌍 国外媒体'] })}, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png`);
+        lines.push(`static=🎬 奈飞视频, ${iniPolicyList(names, { extraGroups: ['🌍 国外媒体'] })}, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png`);
+        lines.push(`static=📲 电报信息, ${iniPolicyList(names)}, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png`);
+        lines.push(`static=🌐 谷歌服务, ${iniPolicyList(names)}, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google.png`);
+        lines.push(`static=🤖 OpenAI, ${iniPolicyList(names)}, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png`);
+        lines.push(`static=Ⓜ️ 微软服务, ${iniPolicyList(names, { directFirst: true })}, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png`);
+        lines.push(`static=🍎 苹果服务, ${iniPolicyList(names, { directFirst: true })}, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png`);
+        lines.push(`static=🎯 全球直连, direct, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png`);
+        lines.push(`static=🛑 全球拦截, reject, direct, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png`);
+        lines.push(`static=🐟 漏网之鱼, ${iniPolicyList(names)}, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png`);
+        lines.push('');
+        lines.push('[filter_remote]');
+        lines.push(`${QX_BASE}/Lan/Lan.list, tag=局域网, force-policy=🎯 全球直连, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/Advertising/Advertising.list, tag=广告拦截, force-policy=🛑 全球拦截, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/Microsoft/Microsoft.list, tag=微软, force-policy=Ⓜ️ 微软服务, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/Apple/Apple.list, tag=苹果, force-policy=🍎 苹果服务, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/Telegram/Telegram.list, tag=电报, force-policy=📲 电报信息, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/Google/Google.list, tag=谷歌, force-policy=🌐 谷歌服务, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/OpenAI/OpenAI.list, tag=OpenAI, force-policy=🤖 OpenAI, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/Claude/Claude.list, tag=Claude, force-policy=🤖 OpenAI, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/YouTube/YouTube.list, tag=YouTube, force-policy=🌍 国外媒体, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/Netflix/Netflix.list, tag=Netflix, force-policy=🌍 国外媒体, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/Disney/Disney.list, tag=Disney, force-policy=🌍 国外媒体, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/Spotify/Spotify.list, tag=Spotify, force-policy=🌍 国外媒体, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/TikTok/TikTok.list, tag=TikTok, force-policy=🌍 国外媒体, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/BiliBili/BiliBili.list, tag=哔哩哔哩, force-policy=📺 哔哩哔哩, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/Global/Global.list, tag=全球加速, force-policy=🚀 节点选择, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push(`${QX_BASE}/ChinaMax/ChinaMax.list, tag=中国直连, force-policy=🎯 全球直连, update-interval=86400, opt-parser=false, enabled=true`);
+        lines.push('');
+        lines.push('[filter_local]');
+        lines.push('geoip, cn, 🎯 全球直连');
+        lines.push('final, 🐟 漏网之鱼');
+        return lines.join('\n');
+    }
+
+    // 兼容旧调用名
+    async function generateClashConfig(links) {
+        return generateClashYaml(links);
+    }
+    function generateSurgeConfig(links) { return generateSurgeIni(links); }
+    function generateLoonConfig(links) { return generateLoonIni(links); }
+    function generateQuantumultXConfig(links) { return generateQuanxConf(links); }
+    function generateSingBoxConfig(links) { return generateSingBoxJson(links); }
+    function generateSSConfig(links) { return btoa(links.join('\n')); }
+    function generateV2RayConfig(links) { return btoa(links.join('\n')); }
 
     // 全局变量存储ECH调试信息
     let echDebugInfo = '';
@@ -1813,31 +2683,43 @@ body {
         let contentType = 'text/plain; charset=utf-8';
 
         switch (target.toLowerCase()) {
-            case atob('Y2xhc2g='):
-            case atob('Y2xhc2hy'):
-                subscriptionContent = await generateClashConfig(finalLinks, request, user);
+            case atob('Y2xhc2g='):     // clash
+            case atob('Y2xhc2hy'):     // clashr
+            case 'stash':
+            case 'meta':
+            case 'clashmeta':
+                subscriptionContent = generateClashYaml(finalLinks);
                 contentType = 'text/yaml; charset=utf-8';
                 break;
-            case atob('c3VyZ2U='):
+            case atob('c3VyZ2U='):     // surge
             case atob('c3VyZ2Uy'):
             case atob('c3VyZ2Uz'):
             case atob('c3VyZ2U0'):
-                subscriptionContent = generateSurgeConfig(finalLinks);
+                subscriptionContent = generateSurgeIni(finalLinks);
+                contentType = 'text/plain; charset=utf-8';
                 break;
-            case atob('cXVhbnR1bXVsdA=='):
-            case atob('cXVhbng='):
+            case atob('cXVhbnR1bXVsdA=='):  // quantumult
+            case atob('cXVhbng='):          // quanx
             case 'quanx':
-                subscriptionContent = generateQuantumultConfig(finalLinks);
+                subscriptionContent = generateQuanxConf(finalLinks);
+                contentType = 'text/plain; charset=utf-8';
                 break;
             case atob('c3M='):
             case atob('c3Ny'):
-                subscriptionContent = generateSSConfig(finalLinks);
+                subscriptionContent = btoa(finalLinks.join('\n'));
                 break;
             case atob('djJyYXk='):
-                subscriptionContent = generateV2RayConfig(finalLinks);
+                subscriptionContent = btoa(finalLinks.join('\n'));
                 break;
             case atob('bG9vbg=='):
-                subscriptionContent = generateLoonConfig(finalLinks);
+                subscriptionContent = generateLoonIni(finalLinks);
+                contentType = 'text/plain; charset=utf-8';
+                break;
+            case atob('c2luZ2JveA=='):  // singbox
+            case 'sing-box':
+            case 'singbox':
+                subscriptionContent = generateSingBoxJson(finalLinks);
+                contentType = 'application/json; charset=utf-8';
                 break;
             default:
                 subscriptionContent = btoa(finalLinks.join('\n'));
@@ -1926,7 +2808,6 @@ body {
                     if (enableECH) {
                         const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                         const echDomain = customECHDomain || 'cloudflare-ech.com';
-                        wsParams.set('alpn', 'h3');
                         wsParams.set('ech', `${echDomain}+${dnsServer}`);
                     }
 
@@ -2012,7 +2893,6 @@ body {
                     if (enableECH) {
                         const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                         const echDomain = customECHDomain || 'cloudflare-ech.com';
-                        wsParams.set('alpn', 'h3');
                         wsParams.set('ech', `${echDomain}+${dnsServer}`);
                     }
 
@@ -2315,19 +3195,40 @@ body {
     }
 
     async function connectStreams(remoteSocket, webSocket, headerData, retryFunc) {
-        let header = headerData, hasData = false;
+        let header = headerData, hasData = false, retried = false;
+
+        // 关键：CF 直连有时握手成功但远端长时间无数据，需要超时触发 SOCKS5 降级
+        let firstByteTimer = null;
+        if (retryFunc) {
+            firstByteTimer = setTimeout(() => {
+                if (!hasData && !retried) {
+                    retried = true;
+                    try { remoteSocket.close && remoteSocket.close(); } catch (_) {}
+                    retryFunc();
+                }
+            }, 3500);
+        }
+
         await remoteSocket.readable.pipeTo(
             new WritableStream({
                 async write(chunk, controller) {
-                    hasData = true;
+                    if (!hasData) {
+                        hasData = true;
+                        if (firstByteTimer) { clearTimeout(firstByteTimer); firstByteTimer = null; }
+                    }
                     if (webSocket.readyState !== 1) controller.error(E_WS_NOT_OPEN);
-                    if (header) { webSocket.send(await new Blob([header, chunk]).arrayBuffer()); header = null; } 
+                    if (header) { webSocket.send(await new Blob([header, chunk]).arrayBuffer()); header = null; }
                     else { webSocket.send(chunk); }
                 },
                 abort(reason) { },
             })
-        ).catch((error) => { closeSocketQuietly(webSocket); });
-        if (!hasData && retryFunc) retryFunc();
+        ).catch((error) => {
+            // 已经触发 retry 时不要关闭 WS（retry 会重新挂载新 socket）
+            if (!retried) closeSocketQuietly(webSocket);
+        });
+
+        if (firstByteTimer) { clearTimeout(firstByteTimer); firstByteTimer = null; }
+        if (!hasData && !retried && retryFunc) retryFunc();
     }
 
     async function forwardUDP(udpChunk, webSocket, respHeader) {
@@ -2495,7 +3396,7 @@ body {
                 enablePreferredDomain: '启用优选域名',
                 enablePreferredIP: '启用优选 IP',
                 enableNativeAddress: '启用原生地址',
-                enableGitHubPreferred: '启用 GitHub 默认优选',
+                enableGitHubPreferred: '启用自定义优选',
                 allowAPIManagement: '允许API管理 (ae):',
                 regionMatching: '地区匹配 (rm):',
                 downgradeControl: '降级控制 (qj):',
@@ -2520,8 +3421,8 @@ body {
                 customECHDomainPlaceholder: '例如: cloudflare-ech.com',
                 customECHDomainHint: 'ECH配置中使用的域名，留空则使用默认值',
                 saveProtocol: '保存协议配置',
-                subscriptionConverterPlaceholder: '默认: https://api.wcc.best/sub',
-                subscriptionConverterHint: '自定义订阅转换API地址，留空则使用默认地址',
+                subscriptionConverterPlaceholder: '默认: https://url.v1.mk/sub',
+                subscriptionConverterHint: '订阅转换已内部实现，无需外部 API。此项仅作兼容保留，可留空。',
                 builtinPreferredHint: '控制订阅中包含哪些内置优选节点。默认全部启用。',
                 apiEnabledDefault: '默认（关闭API）',
                 apiEnabledYes: '开启API管理',
@@ -2543,7 +3444,7 @@ body {
                     KR: '🇰🇷 韩国', DE: '🇩🇪 德国', SE: '🇸🇪 瑞典', NL: '🇳🇱 荷兰',
                     FI: '🇫🇮 芬兰', GB: '🇬🇧 英国'
                 },
-                terminal: '终端 v2.9.7',
+                terminal: '终端 v2.9.8',
                 githubProject: 'GitHub 项目',
                 autoDetectClient: '自动识别',
                 selectionLogicText: '同地区 → 邻近地区 → 其他地区',
@@ -2643,7 +3544,7 @@ body {
                 enablePreferredDomain: 'فعال‌سازی دامنه ترجیحی',
                 enablePreferredIP: 'فعال‌سازی IP ترجیحی',
                 enableNativeAddress: 'فعال‌سازی آدرس اصلی',
-                enableGitHubPreferred: 'فعال‌سازی ترجیح پیش‌فرض GitHub',
+                enableGitHubPreferred: 'فعال‌سازی ترجیح سفارشی',
                 allowAPIManagement: 'اجازه مدیریت API (ae):',
                 regionMatching: 'تطبیق منطقه (rm):',
                 downgradeControl: 'کنترل کاهش سطح (qj):',
@@ -2660,8 +3561,8 @@ body {
                 trojanPasswordHint: 'رمز عبور Trojan سفارشی را تنظیم کنید. اگر خالی بگذارید از UUID استفاده می‌شود. کلاینت به طور خودکار رمز عبور را با SHA224 هش می‌کند.',
                 protocolHint: 'می‌توانید چندین پروتکل را همزمان فعال کنید. اشتراک گره‌های پروتکل‌های انتخاب شده را تولید می‌کند.<br>• VLESS WS: پروتکل استاندارد مبتنی بر WebSocket<br>• Trojan: احراز هویت با رمز عبور SHA224<br>• xhttp: پروتکل استتار مبتنی بر HTTP POST (نیاز به اتصال دامنه سفارشی و فعال‌سازی gRPC دارد)',
                 saveProtocol: 'ذخیره تنظیمات پروتکل',
-                subscriptionConverterPlaceholder: 'پیش‌فرض: https://api.wcc.best/sub',
-                subscriptionConverterHint: 'آدرس API تبدیل اشتراک سفارشی، اگر خالی بگذارید از آدرس پیش‌فرض استفاده می‌شود',
+                subscriptionConverterPlaceholder: 'پیش‌فرض: https://url.v1.mk/sub',
+                subscriptionConverterHint: 'تبدیل اشتراک به صورت داخلی پیاده‌سازی شده است و نیازی به API خارجی ندارد. این فیلد فقط برای سازگاری حفظ شده و می‌توان آن را خالی گذاشت.',
                 builtinPreferredHint: 'کنترل اینکه کدام گره‌های ترجیحی داخلی در اشتراک گنجانده شوند. به طور پیش‌فرض همه فعال هستند.',
                 apiEnabledDefault: 'پیش‌فرض (بستن API)',
                 apiEnabledYes: 'فعال‌سازی مدیریت API',
@@ -2683,7 +3584,7 @@ body {
                     KR: '🇰🇷 کره جنوبی', DE: '🇩🇪 آلمان', SE: '🇸🇪 سوئد', NL: '🇳🇱 هلند',
                     FI: '🇫🇮 فنلاند', GB: '🇬🇧 بریتانیا'
                 },
-                terminal: 'ترمینال v2.9.7',
+                terminal: 'ترمینال v2.9.8',
                 githubProject: 'پروژه GitHub',
                 autoDetectClient: 'تشخیص خودکار',
                 selectionLogicText: 'هم‌منطقه → منطقه مجاور → سایر مناطق',
@@ -2722,1051 +3623,925 @@ body {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>${t.title}</title>
         <style>
-/* iOS Style CSS - cfnew App */
-
-:root {
-  --ios-blue: #007AFF;
-  --ios-blue-light: #0A84FF;
-  --ios-green: #34C759;
-  --ios-red: #FF3B30;
-  --ios-orange: #FF9500;
-  --ios-yellow: #FFCC00;
-  --ios-purple: #AF52DE;
-  --ios-bg: #F2F2F7;
-  --ios-card-bg: #FFFFFF;
-  --ios-separator: rgba(60, 60, 67, 0.12);
-  --ios-text: #000000;
-  --ios-text-secondary: #3C3C43;
-  --ios-text-tertiary: #8E8E93;
-  --ios-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --ios-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --ios-radius: 12px;
-  --ios-radius-lg: 16px;
-  --ios-font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  font-family: var(--ios-font);
-  background: var(--ios-bg);
-  color: var(--ios-text);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-}
-
-/* Container */
-.app-container {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 16px 16px 100px;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Header */
-.app-header {
-  text-align: center;
-  padding: 24px 16px;
-  margin-bottom: 16px;
-}
-
-.app-header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--ios-text);
-  margin-bottom: 4px;
-  letter-spacing: -0.5px;
-}
-
-.app-header p {
-  font-size: 15px;
-  color: var(--ios-text-secondary);
-}
-
-/* Language Switcher */
-.lang-switcher {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.lang-btn {
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid var(--ios-separator);
-  background: var(--ios-card-bg);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ios-text);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.lang-btn.active {
-  background: var(--ios-blue);
-  color: white;
-  border-color: var(--ios-blue);
-}
-
-/* Card */
-.ios-card {
-  background: var(--ios-card-bg);
-  border-radius: var(--ios-radius-lg);
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: var(--ios-shadow);
-}
-
-.card-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ios-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--ios-separator);
-}
-
-/* Section */
-.section-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ios-text);
-  margin-bottom: 12px;
-}
-
-/* Client Grid */
-.client-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.client-btn {
-  padding: 14px 16px;
-  background: var(--ios-bg);
-  border: none;
-  border-radius: var(--ios-radius);
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ios-blue);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-
-.client-btn:active {
-  transform: scale(0.97);
-  background: #E5E5EA;
-}
-
-.client-btn.selected {
-  background: var(--ios-blue);
-  color: white;
-}
-
-/* Form Elements */
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-label {
-  display: block;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ios-text);
-  margin-bottom: 8px;
-}
-
-.form-hint {
-  font-size: 12px;
-  color: var(--ios-text-tertiary);
-  margin-top: 6px;
-}
-
-.ios-input {
-  width: 100%;
-  padding: 12px 16px;
-  background: var(--ios-bg);
-  border: none;
-  border-radius: var(--ios-radius);
-  font-size: 16px;
-  font-family: var(--ios-font);
-  color: var(--ios-text);
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.ios-input:focus {
-  background: #E5E5EA;
-}
-
-.ios-input::placeholder {
-  color: var(--ios-text-tertiary);
-}
-
-.ios-select {
-  width: 100%;
-  padding: 12px 16px;
-  background: var(--ios-bg);
-  border: none;
-  border-radius: var(--ios-radius);
-  font-size: 16px;
-  font-family: var(--ios-font);
-  color: var(--ios-text);
-  cursor: pointer;
-  outline: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238E8E93' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  padding-right: 40px;
-}
-
-/* Toggle Switch */
-.ios-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--ios-separator);
-}
-
-.ios-toggle:last-child {
-  border-bottom: none;
-}
-
-.ios-toggle-label {
-  font-size: 15px;
-  color: var(--ios-text);
-  flex: 1;
-}
-
-.toggle-switch {
-  position: relative;
-  width: 51px;
-  height: 31px;
-  flex-shrink: 0;
-}
-
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggle-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #E5E5EA;
-  border-radius: 31px;
-  transition: 0.3s;
-}
-
-.toggle-slider:before {
-  position: absolute;
-  content: "";
-  height: 27px;
-  width: 27px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  border-radius: 50%;
-  transition: 0.3s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.toggle-switch input:checked + .toggle-slider {
-  background-color: var(--ios-green);
-}
-
-.toggle-switch input:checked + .toggle-slider:before {
-  transform: translateX(20px);
-}
-
-/* Toggle with description */
-.toggle-with-hint {
-  display: flex;
-  flex-direction: column;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--ios-separator);
-}
-
-.toggle-with-hint:last-child {
-  border-bottom: none;
-}
-
-.toggle-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.toggle-hint {
-  font-size: 12px;
-  color: var(--ios-text-tertiary);
-  margin-top: 4px;
-}
-
-/* Checkbox Group */
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.checkbox-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 0;
-}
-
-.checkbox-item input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
-  margin-right: 12px;
-  accent-color: var(--ios-blue);
-}
-
-.checkbox-item label {
-  font-size: 15px;
-  color: var(--ios-text);
-  cursor: pointer;
-}
-
-/* Status Panel */
-.status-panel {
-  background: var(--ios-bg);
-  border-radius: var(--ios-radius);
-  padding: 16px;
-}
-
-.status-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  font-size: 14px;
-}
-
-.status-item:not(:last-child) {
-  border-bottom: 1px solid var(--ios-separator);
-}
-
-.status-label {
-  color: var(--ios-text-secondary);
-}
-
-.status-value {
-  color: var(--ios-text);
-  font-weight: 500;
-}
-
-.status-value.success {
-  color: var(--ios-green);
-}
-
-.status-value.warning {
-  color: var(--ios-orange);
-}
-
-.status-value.error {
-  color: var(--ios-red);
-}
-
-/* Latency Test */
-.latency-section {
-  background: var(--ios-bg);
-  border-radius: var(--ios-radius);
-  padding: 16px;
-  margin-top: 12px;
-}
-
-.latency-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.latency-icon {
-  font-size: 18px;
-}
-
-.latency-title {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.latency-controls {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.latency-input-group {
-  flex: 1;
-  min-width: 100px;
-}
-
-.latency-input-group label {
-  display: block;
-  font-size: 12px;
-  color: var(--ios-text-tertiary);
-  margin-bottom: 4px;
-}
-
-.latency-input {
-  width: 100%;
-  padding: 10px 12px;
-  background: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-}
-
-.latency-buttons {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.ios-btn {
-  padding: 12px 20px;
-  border-radius: var(--ios-radius);
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-  flex: 1;
-}
-
-.ios-btn:active {
-  transform: scale(0.97);
-}
-
-.ios-btn-primary {
-  background: var(--ios-blue);
-  color: white;
-}
-
-.ios-btn-secondary {
-  background: #E5E5EA;
-  color: var(--ios-text);
-}
-
-.ios-btn-danger {
-  background: var(--ios-red);
-  color: white;
-}
-
-.ios-btn-success {
-  background: var(--ios-green);
-  color: white;
-}
-
-.latency-results {
-  max-height: 300px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.latency-result-item {
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  background: white;
-  border-radius: 8px;
-  margin-bottom: 6px;
-  gap: 10px;
-}
-
-.latency-result-item input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  accent-color: var(--ios-blue);
-}
-
-.latency-result-info {
-  flex: 1;
-  font-size: 14px;
-}
-
-.latency-result-ip {
-  color: var(--ios-text);
-}
-
-.latency-result-latency {
-  color: var(--ios-green);
-  font-weight: 600;
-  margin-left: 8px;
-}
-
-.latency-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-/* Action Bar (Bottom) */
-.action-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 12px 16px;
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
-  display: flex;
-  gap: 10px;
-  box-shadow: 0 -1px 0 var(--ios-separator);
-  z-index: 100;
-}
-
-.action-bar .ios-btn {
-  flex: 1;
-}
-
-/* Toast */
-.toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 25px;
-  font-size: 14px;
-  font-weight: 500;
-  z-index: 1000;
-  animation: toast-in 0.3s ease;
-}
-
-.toast.success {
-  background: var(--ios-green);
-}
-
-.toast.error {
-  background: var(--ios-red);
-}
-
-@keyframes toast-in {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-/* Subscription URL Display */
-.subscription-url {
-  margin-top: 16px;
-  padding: 12px 16px;
-  background: var(--ios-bg);
-  border-radius: var(--ios-radius);
-  font-size: 13px;
-  color: var(--ios-text-secondary);
-  word-break: break-all;
-  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
-}
-
-/* Divider */
-.divider {
-  height: 1px;
-  background: var(--ios-separator);
-  margin: 16px 0;
-}
-
-/* KV Status */
-.kv-status {
-  padding: 12px 16px;
-  border-radius: var(--ios-radius);
-  font-size: 14px;
-  margin-bottom: 16px;
-}
-
-.kv-status.ok {
-  background: rgba(52, 199, 89, 0.15);
-  color: var(--ios-green);
-}
-
-.kv-status.warning {
-  background: rgba(255, 149, 0, 0.15);
-  color: var(--ios-orange);
-}
-
-.kv-status.error {
-  background: rgba(255, 59, 48, 0.15);
-  color: var(--ios-red);
-}
-
-/* Protocol Selection */
-.protocol-section {
-  background: var(--ios-bg);
-  border-radius: var(--ios-radius);
-  padding: 16px;
-}
-
-/* RTL Support */
-[dir="rtl"] .lang-switcher {
-  flex-direction: row-reverse;
-}
-
-[dir="rtl"] .ios-toggle {
-  flex-direction: row-reverse;
-}
-
-[dir="rtl"] .toggle-switch {
-  transform: scaleX(-1);
-}
-
-/* Loading State */
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: var(--ios-text-tertiary);
-}
-
-/* Responsive */
-@media (max-width: 380px) {
-  .app-container {
-    padding: 12px 12px 100px;
-  }
-  
-  .client-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-  
-  .client-btn {
-    padding: 12px 10px;
-    font-size: 14px;
-  }
-}
-
-/* URL Input with Button */
-.url-input-group {
-  display: flex;
-  gap: 8px;
-}
-
-.url-input-group .ios-input {
-  flex: 1;
-}
-
-/* Link */
-.ios-link {
-  color: var(--ios-blue);
-  text-decoration: none;
-  font-size: 14px;
-}
-
-.ios-link:active {
-  opacity: 0.7;
-}
-
-/* Tag */
-.tag {
-  display: inline-block;
-  padding: 4px 10px;
-  background: var(--ios-bg);
-  border-radius: 12px;
-  font-size: 12px;
-  color: var(--ios-text-secondary);
-}
-
-/* Region Grid */
-.region-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.region-btn {
-  padding: 10px 8px;
-  background: var(--ios-bg);
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  color: var(--ios-text);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-
-.region-btn:active {
-  transform: scale(0.97);
-}
-
-.region-btn.selected {
-  background: var(--ios-blue);
-  color: white;
-}
-
-/* Copy Button */
-.copy-btn {
-  padding: 8px 16px;
-  background: var(--ios-blue);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.copy-btn:active {
-  opacity: 0.8;
-}
-
-/* Subscription Link Card */
-.sub-link-card {
-  background: var(--ios-bg);
-  border-radius: var(--ios-radius);
-  padding: 16px;
-  margin-top: 12px;
-}
-
-.sub-link-url {
-  font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 12px;
-  color: var(--ios-text);
-  word-break: break-all;
-  margin-bottom: 12px;
-  padding: 12px;
-  background: white;
-  border-radius: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-
-/* Override inline styles in pageHtml */
-.container, .header, .title, .subtitle, .card {
-  all: initial !important;
-  font-family: var(--ios-font) !important;
-  box-sizing: border-box !important;
-  display: block !important;
-}
-
-/* Container */
-.container {
-  display: block !important;
-  width: 100% !important;
-  max-width: 680px !important;
-  margin: 0 auto !important;
-  padding: 16px 16px 100px !important;
-  background: var(--ios-bg) !important;
-  min-height: 100vh !important;
-  box-sizing: border-box !important;
-}
-
-/* Header */
-.header {
-  text-align: center !important;
-  padding: 24px 16px !important;
-  margin-bottom: 16px !important;
-}
-
-/* Title */
-.title {
-  font-size: 28px !important;
-  font-weight: 700 !important;
-  color: var(--ios-text) !important;
-  margin-bottom: 4px !important;
-  letter-spacing: -0.5px !important;
-}
-
-/* Subtitle */
-.subtitle {
-  font-size: 15px !important;
-  color: var(--ios-text-secondary) !important;
-}
-
-/* Card */
-.card {
-  background: var(--ios-card-bg) !important;
-  border-radius: var(--ios-radius-lg) !important;
-  padding: 20px !important;
-  margin-bottom: 16px !important;
-  box-shadow: var(--ios-shadow) !important;
-}
-
-/* Card Title */
-.card-title {
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  color: var(--ios-text-tertiary) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  margin-bottom: 16px !important;
-  padding-bottom: 8px !important;
-  border-bottom: 1px solid var(--ios-separator) !important;
-}
-
-/* Client Grid */
-.client-grid {
-  display: grid !important;
-  grid-template-columns: repeat(2, 1fr) !important;
-  gap: 10px !important;
-}
-
-/* Client Button */
-.client-btn {
-  padding: 14px 16px !important;
-  background: var(--ios-bg) !important;
-  border: none !important;
-  border-radius: var(--ios-radius) !important;
-  font-size: 15px !important;
-  font-weight: 500 !important;
-  color: var(--ios-blue) !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  text-align: center !important;
-  display: block !important;
-  width: 100% !important;
-}
-
-/* System Status */
-#systemStatus {
-  margin: 20px 0 !important;
-  padding: 16px !important;
-  background: var(--ios-bg) !important;
-  border: none !important;
-  border-radius: var(--ios-radius) !important;
-  box-shadow: var(--ios-shadow) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  color: var(--ios-text) !important;
-}
-
-/* Config Card */
-#configCard {
-  display: none !important;
-}
-
-#configCard[style*="block"], #configCard[style*="flex"] {
-  display: block !important;
-}
-
-/* KV Status */
-#kvStatus {
-  margin-bottom: 20px !important;
-  padding: 12px 16px !important;
-  background: var(--ios-bg) !important;
-  border: none !important;
-  border-radius: var(--ios-radius) !important;
-  color: var(--ios-text-secondary) !important;
-}
-
-/* Config Content */
-#configContent {
-  display: none !important;
-}
-
-#configContent[style*="block"], #configContent[style*="flex"] {
-  display: block !important;
-}
-
-/* Form elements */
-select, input[type="text"], input[type="number"], textarea {
-  font-family: var(--ios-font) !important;
-  box-sizing: border-box !important;
-}
-
-/* Select */
-select {
-  width: 100% !important;
-  padding: 12px 16px !important;
-  background: var(--ios-bg) !important;
-  border: none !important;
-  border-radius: var(--ios-radius) !important;
-  font-size: 16px !important;
-  color: var(--ios-text) !important;
-  cursor: pointer !important;
-  outline: none !important;
-  appearance: none !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238E8E93' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 16px center !important;
-  padding-right: 40px !important;
-  color: var(--ios-text) !important;
-}
-
-/* Checkbox */
-input[type="checkbox"] {
-  width: 22px !important;
-  height: 22px !important;
-  margin-right: 8px !important;
-  accent-color: var(--ios-blue) !important;
-  cursor: pointer !important;
-}
-
-/* Labels */
-label {
-  font-size: 15px !important;
-  color: var(--ios-text) !important;
-  cursor: pointer !important;
-}
-
-/* Small text */
-small {
-  font-size: 12px !important;
-  color: var(--ios-text-tertiary) !important;
-}
-
-/* Status text colors */
-#regionStatus, #geoInfo, #backupStatus, #currentIP, #echStatus, #regionMatch, #selectionLogic {
-  color: var(--ios-text) !important;
-  font-family: var(--ios-font) !important;
-  font-size: 14px !important;
-  margin: 8px 0 !important;
-  text-shadow: none !important;
-}
-
-/* Divider */
-hr {
-  border: none !important;
-  border-top: 1px solid var(--ios-separator) !important;
-  margin: 16px 0 !important;
-}
-
-/* UUID Input */
-#uuidInput {
-  width: 100% !important;
-  padding: 12px 16px !important;
-  background: var(--ios-bg) !important;
-  border: none !important;
-  border-radius: var(--ios-radius) !important;
-  font-size: 16px !important;
-  font-family: var(--ios-font) !important;
-  color: var(--ios-text) !important;
-  outline: none !important;
-}
-
-/* Action Bar - fixed bottom */
-.cp-action-bar {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  background: var(--ios-bg) !important;
-  border-top: 1px solid var(--ios-separator) !important;
-  padding: 12px 16px !important;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  z-index: 1000 !important;
-  box-sizing: border-box !important;
-}
-
-/* Save All button - iOS blue */
-.cp-fab-save {
-  flex: 1 !important;
-  background: var(--ios-blue) !important;
-  color: white !important;
-  border: none !important;
-  border-radius: var(--ios-radius) !important;
-  padding: 14px 16px !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  font-family: var(--ios-font) !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  box-shadow: 0 2px 8px rgba(0,122,255,0.3) !important;
-  white-space: nowrap !important;
-  all: unset !important;
-}
-
-/* Refresh and Reset buttons - iOS secondary */
-.cp-action-btn {
-  background: var(--ios-card-bg) !important;
-  color: var(--ios-blue) !important;
-  border: 1px solid var(--ios-separator) !important;
-  border-radius: var(--ios-radius) !important;
-  padding: 14px 16px !important;
-  font-size: 15px !important;
-  font-weight: 500 !important;
-  font-family: var(--ios-font) !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  white-space: nowrap !important;
-  all: unset !important;
-}
-
-/* Danger (reset) button */
-.cp-action-btn-danger {
-  color: var(--ios-red) !important;
-  border-color: rgba(255,59,48,0.3) !important;
-}
-
-/* Button inner elements */
-.cp-fab-icon, .cp-btn-label {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-}
-.cp-fab-dot { display: none !important; }
-
-/* Save button text - no internal spaces */
-.cp-fab-save > span:not(.cp-fab-icon):not(.cp-fab-dot) {
-  letter-spacing: 0 !important;
-}
-
-/* Matrix rain - remove for iOS look */
-.matrix-bg, .matrix-code-rain, .cp-hud, .cp-lang-wrapper {
-  display: none !important;
-}
-
+            :root {
+                --cp-bg: #05030e;
+                --cp-bg-2: #0a0820;
+                --cp-bg-3: #110835;
+                --cp-cyan: #00f0ff;
+                --cp-cyan-d: #00b8c4;
+                --cp-pink: #ff2bd6;
+                --cp-pink-d: #d1239f;
+                --cp-purple: #a347ff;
+                --cp-yellow: #fff200;
+                --cp-mint: #00ff9d;
+                --cp-amber: #ffb400;
+                --cp-red: #ff3860;
+                --cp-text: #e6f5ff;
+                --cp-text-dim: #7aa9c4;
+                --cp-border: rgba(0, 240, 255, 0.55);
+                --cp-border-pink: rgba(255, 43, 214, 0.55);
+                --cp-grid: rgba(255, 43, 214, 0.16);
+            }
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            html, body { min-height: 100%; }
+            body {
+                font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+                background: radial-gradient(ellipse at 80% -10%, #2a0040 0%, var(--cp-bg) 50%, #000 100%);
+                color: var(--cp-text);
+                min-height: 100vh;
+                overflow-x: hidden;
+                position: relative;
+            }
+            body::before {
+                content: ""; position: fixed; inset: 0;
+                background-image:
+                    linear-gradient(var(--cp-grid) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--cp-grid) 1px, transparent 1px);
+                background-size: 48px 48px;
+                mask-image: radial-gradient(ellipse at center, #000 30%, transparent 85%);
+                z-index: -3;
+                animation: cp-grid-slide 22s linear infinite;
+                pointer-events: none;
+            }
+            body::after {
+                content: ""; position: fixed; inset: 0;
+                background: repeating-linear-gradient(
+                    180deg,
+                    rgba(255,255,255,0.035) 0,
+                    rgba(255,255,255,0.035) 1px,
+                    transparent 1px,
+                    transparent 3px
+                );
+                pointer-events: none;
+                z-index: 6;
+                mix-blend-mode: overlay;
+                animation: cp-scan-flicker 6s infinite;
+            }
+            @keyframes cp-grid-slide {
+                0% { background-position: 0 0, 0 0; }
+                100% { background-position: 48px 48px, 48px 48px; }
+            }
+            @keyframes cp-scan-flicker {
+                0%, 100% { opacity: 0.55; }
+                50% { opacity: 0.85; }
+            }
+            .matrix-bg {
+                position: fixed; inset: 0;
+                background:
+                    radial-gradient(circle at 85% 15%, rgba(255,43,214,0.18) 0%, transparent 45%),
+                    radial-gradient(circle at 10% 85%, rgba(0,240,255,0.18) 0%, transparent 45%),
+                    radial-gradient(circle at 55% 50%, rgba(163,71,255,0.10) 0%, transparent 60%);
+                z-index: -2;
+                pointer-events: none;
+            }
+            .matrix-rain { display: none; }
+            .matrix-code-rain {
+                position: fixed; inset: 0;
+                pointer-events: none; z-index: -1;
+                overflow: hidden;
+            }
+            .matrix-column {
+                position: absolute; top: -120%; left: 0;
+                color: var(--cp-cyan);
+                font-family: "JetBrains Mono", "Courier New", monospace;
+                font-size: 14px; line-height: 1.25;
+                text-shadow: 0 0 6px var(--cp-cyan), 0 0 12px rgba(0,240,255,0.5);
+                animation: cp-drop linear infinite;
+            }
+            @keyframes cp-drop {
+                0%   { top: -120%; opacity: 0; }
+                10%  { opacity: 0.85; }
+                90%  { opacity: 0.4; }
+                100% { top: 110vh; opacity: 0; }
+            }
+            .matrix-column:nth-child(odd)  { animation-duration: 12s; }
+            .matrix-column:nth-child(even) { animation-duration: 18s; color: var(--cp-pink); text-shadow: 0 0 6px var(--cp-pink), 0 0 14px rgba(255,43,214,0.5); }
+            .matrix-column:nth-child(3n)   { animation-duration: 20s; color: var(--cp-purple); text-shadow: 0 0 6px var(--cp-purple); }
+            .matrix-column:nth-child(5n)   { animation-duration: 9s; opacity: 0.6; }
+
+            ::selection { background: var(--cp-pink); color: var(--cp-bg); }
+
+            .container {
+                max-width: 1180px;
+                margin: 0 auto;
+                padding: 110px 24px 60px;
+                position: relative;
+                z-index: 1;
+            }
+            .header {
+                text-align: center;
+                margin-bottom: 36px;
+                padding: 28px 24px;
+                position: relative;
+                border: 1px solid var(--cp-border);
+                background: linear-gradient(135deg, rgba(15,3,40,0.6), rgba(40,5,70,0.45));
+                clip-path: polygon(
+                    0 14px, 14px 0,
+                    calc(100% - 80px) 0, calc(100% - 60px) 14px,
+                    100% 14px, 100% calc(100% - 14px),
+                    calc(100% - 14px) 100%, 80px 100%,
+                    60px calc(100% - 14px), 0 calc(100% - 14px)
+                );
+                box-shadow: 0 0 30px rgba(0,240,255,0.25), 0 0 60px rgba(255,43,214,0.18);
+            }
+            .header::before {
+                content: "// SYS_ID / CFNEW / NIGHTCITY.NET";
+                position: absolute; top: 8px; left: 24px;
+                font-size: 10px; letter-spacing: 0.35em;
+                color: var(--cp-pink);
+                text-shadow: 0 0 6px var(--cp-pink);
+            }
+            .header::after {
+                content: "STATUS // ONLINE";
+                position: absolute; top: 8px; right: 24px;
+                font-size: 10px; letter-spacing: 0.35em;
+                color: var(--cp-mint);
+                text-shadow: 0 0 6px var(--cp-mint);
+            }
+            .title {
+                font-size: clamp(2.2rem, 5vw, 3.4rem);
+                font-weight: 800;
+                margin: 14px 0 8px;
+                color: var(--cp-cyan);
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                text-shadow:
+                    0 0 12px var(--cp-cyan),
+                    0 0 28px rgba(0,240,255,0.5),
+                    -2px 0 var(--cp-pink),
+                    2px 0 var(--cp-mint);
+                position: relative;
+                animation: cp-title-flicker 6s infinite;
+            }
+            @keyframes cp-title-flicker {
+                0%, 92%, 100% { opacity: 1; }
+                94%, 96% { opacity: 0.65; }
+            }
+            .subtitle {
+                color: var(--cp-text-dim);
+                margin-bottom: 0;
+                font-size: 0.95rem;
+                letter-spacing: 0.25em;
+                text-transform: uppercase;
+            }
+            .subtitle::before { content: "▸ "; color: var(--cp-pink); }
+
+            .card {
+                background:
+                    linear-gradient(180deg, rgba(8,4,28,0.85) 0%, rgba(15,3,40,0.78) 100%);
+                border: 1px solid var(--cp-border);
+                border-radius: 0;
+                padding: 26px 28px 28px;
+                margin-bottom: 22px;
+                position: relative;
+                backdrop-filter: blur(8px);
+                width: 100%;
+                box-shadow:
+                    0 0 0 1px rgba(255,43,214,0.18),
+                    0 0 22px rgba(0,240,255,0.18),
+                    0 0 60px rgba(255,43,214,0.06),
+                    inset 0 0 24px rgba(0,240,255,0.05);
+                clip-path: polygon(
+                    0 16px, 16px 0,
+                    calc(100% - 56px) 0, calc(100% - 40px) 16px,
+                    100% 16px, 100% calc(100% - 14px),
+                    calc(100% - 14px) 100%, 40px 100%,
+                    24px calc(100% - 14px), 0 calc(100% - 14px)
+                );
+            }
+            .card::after {
+                content: ""; position: absolute; top: 0; left: 0; right: 0;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, var(--cp-pink), var(--cp-cyan), transparent);
+                opacity: 0.7;
+            }
+            .card-title {
+                font-size: 1.1rem;
+                margin: 0 0 20px;
+                color: var(--cp-cyan);
+                letter-spacing: 0.25em;
+                text-transform: uppercase;
+                text-shadow: 0 0 8px var(--cp-cyan);
+                display: flex; align-items: center; gap: 12px;
+                font-weight: 700;
+            }
+            .card-title::before {
+                content: ""; display: inline-block;
+                width: 14px; height: 14px;
+                background: var(--cp-pink);
+                box-shadow: 0 0 10px var(--cp-pink);
+                transform: rotate(45deg);
+            }
+            .card-title::after {
+                content: ""; flex: 1; height: 1px;
+                background: linear-gradient(90deg, var(--cp-cyan), transparent);
+                margin-left: 6px;
+            }
+            h3, h4 {
+                color: var(--cp-cyan);
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                text-shadow: 0 0 6px var(--cp-cyan);
+                font-weight: 700;
+            }
+
+            .client-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 14px;
+                margin: 12px 0 18px;
+            }
+            .client-btn {
+                background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(255,43,214,0.08));
+                border: 1px solid var(--cp-border);
+                padding: 14px 18px;
+                color: var(--cp-cyan);
+                font-family: inherit;
+                font-weight: 700;
+                font-size: 0.85rem;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-align: center;
+                position: relative;
+                overflow: hidden;
+                text-shadow: 0 0 6px var(--cp-cyan);
+                clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            }
+            .client-btn::before {
+                content: ""; position: absolute; inset: 0; left: -100%;
+                background: linear-gradient(90deg, transparent, rgba(0,240,255,0.35), transparent);
+                transition: left 0.6s ease;
+            }
+            .client-btn:hover::before { left: 100%; }
+            .client-btn:hover {
+                color: var(--cp-pink);
+                border-color: var(--cp-pink);
+                background: linear-gradient(135deg, rgba(255,43,214,0.18), rgba(0,240,255,0.10));
+                box-shadow: 0 0 14px rgba(255,43,214,0.55), 0 0 28px rgba(0,240,255,0.30);
+                transform: translateY(-2px);
+                text-shadow: 0 0 8px var(--cp-pink);
+            }
+
+            #clientSubscriptionUrl,
+            .subscription-url,
+            [class*='subscription-url'],
+            [class*='c3Vic2NyaXB0aW9u'] {
+                background: rgba(0,0,0,0.7) !important;
+                border: 1px dashed var(--cp-pink) !important;
+                padding: 14px 16px !important;
+                word-break: break-all;
+                font-family: inherit;
+                color: var(--cp-mint) !important;
+                margin-top: 18px;
+                box-shadow: inset 0 0 12px rgba(255,43,214,0.18), 0 0 18px rgba(0,255,157,0.18) !important;
+                position: relative;
+                overflow-wrap: break-word;
+                overflow-x: auto;
+                max-width: 100%;
+                font-size: 0.85rem;
+                line-height: 1.6;
+                text-shadow: 0 0 6px var(--cp-mint);
+            }
+            #clientSubscriptionUrl:empty { display: none !important; }
+
+            .cp-hud {
+                position: fixed; top: 18px; right: 22px;
+                color: var(--cp-cyan);
+                font-family: "JetBrains Mono", monospace;
+                font-size: 11px; letter-spacing: 0.2em;
+                text-transform: uppercase;
+                text-align: right;
+                opacity: 0.85;
+                z-index: 1000;
+            }
+            .cp-hud .cp-hud-label { color: var(--cp-pink); }
+            .cp-hud .cp-hud-line { display: block; }
+            .cp-lang-wrapper {
+                position: fixed; top: 18px; left: 22px; z-index: 1000;
+                display: flex; align-items: center; gap: 10px;
+            }
+            .cp-lang-tag {
+                color: var(--cp-pink); font-size: 11px;
+                letter-spacing: 0.25em; text-transform: uppercase;
+                text-shadow: 0 0 6px var(--cp-pink);
+            }
+            #languageSelector {
+                background: rgba(8,4,28,0.85);
+                border: 1px solid var(--cp-cyan);
+                color: var(--cp-cyan);
+                padding: 6px 12px;
+                font-family: inherit;
+                font-size: 12px;
+                cursor: pointer;
+                letter-spacing: 0.12em;
+                text-shadow: 0 0 6px var(--cp-cyan);
+                box-shadow: 0 0 12px rgba(0,240,255,0.35);
+                clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            }
+            #languageSelector option { background: var(--cp-bg-2); color: var(--cp-cyan); }
+
+            /* FX toggle - 页面特效图形化开关 */
+            .cp-fx-toggle {
+                position: fixed; top: 68px; left: 22px; z-index: 1001;
+                background: rgba(8,4,28,0.85);
+                border: 1px solid var(--cp-mint);
+                color: var(--cp-mint);
+                padding: 6px 12px;
+                font-family: inherit;
+                font-size: 11px;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                cursor: pointer;
+                text-shadow: 0 0 6px var(--cp-mint);
+                box-shadow: 0 0 10px rgba(0,255,157,0.35);
+                clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+                transition: all 0.2s ease;
+                display: inline-flex; align-items: center; gap: 6px;
+            }
+            .cp-fx-toggle:hover {
+                color: var(--cp-pink);
+                border-color: var(--cp-pink);
+                text-shadow: 0 0 8px var(--cp-pink);
+                box-shadow: 0 0 16px rgba(255,43,214,0.55);
+            }
+            .cp-fx-toggle .cp-fx-dot {
+                width: 6px; height: 6px;
+                background: var(--cp-mint);
+                border-radius: 50%;
+                box-shadow: 0 0 8px var(--cp-mint);
+                transition: all 0.2s;
+            }
+            body.fx-off .cp-fx-toggle {
+                color: var(--cp-text-dim);
+                border-color: var(--cp-text-dim);
+                text-shadow: none;
+                box-shadow: none;
+            }
+            body.fx-off .cp-fx-toggle .cp-fx-dot {
+                background: transparent;
+                border: 1px solid var(--cp-text-dim);
+                box-shadow: none;
+            }
+            /* FX OFF: 关闭所有装饰性特效，保留布局和配色 */
+            body.fx-off .matrix-bg,
+            body.fx-off .matrix-code-rain,
+            body.fx-off .matrix-column { display: none !important; }
+            body.fx-off::before,
+            body.fx-off::after { display: none !important; content: none !important; }
+            body.fx-off { background: var(--cp-bg) !important; }
+            body.fx-off * {
+                animation: none !important;
+                transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s !important;
+            }
+            body.fx-off .cp-glitch::before,
+            body.fx-off .cp-glitch::after { display: none !important; }
+            body.fx-off .terminal-cursor::after,
+            body.fx-off .cp-fab-save .cp-fab-dot { animation: none !important; }
+            body.fx-off .cp-fab-save:hover { transform: none !important; }
+            body.fx-off .cp-action-bar.cp-dirty::before { animation: none !important; }
+            body.fx-off .header::before { display: none !important; }
+            body.fx-off .card { backdrop-filter: none !important; }
+            body.fx-off select, body.fx-off input, body.fx-off textarea { backdrop-filter: none !important; }
+
+            /* Status panel inside card */
+            #systemStatus {
+                background: linear-gradient(135deg, rgba(0,240,255,0.05), rgba(255,43,214,0.05)) !important;
+                border: 1px solid var(--cp-border) !important;
+                padding: 18px 20px !important;
+                margin: 14px 0 0 !important;
+                box-shadow: inset 0 0 16px rgba(0,240,255,0.12) !important;
+                position: relative;
+                clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            }
+            #systemStatus > div {
+                color: var(--cp-text) !important;
+                text-shadow: none !important;
+                font-family: inherit !important;
+                margin: 6px 0 !important;
+                font-size: 0.85rem !important;
+                letter-spacing: 0.05em;
+            }
+            #systemStatus > div:first-child {
+                color: var(--cp-pink) !important;
+                font-weight: 700 !important;
+                letter-spacing: 0.25em !important;
+                text-shadow: 0 0 6px var(--cp-pink) !important;
+                margin-bottom: 14px !important;
+                text-transform: uppercase;
+            }
+
+            /* Force inputs / selects to cyberpunk */
+            input[type="text"], input[type="number"], input[type="password"],
+            select, textarea {
+                background: rgba(0,0,0,0.6) !important;
+                border: 1px solid var(--cp-border) !important;
+                color: var(--cp-cyan) !important;
+                font-family: inherit !important;
+                font-size: 13px !important;
+                padding: 10px 12px !important;
+                outline: none;
+                transition: border-color 0.2s, box-shadow 0.2s;
+                box-shadow: inset 0 0 8px rgba(0,240,255,0.08) !important;
+                letter-spacing: 0.04em;
+            }
+            input::placeholder { color: var(--cp-text-dim) !important; opacity: 0.7; }
+            input:focus, select:focus, textarea:focus {
+                border-color: var(--cp-pink) !important;
+                box-shadow: 0 0 0 1px var(--cp-pink), 0 0 14px rgba(255,43,214,0.4) !important;
+            }
+            select option { background: var(--cp-bg-2); color: var(--cp-cyan); }
+            input[type="checkbox"], input[type="radio"] {
+                accent-color: var(--cp-pink);
+            }
+
+            label {
+                color: var(--cp-cyan) !important;
+                letter-spacing: 0.05em;
+                text-shadow: 0 0 4px rgba(0,240,255,0.4);
+            }
+            label[style*="font-weight"], label[style*="bold"] {
+                font-weight: 700 !important;
+                color: var(--cp-pink) !important;
+                text-shadow: 0 0 6px var(--cp-pink) !important;
+                letter-spacing: 0.15em !important;
+                text-transform: uppercase;
+                font-size: 0.78rem !important;
+            }
+            small {
+                color: var(--cp-text-dim) !important;
+                font-size: 0.78rem !important;
+                letter-spacing: 0.04em;
+                line-height: 1.5;
+            }
+
+            /* Buttons inside forms - global override */
+            button, input[type="submit"] {
+                background: linear-gradient(135deg, rgba(0,240,255,0.15), rgba(255,43,214,0.15)) !important;
+                border: 1px solid var(--cp-border) !important;
+                color: var(--cp-cyan) !important;
+                font-family: inherit !important;
+                font-weight: 700 !important;
+                cursor: pointer;
+                padding: 10px 18px !important;
+                letter-spacing: 0.18em !important;
+                text-transform: uppercase;
+                font-size: 0.78rem !important;
+                text-shadow: 0 0 6px var(--cp-cyan) !important;
+                transition: all 0.25s ease;
+                clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+                box-shadow: 0 0 10px rgba(0,240,255,0.25);
+            }
+            button:hover, input[type="submit"]:hover {
+                color: var(--cp-pink) !important;
+                border-color: var(--cp-pink) !important;
+                box-shadow: 0 0 16px rgba(255,43,214,0.45), 0 0 32px rgba(0,240,255,0.20) !important;
+                transform: translateY(-1px);
+                text-shadow: 0 0 8px var(--cp-pink) !important;
+            }
+            button[id*="Reset"], button[onclick*="reset"], button[style*="ff0000"] {
+                color: var(--cp-red) !important;
+                border-color: var(--cp-red) !important;
+                text-shadow: 0 0 6px var(--cp-red) !important;
+                background: linear-gradient(135deg, rgba(255,56,96,0.15), rgba(255,43,214,0.10)) !important;
+            }
+            button[id*="Reset"]:hover, button[onclick*="reset"]:hover, button[style*="ff0000"]:hover {
+                box-shadow: 0 0 16px rgba(255,56,96,0.5) !important;
+            }
+            button[id="stopLatencyTest"] {
+                color: var(--cp-red) !important;
+                border-color: var(--cp-red) !important;
+            }
+
+            /* Form sub-cards */
+            .card form > div[style*="background: rgba(15, 3, 40"],
+            .card form > div[style*="background: rgba(20, 5, 50"],
+            div[style*="background: rgba(15, 3, 40"],
+            div[style*="background: rgba(20, 5, 50"] {
+                background: linear-gradient(135deg, rgba(0,240,255,0.04), rgba(255,43,214,0.04)) !important;
+                border: 1px solid var(--cp-border-pink) !important;
+                box-shadow: inset 0 0 12px rgba(255,43,214,0.06) !important;
+                border-radius: 0 !important;
+            }
+
+            /* kvStatus / statusMessage / currentConfig / pathTypeInfo */
+            #kvStatus, #statusMessage, #currentConfig, #pathTypeInfo {
+                background: rgba(0,0,0,0.55) !important;
+                border: 1px solid var(--cp-border) !important;
+                color: var(--cp-cyan) !important;
+                font-family: inherit !important;
+                box-shadow: inset 0 0 10px rgba(0,240,255,0.10) !important;
+                padding: 12px 14px !important;
+                font-size: 0.85rem !important;
+                letter-spacing: 0.04em;
+            }
+            #pathTypeInfo div:first-child {
+                color: var(--cp-pink) !important;
+                text-shadow: 0 0 6px var(--cp-pink) !important;
+                letter-spacing: 0.2em !important;
+            }
+
+            /* Latency Result list */
+            #latencyResultsList {
+                background: rgba(0,0,0,0.5) !important;
+                border: 1px solid var(--cp-border) !important;
+            }
+            #latencyResultsList > div {
+                border-bottom: 1px dashed rgba(0,240,255,0.18) !important;
+            }
+            #cityFilterContainer {
+                background: rgba(0,0,0,0.55) !important;
+                border: 1px solid var(--cp-border-pink) !important;
+            }
+
+            /* Related links area */
+            .card a {
+                color: var(--cp-cyan) !important;
+                text-decoration: none;
+                text-shadow: 0 0 6px var(--cp-cyan);
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                font-size: 0.85rem;
+                padding: 4px 0;
+                border-bottom: 1px dashed transparent;
+                transition: all 0.25s;
+            }
+            .card a:hover {
+                color: var(--cp-pink) !important;
+                border-bottom-color: var(--cp-pink);
+                text-shadow: 0 0 8px var(--cp-pink);
+            }
+
+            /* Scrollbars */
+            ::-webkit-scrollbar { width: 8px; height: 8px; }
+            ::-webkit-scrollbar-track { background: rgba(0,0,0,0.4); }
+            ::-webkit-scrollbar-thumb {
+                background: linear-gradient(180deg, var(--cp-pink), var(--cp-cyan));
+            }
+
+            .cp-glitch {
+                position: relative;
+                display: inline-block;
+            }
+
+            /* Floating action dock - bottom-right anchored FAB cluster */
+            .cp-action-bar {
+                position: fixed;
+                right: 22px;
+                bottom: 22px;
+                z-index: 99999;
+                isolation: isolate;
+                display: flex;
+                flex-direction: row-reverse;
+                align-items: center;
+                gap: 10px;
+                padding: 0;
+                background: transparent;
+                border: 0;
+                box-shadow: none;
+                max-width: calc(100vw - 32px);
+                pointer-events: auto;
+            }
+            /* Primary SAVE FAB - large, magenta, pulses when dirty */
+            .cp-fab-save {
+                position: relative;
+                min-width: 188px;
+                padding: 16px 26px !important;
+                font-size: 0.92rem !important;
+                font-weight: 800 !important;
+                letter-spacing: 0.22em !important;
+                text-transform: uppercase;
+                color: var(--cp-pink) !important;
+                background:
+                    linear-gradient(135deg, rgba(255,43,214,0.45) 0%, rgba(0,240,255,0.25) 100%) !important;
+                border: 2px solid var(--cp-pink) !important;
+                text-shadow: 0 0 10px var(--cp-pink) !important;
+                box-shadow:
+                    0 0 0 1px rgba(0,240,255,0.4),
+                    0 0 24px rgba(255,43,214,0.7),
+                    0 0 48px rgba(255,43,214,0.35),
+                    inset 0 0 18px rgba(255,43,214,0.25) !important;
+                clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+                cursor: pointer;
+                transition: transform 0.18s ease, box-shadow 0.25s ease;
+                display: inline-flex; align-items: center; gap: 10px;
+                white-space: nowrap;
+                font-family: inherit !important;
+                animation: cp-fab-breathe 3.4s ease-in-out infinite;
+            }
+            @keyframes cp-fab-breathe {
+                0%, 100% {
+                    box-shadow:
+                        0 0 0 1px rgba(0,240,255,0.4),
+                        0 0 24px rgba(255,43,214,0.7),
+                        0 0 48px rgba(255,43,214,0.35),
+                        inset 0 0 18px rgba(255,43,214,0.25);
+                }
+                50% {
+                    box-shadow:
+                        0 0 0 1px rgba(0,240,255,0.55),
+                        0 0 32px rgba(255,43,214,0.9),
+                        0 0 80px rgba(255,43,214,0.45),
+                        inset 0 0 24px rgba(255,43,214,0.4);
+                }
+            }
+            .cp-fab-save:hover {
+                transform: translateY(-3px) scale(1.03);
+                color: #fff !important;
+                text-shadow: 0 0 14px #fff, 0 0 22px var(--cp-pink) !important;
+            }
+            .cp-fab-save .cp-fab-icon {
+                font-size: 1.15em;
+                line-height: 1;
+                color: var(--cp-cyan);
+                text-shadow: 0 0 10px var(--cp-cyan);
+            }
+            .cp-fab-save .cp-fab-dot {
+                width: 8px; height: 8px;
+                background: var(--cp-mint);
+                box-shadow: 0 0 8px var(--cp-mint);
+                transform: rotate(45deg);
+                margin-left: 4px;
+                opacity: 0.5;
+                transition: all 0.2s;
+            }
+            .cp-action-bar.cp-dirty .cp-fab-save {
+                animation: cp-fab-dirty 1.1s ease-in-out infinite;
+                color: #fff !important;
+            }
+            .cp-action-bar.cp-dirty .cp-fab-save .cp-fab-dot {
+                background: var(--cp-pink);
+                box-shadow: 0 0 12px var(--cp-pink), 0 0 24px var(--cp-pink);
+                opacity: 1;
+            }
+            @keyframes cp-fab-dirty {
+                0%, 100% {
+                    box-shadow:
+                        0 0 0 1px var(--cp-pink),
+                        0 0 24px rgba(255,43,214,0.85),
+                        0 0 60px rgba(255,43,214,0.5),
+                        inset 0 0 22px rgba(255,43,214,0.45);
+                    transform: scale(1);
+                }
+                50% {
+                    box-shadow:
+                        0 0 0 2px var(--cp-pink),
+                        0 0 40px rgba(255,43,214,1),
+                        0 0 100px rgba(255,43,214,0.7),
+                        inset 0 0 30px rgba(255,43,214,0.6);
+                    transform: scale(1.04);
+                }
+            }
+            /* Secondary mini buttons - icon-first */
+            .cp-action-btn {
+                background: rgba(8,4,28,0.85) !important;
+                border: 1px solid var(--cp-border) !important;
+                color: var(--cp-cyan) !important;
+                font-family: inherit !important;
+                font-weight: 700 !important;
+                cursor: pointer;
+                width: 46px; height: 46px;
+                padding: 0 !important;
+                letter-spacing: 0 !important;
+                font-size: 1.05rem !important;
+                text-shadow: 0 0 6px var(--cp-cyan) !important;
+                transition: all 0.25s ease;
+                clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+                box-shadow: 0 0 10px rgba(0,240,255,0.35);
+                display: inline-flex; align-items: center; justify-content: center;
+                white-space: nowrap;
+                position: relative;
+            }
+            .cp-action-btn .cp-btn-label { display: none; }
+            .cp-action-btn::after {
+                content: attr(data-tip);
+                position: absolute;
+                bottom: 100%; right: 50%;
+                transform: translate(50%, -8px);
+                background: rgba(8,4,28,0.95);
+                color: var(--cp-cyan);
+                font-size: 10px;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                padding: 5px 9px;
+                border: 1px solid var(--cp-border);
+                opacity: 0; pointer-events: none;
+                transition: opacity 0.2s;
+                white-space: nowrap;
+                text-shadow: 0 0 5px var(--cp-cyan);
+                box-shadow: 0 0 10px rgba(0,240,255,0.4);
+            }
+            .cp-action-btn:hover::after { opacity: 1; }
+            .cp-action-btn:hover {
+                color: var(--cp-pink) !important;
+                border-color: var(--cp-pink) !important;
+                box-shadow: 0 0 16px rgba(255,43,214,0.55) !important;
+                transform: translateY(-2px);
+                text-shadow: 0 0 8px var(--cp-pink) !important;
+            }
+            .cp-action-btn-danger {
+                color: var(--cp-red) !important;
+                border-color: var(--cp-red) !important;
+                text-shadow: 0 0 6px var(--cp-red) !important;
+                box-shadow: 0 0 10px rgba(255,56,96,0.45) !important;
+            }
+            .cp-action-btn-danger:hover {
+                color: #fff !important;
+                box-shadow: 0 0 20px rgba(255,56,96,0.85) !important;
+                transform: translateY(-2px);
+            }
+            .cp-action-btn-saving,
+            .cp-fab-save.cp-action-btn-saving {
+                opacity: 0.7;
+                pointer-events: none;
+                animation: cp-pulse-pink 0.9s ease-in-out infinite !important;
+            }
+            @keyframes cp-pulse-pink {
+                0%, 100% { box-shadow: 0 0 12px rgba(255,43,214,0.45); }
+                50%      { box-shadow: 0 0 36px rgba(255,43,214,0.95); }
+            }
+            .container { padding-bottom: 130px; }
+            .cp-action-status {
+                position: fixed;
+                right: 22px;
+                bottom: 86px;
+                z-index: 99998;
+                padding: 9px 16px;
+                background: rgba(8,4,28,0.95);
+                border: 1px solid var(--cp-mint);
+                color: var(--cp-mint);
+                font-size: 0.78rem;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                text-shadow: 0 0 6px var(--cp-mint);
+                box-shadow: 0 0 14px rgba(0,255,157,0.45);
+                clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+                opacity: 0;
+                transform: translateY(8px);
+                transition: opacity 0.25s, transform 0.25s;
+                pointer-events: none;
+                white-space: nowrap;
+                max-width: calc(100vw - 44px);
+                overflow: hidden; text-overflow: ellipsis;
+            }
+            .cp-action-status.cp-show { opacity: 1; transform: translateY(0); }
+            .cp-action-status.cp-err {
+                border-color: var(--cp-red);
+                color: var(--cp-red);
+                text-shadow: 0 0 6px var(--cp-red);
+                box-shadow: 0 0 14px rgba(255,56,96,0.55);
+            }
+            /* Toast notification stack (top-right) */
+            .cp-toast-stack {
+                position: fixed;
+                top: 88px;
+                right: 22px;
+                z-index: 100000;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                max-width: min(420px, calc(100vw - 32px));
+                pointer-events: none;
+            }
+            .cp-toast {
+                position: relative;
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 12px 16px 12px 14px;
+                background: linear-gradient(135deg, rgba(8,4,28,0.96) 0%, rgba(20,5,50,0.92) 100%);
+                border: 1px solid var(--cp-mint);
+                color: var(--cp-mint);
+                font-size: 0.82rem;
+                line-height: 1.45;
+                letter-spacing: 0.06em;
+                text-shadow: 0 0 6px var(--cp-mint);
+                box-shadow:
+                    0 0 0 1px rgba(0,255,157,0.25),
+                    0 0 18px rgba(0,255,157,0.45),
+                    0 8px 28px rgba(0,0,0,0.55);
+                backdrop-filter: blur(8px);
+                clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+                transform: translateX(120%);
+                opacity: 0;
+                transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s;
+                pointer-events: auto;
+                overflow: hidden;
+                word-break: break-all;
+            }
+            .cp-toast.cp-show { transform: translateX(0); opacity: 1; }
+            .cp-toast.cp-hide { transform: translateX(120%); opacity: 0; }
+            .cp-toast::before {
+                content: "";
+                position: absolute;
+                left: 0; top: 0; bottom: 0;
+                width: 3px;
+                background: var(--cp-mint);
+                box-shadow: 0 0 10px var(--cp-mint);
+            }
+            .cp-toast-icon {
+                font-size: 1.1rem;
+                line-height: 1;
+                margin-top: 1px;
+                flex-shrink: 0;
+                color: var(--cp-mint);
+                text-shadow: 0 0 8px var(--cp-mint);
+            }
+            .cp-toast-body { flex: 1; min-width: 0; }
+            .cp-toast-title {
+                font-size: 0.72rem;
+                font-weight: 800;
+                letter-spacing: 0.22em;
+                text-transform: uppercase;
+                opacity: 0.85;
+                margin-bottom: 2px;
+            }
+            .cp-toast-msg { white-space: pre-wrap; }
+            .cp-toast-close {
+                position: absolute;
+                top: 6px; right: 8px;
+                background: transparent;
+                border: 0;
+                color: inherit;
+                font-size: 14px;
+                cursor: pointer;
+                opacity: 0.55;
+                padding: 2px 4px;
+                line-height: 1;
+                transition: opacity 0.2s;
+            }
+            .cp-toast-close:hover { opacity: 1; }
+            .cp-toast::after {
+                content: "";
+                position: absolute;
+                left: 0; bottom: 0;
+                height: 2px;
+                width: 100%;
+                background: linear-gradient(90deg, var(--cp-mint), transparent);
+                box-shadow: 0 0 6px var(--cp-mint);
+                transform-origin: left;
+                animation: cp-toast-bar var(--cp-toast-dur, 3200ms) linear forwards;
+            }
+            @keyframes cp-toast-bar {
+                from { transform: scaleX(1); }
+                to   { transform: scaleX(0); }
+            }
+            .cp-toast.cp-toast-success { border-color: var(--cp-mint); color: var(--cp-mint); text-shadow: 0 0 6px var(--cp-mint); }
+            .cp-toast.cp-toast-success::before,
+            .cp-toast.cp-toast-success::after { background: var(--cp-mint); box-shadow: 0 0 10px var(--cp-mint); }
+            .cp-toast.cp-toast-success .cp-toast-icon { color: var(--cp-mint); text-shadow: 0 0 8px var(--cp-mint); }
+            .cp-toast.cp-toast-info { border-color: var(--cp-cyan); color: var(--cp-cyan); text-shadow: 0 0 6px var(--cp-cyan); box-shadow: 0 0 0 1px rgba(0,240,255,0.25), 0 0 18px rgba(0,240,255,0.45), 0 8px 28px rgba(0,0,0,0.55); }
+            .cp-toast.cp-toast-info::before,
+            .cp-toast.cp-toast-info::after { background: var(--cp-cyan); box-shadow: 0 0 10px var(--cp-cyan); }
+            .cp-toast.cp-toast-info .cp-toast-icon { color: var(--cp-cyan); text-shadow: 0 0 8px var(--cp-cyan); }
+            .cp-toast.cp-toast-warn { border-color: var(--cp-amber); color: var(--cp-amber); text-shadow: 0 0 6px var(--cp-amber); box-shadow: 0 0 0 1px rgba(255,176,46,0.25), 0 0 18px rgba(255,176,46,0.45), 0 8px 28px rgba(0,0,0,0.55); }
+            .cp-toast.cp-toast-warn::before,
+            .cp-toast.cp-toast-warn::after { background: var(--cp-amber); box-shadow: 0 0 10px var(--cp-amber); }
+            .cp-toast.cp-toast-warn .cp-toast-icon { color: var(--cp-amber); text-shadow: 0 0 8px var(--cp-amber); }
+            .cp-toast.cp-toast-error { border-color: var(--cp-red); color: var(--cp-red); text-shadow: 0 0 6px var(--cp-red); box-shadow: 0 0 0 1px rgba(255,56,96,0.30), 0 0 18px rgba(255,56,96,0.55), 0 8px 28px rgba(0,0,0,0.55); }
+            .cp-toast.cp-toast-error::before,
+            .cp-toast.cp-toast-error::after { background: var(--cp-red); box-shadow: 0 0 10px var(--cp-red); }
+            .cp-toast.cp-toast-error .cp-toast-icon { color: var(--cp-red); text-shadow: 0 0 8px var(--cp-red); }
+
+            /* Tiny floating "unsaved" badge on the FAB */
+            .cp-action-bar.cp-dirty::before {
+                content: "● UNSAVED";
+                position: absolute;
+                top: -22px; right: 6px;
+                font-size: 9px;
+                letter-spacing: 0.3em;
+                color: var(--cp-pink);
+                text-shadow: 0 0 6px var(--cp-pink);
+                background: rgba(8,4,28,0.92);
+                padding: 3px 8px;
+                border: 1px solid var(--cp-pink);
+                box-shadow: 0 0 10px rgba(255,43,214,0.6);
+                animation: cp-pulse-pink 1.6s ease-in-out infinite;
+            }
+
+            @media (max-width: 720px) {
+                .container { padding: 100px 14px 140px; }
+                .card { padding: 22px 18px; }
+                .header { padding: 22px 18px; }
+                .title { font-size: 2rem; }
+                .cp-hud { font-size: 9px; }
+                .cp-action-bar {
+                    right: 50%;
+                    bottom: 14px;
+                    transform: translateX(50%);
+                    gap: 8px;
+                }
+                .cp-fab-save {
+                    min-width: 0;
+                    padding: 13px 18px !important;
+                    font-size: 0.8rem !important;
+                    letter-spacing: 0.16em !important;
+                }
+                .cp-action-btn { width: 42px; height: 42px; }
+                .cp-action-status { right: 50%; transform: translate(50%, 8px); }
+                .cp-action-status.cp-show { transform: translate(50%, 0); }
+            }
         </style>
     </head>
     <body>
@@ -3784,6 +4559,10 @@ hr {
                     <option value="fa" ${isFarsi ? 'selected' : ''}>🇮🇷 فارسی</option>
                 </select>
             </div>
+            <button type="button" id="cpFxToggle" class="cp-fx-toggle" onclick="cpToggleFx()" title="${isFarsi ? 'تغییر افکت‌های صفحه' : '切换页面特效'}" aria-label="FX toggle">
+                <span class="cp-fx-dot" aria-hidden="true"></span>
+                <span id="cpFxLabel">FX: ON</span>
+            </button>
         <div class="container">
             <div class="header">
                     <h1 class="title cp-glitch" data-text="${t.title}">${t.title}</h1>
@@ -3807,27 +4586,27 @@ hr {
             </div>
             <div class="card">
                     <h2 class="card-title">${t.systemStatus}</h2>
-                <div id="systemStatus" style="margin: 20px 0; padding: 16px; background: var(--ios-bg); border: none; border-radius: var(--ios-radius); box-shadow: var(--ios-shadow); position: relative; overflow: hidden;">
-                        <div style="color: var(--ios-text-secondary); margin-bottom: 15px; font-weight: 600; font-size: 14px;">[ ${t.checking} ]</div>
-                        <div id="regionStatus" style="margin: 8px 0; color: var(--ios-text); font-family: var(--ios-font); font-size: 14px;">${t.workerRegion}${t.checking}</div>
-                        <div id="geoInfo" style="margin: 8px 0; color: var(--ios-text-secondary); font-family: var(--ios-font); font-size: 13px;">${t.detectionMethod}${t.checking}</div>
-                        <div id="backupStatus" style="margin: 8px 0; color: var(--ios-text); font-family: var(--ios-font); font-size: 14px;">${t.proxyIPStatus}${t.checking}</div>
-                        <div id="currentIP" style="margin: 8px 0; color: var(--ios-text); font-family: var(--ios-font); font-size: 14px;">${t.currentIP}${t.checking}</div>
-                        <div id="echStatus" style="margin: 8px 0; color: var(--ios-text); font-family: var(--ios-font); font-size: 13px;">ECH状态: ${t.checking}</div>
-                        <div id="regionMatch" style="margin: 8px 0; color: var(--ios-text); font-family: var(--ios-font); font-size: 14px;">${t.regionMatch}${t.checking}</div>
-                        <div id="selectionLogic" style="margin: 8px 0; color: var(--ios-text-secondary); font-family: var(--ios-font); font-size: 13px;">${t.selectionLogic}${t.selectionLogicText}</div>
+                <div id="systemStatus" style="margin: 20px 0; padding: 15px; background: rgba(8, 4, 28, 0.8); border: 2px solid #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 0 15px rgba(0, 240, 255, 0.1); position: relative; overflow: hidden;">
+                        <div style="color: #00f0ff; margin-bottom: 15px; font-weight: bold; text-shadow: 0 0 5px #00f0ff;">[ ${t.checking} ]</div>
+                        <div id="regionStatus" style="margin: 8px 0; color: #00f0ff; font-family: 'Courier New', monospace; text-shadow: 0 0 3px #00f0ff;">${t.workerRegion}${t.checking}</div>
+                        <div id="geoInfo" style="margin: 8px 0; color: #7aa9c4; font-family: 'Courier New', monospace; font-size: 0.9rem; text-shadow: 0 0 3px #7aa9c4;">${t.detectionMethod}${t.checking}</div>
+                        <div id="backupStatus" style="margin: 8px 0; color: #00f0ff; font-family: 'Courier New', monospace; text-shadow: 0 0 3px #00f0ff;">${t.proxyIPStatus}${t.checking}</div>
+                        <div id="currentIP" style="margin: 8px 0; color: #00f0ff; font-family: 'Courier New', monospace; text-shadow: 0 0 3px #00f0ff;">${t.currentIP}${t.checking}</div>
+                        <div id="echStatus" style="margin: 8px 0; color: #00f0ff; font-family: 'Courier New', monospace; text-shadow: 0 0 3px #00f0ff; font-size: 0.9rem;">ECH状态: ${t.checking}</div>
+                        <div id="regionMatch" style="margin: 8px 0; color: #00f0ff; font-family: 'Courier New', monospace; text-shadow: 0 0 3px #00f0ff;">${t.regionMatch}${t.checking}</div>
+                        <div id="selectionLogic" style="margin: 8px 0; color: #7aa9c4; font-family: 'Courier New', monospace; font-size: 0.9rem; text-shadow: 0 0 3px #7aa9c4;">${t.selectionLogic}${t.selectionLogicText}</div>
                 </div>
             </div>
             <div class="card" id="configCard" style="display: none;">
                     <h2 class="card-title">${t.configManagement}</h2>
-                <div id="kvStatus" style="margin-bottom: 20px; padding: 12px 16px; background: var(--ios-bg); border: none; border-radius: var(--ios-radius); color: var(--ios-text-secondary);">
+                <div id="kvStatus" style="margin-bottom: 20px; padding: 10px; background: rgba(8, 4, 28, 0.8); border: 1px solid #00f0ff; color: #00f0ff;">
                     ${t.kvStatusChecking}
                 </div>
                 <div id="configContent" style="display: none;">
                     <form id="regionForm" style="margin-bottom: 20px;">
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: var(--ios-text); font-weight: 600; font-size: 15px;">${t.specifyRegion}</label>
-                            <select id="wkRegion" style="width: 100%; padding: 12px 16px; background: var(--ios-bg); border: none; border-radius: var(--ios-radius); font-family: var(--ios-font); font-size: 16px; color: var(--ios-text); appearance: none;">
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.specifyRegion}</label>
+                            <select id="wkRegion" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                     <option value="">${t.autoDetect}</option>
                                     <option value="HK">${t.regionNames.HK}</option>
                                     <option value="US">${t.regionNames.US}</option>
@@ -3845,7 +4624,7 @@ hr {
                     </form>
                     <form id="otherConfigForm" style="margin-bottom: 20px;">
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.protocolSelection}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.protocolSelection}</label>
                             <div style="padding: 15px; background: rgba(15, 3, 40, 0.6); border: 1px solid #00f0ff; border-radius: 5px;">
                                 <div style="margin-bottom: 10px;">
                                     <label style="display: inline-flex; align-items: center; cursor: pointer; color: #00f0ff;">
@@ -3893,33 +4672,33 @@ hr {
                             </div>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.customHomepage}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.customHomepage}</label>
                                 <input type="text" id="customHomepage" placeholder="${t.customHomepagePlaceholder}" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${t.customHomepageHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.customPath}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.customPath}</label>
                                 <input type="text" id="customPath" placeholder="${isFarsi ? 'مثال: /mypath یا خالی بگذارید تا از UUID استفاده شود' : '例如: /mypath 或留空使用 UUID'}" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${isFarsi ? 'مسیر اشتراک سفارشی. اگر خالی بگذارید از UUID به عنوان مسیر استفاده می‌شود.' : '自定义订阅路径。留空则使用 UUID 作为路径。'}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.customIP}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.customIP}</label>
                                 <input type="text" id="customIP" placeholder="${isFarsi ? 'مثال: 1.2.3.4:443' : '例如: 1.2.3.4:443'}" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${isFarsi ? 'آدرس و پورت ProxyIP سفارشی' : '自定义ProxyIP地址和端口'}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.preferredIPs}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.preferredIPs}</label>
                                 <input type="text" id="yx" placeholder="${isFarsi ? 'مثال: 1.2.3.4:443#گره هنگ‌کنگ,5.6.7.8:80#گره آمریکا,example.com:8443#گره سنگاپور' : '例如: 1.2.3.4:443#日本节点,5.6.7.8:80#美国节点,example.com:8443#新加坡节点'}" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${isFarsi ? 'فرمت: IP:پورت#نام گره یا IP:پورت (بدون # از نام پیش‌فرض استفاده می‌شود). پشتیبانی از چندین مورد، با کاما جدا می‌شوند. <span style="color: #ffb400;">IP های اضافه شده از طریق API به طور خودکار در اینجا نمایش داده می‌شوند.</span>' : '格式: IP:端口#节点名称 或 IP:端口 (无#则使用默认名称)。支持多个，用逗号分隔。<span style="color: #ffb400;">API添加的IP会自动显示在这里。</span>'}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.preferredIPsURL}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.preferredIPsURL}</label>
                                 <input type="text" id="yxURL" placeholder="${isFarsi ? 'URL منبع لیست IP ترجیحی را وارد کنید' : '输入优选IP列表来源URL'}" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${isFarsi ? 'URL منبع لیست IP ترجیحی سفارشی، اگر خالی بگذارید از آدرس پیش‌فرض استفاده می‌شود' : '自定义优选IP列表来源URL，留空则使用默认地址'}</small>
                         </div>
                         
                         <div style="margin-bottom: 20px; padding: 15px; background: rgba(20, 5, 50, 0.6); border: 2px solid #7aa9c4; border-radius: 8px;">
-                            <h4 style="color: #00f0ff; margin: 0 0 15px 0; font-size: 1.1rem; text-shadow: none;">⚡ ${t.latencyTest}</h4>
+                            <h4 style="color: #00f0ff; margin: 0 0 15px 0; font-size: 1.1rem; text-shadow: 0 0 5px #00f0ff;">⚡ ${t.latencyTest}</h4>
                             <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;">
                                 <div style="min-width: 120px;">
                                     <label style="display: block; margin-bottom: 5px; color: #00f0ff; font-size: 0.9rem;">${t.ipSource}</label>
@@ -3991,7 +4770,7 @@ hr {
                         </div>
 
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.socks5Config}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.socks5Config}</label>
                                 <input type="text" id="socksConfig" placeholder="${isFarsi ? 'مثال: user:pass@host:port یا host:port' : '例如: user:pass@host:port 或 host:port'}" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${isFarsi ? 'آدرس پروکسی SOCKS5، برای انتقال تمام ترافیک خروجی استفاده می‌شود' : 'SOCKS5代理地址，用于转发所有出站流量'}</small>
                         </div>
@@ -4000,12 +4779,12 @@ hr {
                     <h3 style="color: #00f0ff; margin: 20px 0 15px 0; font-size: 1.2rem;">${t.advancedControl}</h3>
                     <form id="advancedConfigForm" style="margin-bottom: 20px;">
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.subscriptionConverter}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.subscriptionConverter}</label>
                                 <input type="text" id="scu" placeholder="${t.subscriptionConverterPlaceholder}" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${t.subscriptionConverterHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.builtinPreferred}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.builtinPreferred}</label>
                             <div style="padding: 15px; background: rgba(15, 3, 40, 0.6); border: 1px solid #00f0ff; border-radius: 5px;">
                                 <div style="margin-bottom: 10px;">
                                     <label style="display: inline-flex; align-items: center; cursor: pointer; color: #00f0ff;">
@@ -4035,10 +4814,10 @@ hr {
                             </div>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">优选IP筛选设置</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">优选IP筛选设置</label>
                             <div style="padding: 15px; background: rgba(15, 3, 40, 0.6); border: 1px solid #00f0ff; border-radius: 5px;">
                                 <div style="margin-bottom: 15px;">
-                                    <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">IP版本选择</label>
+                                    <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">IP版本选择</label>
                                     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                                         <label style="display: inline-flex; align-items: center; cursor: pointer; color: #00f0ff;">
                                             <input type="checkbox" id="ipv4Enabled" checked style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
@@ -4051,7 +4830,7 @@ hr {
                                     </div>
                                 </div>
                                 <div style="margin-bottom: 10px;">
-                                    <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">运营商选择</label>
+                                    <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">运营商选择</label>
                                     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                                         <label style="display: inline-flex; align-items: center; cursor: pointer; color: #00f0ff;">
                                             <input type="checkbox" id="ispMobile" checked style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
@@ -4071,7 +4850,7 @@ hr {
                             </div>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.allowAPIManagement}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.allowAPIManagement}</label>
                             <select id="apiEnabled" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                     <option value="">${t.apiEnabledDefault}</option>
                                     <option value="yes">${t.apiEnabledYes}</option>
@@ -4079,7 +4858,7 @@ hr {
                                 <small style="color: #ffb400; font-size: 0.85rem;">${t.apiEnabledHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.regionMatching}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.regionMatching}</label>
                             <select id="regionMatching" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                     <option value="">${t.regionMatchingDefault}</option>
                                     <option value="no">${t.regionMatchingNo}</option>
@@ -4087,7 +4866,7 @@ hr {
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${t.regionMatchingHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.downgradeControl}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.downgradeControl}</label>
                             <select id="downgradeControl" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                     <option value="">${t.downgradeControlDefault}</option>
                                     <option value="no">${t.downgradeControlNo}</option>
@@ -4095,7 +4874,7 @@ hr {
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${t.downgradeControlHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.tlsControl}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.tlsControl}</label>
                             <select id="portControl" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                     <option value="">${t.tlsControlDefault}</option>
                                     <option value="yes">${t.tlsControlYes}</option>
@@ -4103,7 +4882,7 @@ hr {
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${t.tlsControlHint}</small>
                         </div>
                         <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: none;">${t.preferredControl}</label>
+                                <label style="display: block; margin-bottom: 8px; color: #00f0ff; font-weight: bold; text-shadow: 0 0 3px #00f0ff;">${t.preferredControl}</label>
                             <select id="preferredControl" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00f0ff; color: #00f0ff; font-family: 'Courier New', monospace; font-size: 14px;">
                                     <option value="">${t.preferredControlDefault}</option>
                                     <option value="yes">${t.preferredControlYes}</option>
@@ -4111,22 +4890,22 @@ hr {
                                 <small style="color: #7aa9c4; font-size: 0.85rem;">${t.preferredControlHint}</small>
                         </div>
                     </form>
-                    <div id="currentConfig" style="background: #0f172a; border: 1px solid #334155; padding: 15px; margin: 10px 0; font-family: 'Courier New', monospace; color: #e2e8f0; word-break: break-all; overflow-wrap: break-word; border-radius: 8px;">
+                    <div id="currentConfig" style="background: rgba(0, 0, 0, 0.9); border: 1px solid #00f0ff; padding: 15px; margin: 10px 0; font-family: 'Courier New', monospace; color: #00f0ff;">
                             ${t.loading}
                     </div>
-                    <div id="pathTypeInfo" style="background: #0f172a; border: 1px solid #334155; padding: 15px; margin: 10px 0; font-family: 'Courier New', monospace; color: #e2e8f0; border-radius: 8px;">
-                            <div style="font-weight: bold; margin-bottom: 8px; color: #e2e8f0; font-size: 0.9rem;">${t.currentConfig}</div>
+                    <div id="pathTypeInfo" style="background: rgba(15, 3, 40, 0.7); border: 1px solid #00f0ff; padding: 15px; margin: 10px 0; font-family: 'Courier New', monospace; color: #00f0ff;">
+                            <div style="font-weight: bold; margin-bottom: 8px; color: #00ff9d; text-shadow: 0 0 5px #00ff9d;">${t.currentConfig}</div>
                             <div id="pathTypeStatus">${t.checking}</div>
                     </div>
                 </div>
-                <div id="statusMessage" style="display: none; padding: 10px; margin: 10px 0; border: 1px solid #00f0ff; background: rgba(8, 4, 28, 0.8); color: #00f0ff; text-shadow: none;"></div>
+                <div id="statusMessage" style="display: none; padding: 10px; margin: 10px 0; border: 1px solid #00f0ff; background: rgba(8, 4, 28, 0.8); color: #00f0ff; text-shadow: 0 0 5px #00f0ff;"></div>
             </div>
             
             <div class="card">
                     <h2 class="card-title">${t.relatedLinks}</h2>
                 <div style="text-align: center; margin: 20px 0;">
-                        <a href="https://github.com/byJoey/cfnew" target="_blank" style="color: #94a3b8; text-decoration: none; margin: 0 20px; font-size: 1rem; transition: color 0.2s;">${t.githubProject}</a>
-                    <a href="https://www.youtube.com/@joeyblog" target="_blank" style="color: #94a3b8; text-decoration: none; margin: 0 20px; font-size: 1rem; transition: color 0.2s;">YouTube @joeyblog</a>
+                        <a href="https://github.com/byJoey/cfnew" target="_blank" style="color: #00f0ff; text-decoration: none; margin: 0 20px; font-size: 1.2rem; text-shadow: 0 0 5px #00f0ff;">${t.githubProject}</a>
+                    <a href="https://www.youtube.com/@joeyblog" target="_blank" style="color: #00f0ff; text-decoration: none; margin: 0 20px; font-size: 1.2rem; text-shadow: 0 0 5px #00f0ff;">YouTube @joeyblog</a>
                 </div>
             </div>
         </div>
@@ -4135,7 +4914,7 @@ hr {
         <div id="cpActionBar" class="cp-action-bar" role="toolbar" aria-label="${t.configManagement}">
             <button type="button" id="cpBtnSaveAll" class="cp-fab-save" title="${isFarsi ? 'ذخیره همه تنظیمات' : '保存所有配置 (Ctrl+S)'}">
                 <span class="cp-fab-icon">▣</span>
-                <span>${isFarsi ? 'ذخیره همه' : '保存全部'}</span>
+                <span>${isFarsi ? 'ذخیره همه' : '保 存 全 部'}</span>
                 <span class="cp-fab-dot" aria-hidden="true"></span>
             </button>
             <button type="button" id="cpBtnRefresh" class="cp-action-btn" data-tip="${t.refreshConfig}" aria-label="${t.refreshConfig}">
@@ -4366,21 +5145,18 @@ hr {
                         });
                     }
                 } else {
-                    // 检查 ECH 是否开启
-                    var echEnabled = document.getElementById('ech') && document.getElementById('ech').checked;
+                    // 统一走内部订阅转换 (?target=xxx)，不再依赖外部 sub-converter
+                    finalUrl = subscriptionUrl + (subscriptionUrl.includes('?') ? '&' : '?') + "target=" + clientType;
+                    var urlElement = document.getElementById("clientSubscriptionUrl");
+                    urlElement.textContent = finalUrl;
+                    urlElement.style.display = "block";
+                    urlElement.style.overflowWrap = "break-word";
+                    urlElement.style.wordBreak = "break-all";
+                    urlElement.style.overflowX = "auto";
+                    urlElement.style.maxWidth = "100%";
+                    urlElement.style.boxSizing = "border-box";
 
-                    // 如果 ECH 开启且是 Clash，直接使用后端接口
-                    if (echEnabled && clientType === atob('Y2xhc2g=')) {
-                        finalUrl = subscriptionUrl + "?target=" + clientType;
-                        var urlElement = document.getElementById("clientSubscriptionUrl");
-                        urlElement.textContent = finalUrl;
-                        urlElement.style.display = "block";
-                        urlElement.style.overflowWrap = "break-word";
-                        urlElement.style.wordBreak = "break-all";
-                        urlElement.style.overflowX = "auto";
-                        urlElement.style.maxWidth = "100%";
-                        urlElement.style.boxSizing = "border-box";
-
+                    if (clientType === atob('Y2xhc2g=')) {
                         if (clientName === 'STASH') {
                             schemeUrl = 'stash://install?url=' + encodeURIComponent(finalUrl);
                             displayName = 'STASH';
@@ -4388,69 +5164,65 @@ hr {
                             schemeUrl = 'clash://install-config?url=' + encodeURIComponent(finalUrl);
                             displayName = 'CLASH';
                         }
+                    } else if (clientType === atob('c3VyZ2U=')) {
+                        schemeUrl = 'surge:///install-config?url=' + encodeURIComponent(finalUrl);
+                        displayName = 'SURGE';
+                    } else if (clientType === atob('c2luZ2JveA==')) {
+                        schemeUrl = 'sing-box://install-config?url=' + encodeURIComponent(finalUrl);
+                        displayName = 'SING-BOX';
+                    } else if (clientType === atob('bG9vbg==')) {
+                        schemeUrl = 'loon://install?url=' + encodeURIComponent(finalUrl);
+                        displayName = 'LOON';
+                    } else if (clientType === atob('cXVhbng=')) {
+                        schemeUrl = 'quantumult-x://install-config?url=' + encodeURIComponent(finalUrl);
+                        displayName = 'QUANTUMULT X';
+                    }
 
-                        if (schemeUrl) {
-                            tryOpenApp(schemeUrl, function() {
-                                navigator.clipboard.writeText(finalUrl).then(function() {
-                                    cpToast(displayName + " " + t.subscriptionCopied, 'success');
-                                });
-                            });
-                        } else {
-                            navigator.clipboard.writeText(finalUrl).then(function() {
-                                    cpToast(displayName + " " + t.subscriptionCopied, 'success');
-                            });
-                        }
-                    } else {
-                        // 其他情况使用订阅转换服务
-                        var encodedUrl = encodeURIComponent(subscriptionUrl);
-                        finalUrl = SUB_CONVERTER_URL + "?target=" + clientType + "&url=" + encodedUrl + "&insert=false&config=" + encodeURIComponent(REMOTE_CONFIG_URL) + "&emoji=true&list=false&xudp=false&udp=false&tfo=false&expand=true&scv=false&fdn=false&new_name=true";
-                        var urlElement = document.getElementById("clientSubscriptionUrl");
-                        urlElement.textContent = finalUrl;
-                        urlElement.style.display = "block";
-                        urlElement.style.overflowWrap = "break-word";
-                        urlElement.style.wordBreak = "break-all";
-                        urlElement.style.overflowX = "auto";
-                        urlElement.style.maxWidth = "100%";
-                        urlElement.style.boxSizing = "border-box";
-
-                        if (clientType === atob('Y2xhc2g=')) {
-                            if (clientName === 'STASH') {
-                                schemeUrl = 'stash://install?url=' + encodeURIComponent(finalUrl);
-                                displayName = 'STASH';
-                            } else {
-                                schemeUrl = 'clash://install-config?url=' + encodeURIComponent(finalUrl);
-                                displayName = 'CLASH';
-                            }
-                        } else if (clientType === atob('c3VyZ2U=')) {
-                            schemeUrl = 'surge:///install-config?url=' + encodeURIComponent(finalUrl);
-                            displayName = 'SURGE';
-                        } else if (clientType === atob('c2luZ2JveA==')) {
-                            schemeUrl = 'sing-box://install-config?url=' + encodeURIComponent(finalUrl);
-                            displayName = 'SING-BOX';
-                        } else if (clientType === atob('bG9vbg==')) {
-                            schemeUrl = 'loon://install?url=' + encodeURIComponent(finalUrl);
-                            displayName = 'LOON';
-                        } else if (clientType === atob('cXVhbng=')) {
-                            schemeUrl = 'quantumult-x://install-config?url=' + encodeURIComponent(finalUrl);
-                            displayName = 'QUANTUMULT X';
-                        }
-                        
-                        if (schemeUrl) {
-                            tryOpenApp(schemeUrl, function() {
-                                navigator.clipboard.writeText(finalUrl).then(function() {
-                                    cpToast(displayName + " " + t.subscriptionCopied, 'success');
-                                });
-                            });
-                        } else {
+                    if (schemeUrl) {
+                        tryOpenApp(schemeUrl, function() {
                             navigator.clipboard.writeText(finalUrl).then(function() {
                                 cpToast(displayName + " " + t.subscriptionCopied, 'success');
                             });
-                        }
+                        });
+                    } else {
+                        navigator.clipboard.writeText(finalUrl).then(function() {
+                            cpToast(displayName + " " + t.subscriptionCopied, 'success');
+                        });
                     }
                 }
             }
 
+            // 页面特效图形化开关 (localStorage 持久化)
+            window.cpApplyFx = function() {
+                var off = localStorage.getItem('cp-fx-off') === '1';
+                document.body.classList.toggle('fx-off', off);
+                var lbl = document.getElementById('cpFxLabel');
+                if (lbl) lbl.textContent = off ? 'FX: OFF' : 'FX: ON';
+                if (off) {
+                    var rain = document.getElementById('matrixCodeRain');
+                    if (rain) rain.innerHTML = '';
+                } else if (typeof createMatrixRain === 'function') {
+                    var r = document.getElementById('matrixCodeRain');
+                    if (r && !r.firstChild) createMatrixRain();
+                }
+            };
+            window.cpToggleFx = function() {
+                var off = localStorage.getItem('cp-fx-off') === '1';
+                localStorage.setItem('cp-fx-off', off ? '0' : '1');
+                window.cpApplyFx();
+            };
+            (function() {
+                if (localStorage.getItem('cp-fx-off') === '1') {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.body.classList.add('fx-off');
+                        var lbl = document.getElementById('cpFxLabel');
+                        if (lbl) lbl.textContent = 'FX: OFF';
+                    });
+                }
+            })();
+
             function createMatrixRain() {
+                if (document.body && document.body.classList.contains('fx-off')) return;
                 const matrixContainer = document.getElementById('matrixCodeRain');
                 if (!matrixContainer) return;
                 const cyberChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ$%#@!?<>+=ABCDEF';
@@ -4965,35 +5737,18 @@ hr {
                 const currentUrl = window.location.href;
                 const pathParts = window.location.pathname.split('/').filter(p => p);
                 const currentPath = pathParts.length > 0 ? pathParts[0] : '';
-                const baseUrl = currentUrl.split('/sub')[0];
-                const subUrl = cp && cp.trim()
-                    ? (currentUrl.split('/')[0] + '//' + currentUrl.split('/')[2]) + cp + '/sub'
-                    : baseUrl + '/sub';
 
-                const typeLabel = cp && cp.trim()
-                    ? '<div style="color: #94a3b8; font-size: 0.85rem;">使用类型: <strong style="color: #e2e8f0;">自定义路径 (d)</strong></div>'
-                    : '<div style="color: #94a3b8; font-size: 0.85rem;">使用类型: <strong style="color: #e2e8f0;">UUID 路径 (u)</strong></div>';
-                const pathLabel = cp && cp.trim()
-                    ? '<div style="color: #94a3b8; font-size: 0.85rem; margin-top: 6px;">当前路径: <span style="color: #c4b5fd;">' + cp + '</span></div>'
-                    : '<div style="color: #94a3b8; font-size: 0.85rem; margin-top: 6px;">当前路径: <span style="color: #c4b5fd;">' + (currentPath || '(UUID)') + '</span></div>';
-
-                pathTypeStatus.innerHTML =
-                    typeLabel + pathLabel +
-                    '<div style="margin-top: 10px;">' +
-                    '<div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">访问地址:</div>' +
-                    '<div style="display: flex; align-items: center; gap: 8px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; overflow: hidden; min-width: 0;">' +
-                    '<div style="flex: 1; padding: 10px 12px; font-family: \'Courier New\', monospace; font-size: 0.8rem; color: #38bdf8; overflow-x: auto; word-break: break-all; word-wrap: break-word; max-width: 100%;" id="pathTypeSubUrl">' + subUrl + '</div>' +
-                    '<button onclick="copyPathUrl()" style="flex-shrink: 0; padding: 10px 14px; background: #1e40af; border: none; border-left: 1px solid #334155; color: white; font-size: 0.8rem; cursor: pointer; font-family: var(--ios-font);" title="复制链接">📋</button>' +
-                    '</div>' +
-                    '</div>';
-            }
-
-            function copyPathUrl() {
-                const url = document.getElementById('pathTypeSubUrl')?.textContent;
-                if (url) {
-                    navigator.clipboard.writeText(url).then(function() {
-                        cpToast('链接已复制', 'success');
-                    });
+                if (cp && cp.trim()) {
+                    // 使用自定义路径 (d)
+                    pathTypeStatus.innerHTML = '<div style="color: #00ff9d;">使用类型: <strong>自定义路径 (d)</strong></div>' +
+                        '<div style="margin-top: 5px; color: #00f0ff;">当前路径: <span style="color: #ffb400;">' + cp + '</span></div>' +
+                        '<div style="margin-top: 5px; font-size: 0.9rem; color: #7aa9c4;">访问地址: ' + 
+                        (currentUrl.split('/')[0] + '//' + currentUrl.split('/')[2]) + cp + '/sub</div>';
+                } else {
+                    // 使用 UUID (u)
+                    pathTypeStatus.innerHTML = '<div style="color: #00ff9d;">使用类型: <strong>UUID 路径 (u)</strong></div>' +
+                        '<div style="margin-top: 5px; color: #00f0ff;">当前路径: <span style="color: #ffb400;">' + (currentPath || '(UUID)') + '</span></div>' +
+                        '<div style="margin-top: 5px; font-size: 0.9rem; color: #7aa9c4;">访问地址: ' + currentUrl.split('/sub')[0] + '/sub</div>';
                 }
             }
 
@@ -6769,7 +7524,7 @@ hr {
                 if (enableECH) {
                     const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                     const echDomain = customECHDomain || 'cloudflare-ech.com';
-                    link += `&alpn=h3&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
+                    link += `&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
                 }
 
                 link += `#${encodeURIComponent(wsNodeName)}`;
@@ -6790,7 +7545,7 @@ hr {
                 if (enableECH) {
                     const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                     const echDomain = customECHDomain || 'cloudflare-ech.com';
-                    link += `&alpn=h3&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
+                    link += `&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
                 }
 
                 link += `#${encodeURIComponent(wsNodeName)}`;
@@ -6837,7 +7592,6 @@ hr {
             if (enableECH) {
                 const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                 const echDomain = customECHDomain || 'cloudflare-ech.com';
-                params.set('alpn', 'h3,h2');
                 params.set('ech', `${echDomain}+${dnsServer}`);
             }
 
@@ -6877,7 +7631,7 @@ hr {
                 if (enableECH) {
                     const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                     const echDomain = customECHDomain || 'cloudflare-ech.com';
-                    link += `&alpn=h3&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
+                    link += `&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
                 }
 
                 link += `#${encodeURIComponent(wsNodeName)}`;
@@ -6898,7 +7652,7 @@ hr {
                 if (enableECH) {
                     const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                     const echDomain = customECHDomain || 'cloudflare-ech.com';
-                    link += `&alpn=h3&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
+                    link += `&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
                 }
                 link += `#${encodeURIComponent(wsNodeName)}`;
                 links.push(link);
@@ -7221,7 +7975,7 @@ hr {
             ev = true;
         }
 
-        scu = getConfigValue('scu', '') || 'https://api.wcc.best/sub';
+        scu = getConfigValue('scu', '') || 'https://url.v1.mk/sub';
 
         const preferredDomainsControl = getConfigValue('epd', 'no');
         if (preferredDomainsControl !== undefined && preferredDomainsControl !== '') {
