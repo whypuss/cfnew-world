@@ -178,20 +178,6 @@ uuid     → uID   WS      → Ws
 ✅ 正常 200/404/500 混合回應
 ```
 
-具體做法（見架構總圖 Layer 1）：
-
-```
-Layer 1（正常站）：
-  GET /              → 正常 HTML 首頁
-  GET /robots.txt    → 正常 robots
-  GET /favicon.ico   → 正常 ico
-  GET /static/*      → 靜態資源
-
-Layer 2（隱藏入口）：
-  GET /${random-hash} → proxy handler
-  WebSocket 升級     → 代理協議
-```
-
 ### C. 降低 WebSocket 比例
 
 WS 比例太高是 CF 風控的重點信號：
@@ -208,7 +194,100 @@ WS 比例太高是 CF 風控的重點信號：
   ✅ 減少 runtime compute
 ```
 
-### D. 每人獨立 Config（終極方案）
+### D. 1.5 層架構：Pages + Worker（推薦方案）
+
+**核心理念：不是兩個複雜 Worker，而是「正常網站層」+「代理入口層」**
+
+---
+
+#### 方案 A：Pages + Worker（最推薦）
+
+```
+Cloudflare Pages（正常網站層）：
+  /                    → HTML 首頁（cache，零 CPU）
+  /docs                → 文檔頁面
+  /blog                → 博客
+  /assets/*            → 靜態資源
+  /sitemap.xml         → 站點地圖
+
+Worker（隱藏入口層）：
+  /api/{random-hash}   → 訂閱入口
+  /ws/{random-hash}    → WebSocket 代理
+```
+
+**為什麼有效？**
+
+```
+CF 看到混合流量：
+  • 正常 HTML GET（瀏覽器 UA）
+  • cache hit 響應
+  • assets / js / css
+  • robots.txt 抓取
+
+這些會稀釋：
+  • websocket 流量
+  • subscription traffic
+  • proxy pattern
+
+CF 認為：這是正常網站 + 隱藏 API，不是有意規避。
+```
+
+**成本幾乎為零：**
+- 靜態頁面：Cloudflare Pages 幾乎免費 cache
+- Worker 只處理秘密入口：負擔極輕
+
+---
+
+#### 方案 B：單 Worker 偽裝（超輕量）
+
+```js
+// 全部在一個 Worker 內，通過 path 區分
+switch(path) {
+  case '/':
+  case '/docs':
+  case '/blog':
+    return fakeWebsite()      // 靜態 HTML，零 CPU
+
+  case '/api/a8f2':
+  case '/live/x7':
+    return proxyHandler()     // 隱藏入口
+}
+```
+
+**最小化版本：**
+- 假首頁：`Welcome | Documentation | API Status`
+- `favicon.ico`
+- `robots.txt`
+
+就已經比 `404 not found` 好太多。
+
+---
+
+#### 方案 C：真正雙 Worker（重量級，長期目標）
+
+```
+front-worker（邊緣 auth）：
+  只做：anti-bot、token verify、rate limit
+  然後：fetch(proxyWorker) 轉發
+
+proxy-worker（隱藏）：
+  只做：websocket 代理
+  特點：path 不公開、可 region 分離、可隨時 rotate
+```
+
+---
+
+#### 推薦順序
+
+```
+現在 → 方案 B（單 Worker 偽裝，已在 P0 完成 static/）
+下一步 → 方案 A（Pages + Worker 拆分）
+未來 → 方案 C（真正雙 Worker for 高安全性場景）
+```
+
+---
+
+### E. 每人獨立 Config（終極方案）
 
 同一 worker 被幾千人用 = 指紋完全一致 = 最容易被聚類。
 
@@ -222,13 +301,15 @@ WS 比例太高是 CF 風控的重點信號：
 ```
 
 **行動**：
-- [ ] `build/build.js` 实现 route mapping 隨機化（每次 build 生成不同的 route 映射表）
-- [ ] `build/build.js` 实现 enum/constant name 隨機化（build 時全局替換關鍵字符串）
-- [ ] `build/build.js` 实现 response key 隨機化（JSON field name 隨機）
-- [ ] `build/build.js` 实现 header key 隨機化（X-Real-IP 等替換）
-- [ ] Worker 增加正常首頁 `/`（static HTML，不只是終端 UI）
-- [ ] 增加 `robots.txt`、`favicon.ico` 等正常站點元素
-- [ ] 实现雙層入口（Layer 1 正常站、Layer 2 隱藏 proxy 入口）
+- [x] `build/build.js` 实现 route mapping 隨機化（每次 build 生成不同的 route 映射表）✅ P0 完成
+- [x] `build/build.js` 实现 enum/constant name 隨機化（build 時全局替換關鍵字符串）✅ P0 完成
+- [x] `build/build.js` 实现 response key 隨機化（JSON field name 隨機）✅ P0 完成
+- [x] `build/build.js` 实现 header key 隨機化（X-Real-IP 等替換）✅ P0 完成
+- [x] `static/` 靜態網站資源（index.html、robots.txt、favicon.ico）✅ P0 完成
+- [ ] **方案 A**：建立 Cloudflare Pages 項目承載正常網站層（docs/blog/assets）
+- [ ] **方案 A**：Worker 只掛 `/api/{random-hash}` 和 `/ws/{random-hash}` 秘密入口
+- [ ] **方案 A**：從 Workers 移除 static HTML/CSS/JS，換成 `fetch(Pages_URL)` 代理
+- [ ] **方案 A**：Worker 的 `/` 根路徑 redirect 到 Pages 域名
 
 ### 舊思維（已放棄）
 
