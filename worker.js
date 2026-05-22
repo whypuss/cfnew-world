@@ -1443,6 +1443,12 @@ Sitemap: https://example.com/sitemap.xml
                             }
                         }
                     }
+                    // Exact match of /{uuid} or /{custom_path} → show Web UI page (not subscription content)
+                    const normalizedPath = url.pathname.endsWith('/') && url.pathname.length > 1
+                        ? url.pathname.slice(0, -1) : url.pathname;
+                    if (normalizedPath === `/${subPath}` || normalizedPath.toLowerCase() === `/${subPath}`) {
+                        return await handleSubscriptionPage(request, at);
+                    }
                     if (url.pathname.toLowerCase().includes(`/${subPath}`)) {
                         return await handleSubscriptionRequest(request, at);
                     }
