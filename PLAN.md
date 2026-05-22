@@ -24,6 +24,130 @@
 
 ---
 
+## ⚠️ 工程安全約束（任何人機實作 P2 前必讀）
+
+> **核心原則：寧可少完成 P2 功能，也不能破壞現有 subscription 功能。**
+> 穩定性優先於功能完整度。如果某功能可能影響核心路由，允許跳過並留下 TODO。
+
+---
+
+### 1. 禁止全域 regex replace
+
+**禁止**對 `worker.js` 做全域 `replace(/xxx/g, ...)` 或 `replaceAll()`。
+
+所有 route/query/header polymorphism 必須：
+- 集中在 `build.js` 的 registry 注入
+- 只替換明確的 placeholder（如 `ROUTE_ALIAS`、`TOKEN_PARAM`、`TARGET_PARAM`）
+- 不得修改 runtime 核心邏輯字串
+
+---
+
+### 2. route dispatch 順序限制
+
+路由優先級必須嚴格保持（從高到低）：
+
+1. `/uuid/secret routes`（最高優先）
+2. WebSocket upgrade routes
+3. Subscription routes（`/uuid/{sub}`）
+4. `/refresh` endpoint
+5. Fake API routes（`/api/...`）
+6. Fake static assets（`/assets/...`、`/sitemap.xml` 等）
+7. Normal static pages（最低，`/robots.txt`、`/favicon.ico`）
+
+**禁止**新增 catch-all route（如 `pathname.startsWith('/')` 寬泛判斷）。
+**禁止**在 route dispatch 中使用 `else if` 鏈式吞噬。
+
+---
+
+### 3. Subscription MIME polymorphism 保守限制
+
+Subscription MIME 多態必須保守實作：
+
+- 已識別代理客戶端（Clash / Sing-box / Surge / Stash）→ 維持原 `Content-Type`
+- `curl` / `wget` → `text/plain`
+- Browser UA → `text/yaml`
+- `Accept: application/json` → `application/json`
+- 未知情況 → 維持現有 MIME（**不要改**）
+
+**禁止**影響 base64 subscription 輸出內容和編碼邏輯。
+
+---
+
+### 4. Rate limit 排除健康檢查
+
+Rate limit 只作用於**外部 subscription refresh requests**。
+
+**不得作用於**：
+- Internal health checks
+- KV refresh jobs
+- `/refresh` endpoint
+- Fake API routes
+
+---
+
+### 5. Fail-fast timeout 配置限制
+
+- TCP connect timeout → `3-5 秒`（可配置 `const CONNECT_TIMEOUT_MS = 4000`）
+- WebSocket upgrade timeout → **不要修改**
+- Timeout 必須可配置，禁止 hardcode 到所有 fetch/socket 操作
+
+---
+
+### 6. Source shuffle 演算法限制
+
+**禁止**使用 `array.sort(() => Math.random() - 0.5)`（不公平且分佈差）。
+
+必須：
+- 使用 weighted shuffle（Fisher-Yates 或 similar）
+- 同 source 不得連續超過 `MAX_NODES_PER_SOURCE` 個
+- 保持 `successRate` 排序優先級
+- `quarantine` nodes **永不**參與 shuffle
+
+---
+
+### 7. Fake static assets 數量限制
+
+- 固定 3-5 個路徑，build 時生成但 deploy 後穩定
+- 返回空內容或極小 JS/CSS（< 1KB）
+- **禁止**每 request 動態生成 fake assets
+- 總數不得超過 5 個
+
+---
+
+### 8. 絕對禁止修改的核心流程
+
+**禁止修改**以下任何一個環節：
+
+- UUID 驗證邏輯
+- Subscription encode / decode pipeline
+- Base64 處理邏輯
+- WebSocket stream handling
+- KV cache schema
+- Health scoring / quarantine algorithm
+- `generateLinks()` 核心輸出格式
+
+除非任務明確要求且已理解完整影響。
+
+---
+
+### 9. Deploy 驗證清單
+
+每次 deploy 完成後**必須**驗證以下所有項目。任何核心路由失敗 → **停止並回滾**：
+
+```
+✅ /uuid/knlg       → 200 + valid base64 content
+✅ /uuid/sub        → 200 + valid base64 content
+✅ /uuid/refresh    → 200
+✅ WebSocket route  → 101 Switching Protocols
+✅ /robots.txt      → 200
+✅ /sitemap.xml     → 200 + valid XML
+✅ Fake asset path  → 200（空內容）
+✅ Rate limit       → 第二次同一 IP 請求返回 429
+✅ Subscription cache hit 不受影響
+```
+
+---
+
 ## 核心理念：真正的敵人是「機器」，不是「人」
 
 ```
@@ -369,5 +493,6 @@ Layer 2（隱藏入口）：
 
 ---
 
-*計劃更新時間：2026-05-22*
+*計劃更新時間：2026-05-23*
 *整合用戶 P2 反饋：流量正常化 + 降特徵化優先於結構拆分*
+*新增工程安全約束（2026-05-23）：禁止全域 replace、route dispatch 順序、保守 MIME、deploy 驗證清單*
