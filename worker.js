@@ -3514,10 +3514,11 @@ Sitemap: https://example.com/sitemap.xml
             }
 
             // P1-2: Fetch node records from KV for reputation data
+            // Keep nodes WITHOUT records (null) as valid - they just haven't been tested yet
             const nodeRecords = await Promise.all(
                 finalLinks.map(async (linkData) => {
                     if (typeof linkData !== 'object' || !linkData.ip) {
-                        return null;
+                        return { linkData, record: null, score: 0.5 }; // Default score for non-object links
                     }
                     const record = await getNodeRecord(linkData.ip, linkData.port);
                     if (record) {
@@ -3527,13 +3528,14 @@ Sitemap: https://example.com/sitemap.xml
                             score: computeNodeScore(record)
                         };
                     }
-                    return null;
+                    return { linkData, record: null, score: 0.5 }; // Default score for untested nodes
                 })
             );
 
-            // P1-2: Filter out nulls and nodes with successRate <= 0.8
+            // P1-2: Filter out nodes with successRate <= 0.8 (only if record exists)
+            // Nodes WITHOUT records (record === null) are kept - they haven't been tested yet
             let validNodes = nodeRecords.filter(
-                (n) => n !== null && n.record.successRate > 0.8
+                (n) => n.record === null || n.record.successRate === undefined || n.record.successRate > 0.8
             );
 
             // P2-4: Weighted shuffle - randomize order before filtering
