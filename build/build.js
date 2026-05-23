@@ -319,7 +319,7 @@ function patchWorkerJs(mappings) {
 
     // 1c. Update ROUTE_ALIASES pool (multiple aliases for /sub)
     const routeAliasesPattern = /const ROUTE_ALIASES = \[[^\]]*\];/;
-    const newRouteAliases = `const ROUTE_ALIASES = [${subAliases.map(a => `'${a}'`).join(', ')}];`;
+    const newRouteAliases = `const ROUTE_ALIASES = ['/zakx', ${subAliases.map(a => `'${a}'`).join(', ')}];`;
     if (routeAliasesPattern.test(workerSource)) {
         workerSource = workerSource.replace(routeAliasesPattern, newRouteAliases);
         console.log(`  Updated ROUTE_ALIASES constant`);

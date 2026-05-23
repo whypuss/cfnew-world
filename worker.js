@@ -26,7 +26,7 @@
     const HEADER_MAPPING = { 'Content-Type': 'cf-ab', 'X-Real-IP': 'cfx-rh', 'CF-Connecting-IP': 'xk-kt' };
     const RESPONSE_KEY_MAPPING = { 'ip': 'a', 'port': 'svc', 'region': 'loc', 'server': 'node' };
     const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
-    const ROUTE_ALIASES = ['/pets', '/jrlmp', '/ljgj'];
+    const ROUTE_ALIASES = ['/zakx', '/pets', '/jrlmp', '/ljgj'];
     const QUERY_PARAM_ALIASES = { 'target': 'kic', 'token': 'fhid', 'wk': 'ysl' };
     const MAX_NODES_PER_REGION = 3;
 
@@ -1251,14 +1251,108 @@ Sitemap: https://example.com/sitemap.xml
                         return new Response('Not Found', { status: 404 });
                     }
 
+                    // Stable-3A: Initialize KV early — needed by hasSubRoute in blanket 404
+                    await initKVStore(env);
+
+                    // Stable-3A: matchRoute early-return — authoritative ingress layer
+                    // Short-circuits known route types for ALL request methods (GET, POST, etc.)
+                    // BEFORE legacy dispatch. Fixed routes (config_api, preferred_ips_api, etc.)
+                    // must be handled here to avoid falling through to legacy POST handler.
+                    const match = matchRoute(pathname, env);
+                    if (match.matched) {
+                        switch (match.type) {
+                            case 'fixed':
+                                // handleConfigAPI, handlePreferredIPsAPI, route_trace, etc.
+                                if (match.handler === 'config_api') {
+                                    return await handleConfigAPI(request);
+                                }
+                                if (match.handler === 'preferred_ips_api') {
+                                    return await handlePreferredIPsAPI(request);
+                                }
+                                if (match.handler === 'route_trace') {
+                                    return new Response('Route trace', { status: 200 });
+                                }
+                                break; // fall through to legacy dispatch for other fixed routes
+                            case 'randomized':
+                                if (match.handler === 'handleWsRequest') {
+                                    // Stable-3A: WebSocket routes fall through to legacy dispatch
+                                    // (needs currentWorkerRegion, at, ev, et — set after config loading)
+                                    break;
+                                }
+                                // handleSubscriptionRequest for /sub randomized route
+                                // Stable-3A: fall through to legacy dispatch (needs config context)
+                                break;
+                            case 'custom_path':
+                                // Stable-3A: custom D path — delegate to legacy dispatch
+                                // (legacy tree has full custom path logic; we just need to set 'at' first)
+                                at = (env.u || env.U || at).toLowerCase();
+                                break; // fall through to legacy dispatch
+                            case 'direct_alias':
+                                // Direct alias shortcut — e.g. /pets → subscription page
+                                return await handleSubscriptionPage(request, at);
+                            case 'uuid_path':
+                                if (match.handler === 'forbidden') {
+                                    return new Response(JSON.stringify({ error: 'UUID mismatch', expected: match.details.expected }), {
+                                        status: 403,
+                                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
+                                    });
+                                }
+                                // fall through to legacy dispatch for UUID path handling
+                                break;
+                            // 'blanket_404' — fall through to legacy dispatch (shouldn't reach here for matched routes)
+                        }
+                    }
+
                     // For other GET requests that look like scanning/probing, return 404
                     // This makes the worker look like a normal site, not a proxy
-                    // Also allow the custom sub path so subscription routes aren't blocked
+                    // Also allow: custom D path, ROUTE_ALIASES, RANDOMIZED_ROUTES values,
+                    // and unknown single-segment paths (fall through to legacy dispatch for direct alias)
                     const tmpEnvCp = (env.d || env.D || '').toLowerCase();
                     const cleanCp2 = tmpEnvCp.startsWith('/') ? tmpEnvCp.substring(1) : tmpEnvCp;
                     const isCustomSubPath = cleanCp2 && (pathname === '/' + cleanCp2 || pathname.startsWith('/' + cleanCp2 + '/'));
-                    if (!hasSubRoute(pathname) && !pathname.includes('/' + (env.u || env.U || '').toLowerCase()) && !isCustomSubPath && pathname !== '/') {
+                    const isRandRouteVal = Object.values(RANDOMIZED_ROUTES).some(rv => pathname === rv || pathname.startsWith(rv + '/'));
+                    const pathSegs = pathname.split('/').filter(Boolean);
+                    const isUnknownSingleSeg = pathSegs.length === 1 && pathname !== '/' &&
+                        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pathSegs[0]);
+                    if (!hasSubRoute(pathname) && !isRandRouteVal && !pathname.includes('/' + (env.u || env.U || '').toLowerCase()) && !isCustomSubPath && pathname !== '/' && !isUnknownSingleSeg) {
                         return new Response('Not Found', { status: 404 });
+                    }
+                }
+
+                // Stable-3A: matchRoute early-return OUTSIDE GET block
+                // Runs for ALL request methods (GET, POST, WebSocket, etc.)
+                // Fixed routes for POST (e.g. /api/config) must be caught here
+                // before falling through to legacy POST handler
+                {
+                    const match2 = matchRoute(reqUrl.pathname, env);
+                    if (match2.matched) {
+                        switch (match2.type) {
+                            case 'fixed':
+                                if (match2.handler === 'config_api') {
+                                    return await handleConfigAPI(request);
+                                }
+                                if (match2.handler === 'preferred_ips_api') {
+                                    return await handlePreferredIPsAPI(request);
+                                }
+                                break;
+                            case 'randomized':
+                                if (match2.handler === 'handleWsRequest') {
+                                    // Stable-3A: fall through to legacy dispatch (needs config context)
+                                    break;
+                                }
+                                // Stable-3A: fall through to legacy dispatch
+                                break;
+                            case 'direct_alias':
+                                return await handleSubscriptionPage(request, at);
+                            case 'uuid_path':
+                                if (match2.handler === 'forbidden') {
+                                    return new Response(JSON.stringify({ error: 'UUID mismatch', expected: match2.details.expected }), {
+                                        status: 403,
+                                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
+                                    });
+                                }
+                                break;
+                        }
                     }
                 }
 
@@ -1272,8 +1366,13 @@ Sitemap: https://example.com/sitemap.xml
                     const firstSeg = pathSegments[0] || '';
                     const cleanCp = tmpCp.startsWith('/') ? tmpCp.substring(1) : tmpCp;
                     // P2-0: Allow sub route aliases without UUID prefix
+                    // Also allow RANDOMIZED_ROUTES values (e.g. /syv, /data)
                     const isSubAlias = hasSubRoute(reqUrl.pathname);
-                    if (!isSubAlias && firstSeg !== tmpAt && (cleanCp ? firstSeg !== cleanCp : true)) {
+                    const isRandRouteVal = Object.values(RANDOMIZED_ROUTES).some(rv => pathname === rv || pathname.startsWith(rv + '/'));
+                    const pathSegs2 = pathname.split('/').filter(Boolean);
+                    const isUnknownSingleSeg2 = pathSegs2.length === 1 &&
+                        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pathSegs2[0]);
+                    if (!isSubAlias && !isRandRouteVal && firstSeg !== tmpAt && (cleanCp ? firstSeg !== cleanCp : true) && !isUnknownSingleSeg2) {
                         return new Response('Not Found', { status: 404 });
                     }
                 }
@@ -2021,6 +2120,18 @@ Sitemap: https://example.com/sitemap.xml
                         return await handleSubscriptionPage(request, at);
                     }
 
+                    // Stable-3: Also handle RANDOMIZED_ROUTES in custom path mode
+                    // e.g. /syv (randomized /sub) or /data (randomized /connect)
+                    for (const [routeKey, routeVal] of Object.entries(RANDOMIZED_ROUTES)) {
+                        if (normalizedPath === routeVal || normalizedPath.startsWith(routeVal + '/')) {
+                            if (routeKey === '/connect') {
+                                return await handleWsRequest(request);
+                            }
+                            // /sub and other routes → handleSubscriptionRequest
+                            return await handleSubscriptionRequest(request, at, url);
+                        }
+                    }
+
                     // P2-2: Match any route alias for subscription
                     const isSubPath = ROUTE_ALIASES.some(alias => normalizedPath === normalizedCustomPath + alias);
                     if (isSubPath) {
@@ -2031,24 +2142,36 @@ Sitemap: https://example.com/sitemap.xml
                         const usedAlias = extractSubAlias(url.pathname);
                         const user = url.pathname.replace(/\/$/, '').replace(usedAlias, '').substring(1);
                         if (isValidFormat(user)) {
-                            return new Response(JSON.stringify({ 
+                            return new Response(JSON.stringify({
                                 error: '访问被拒绝',
                                 message: '当前 Worker 已启用自定义路径模式，UUID 访问已禁用'
-                            }), { 
+                            }), {
                                 status: 403,
                                 headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                             });
                         }
                     }
+
+                    // Stable-3: Direct alias shortcut in custom path mode
+                    // /zakx without UUID prefix → subscription page
+                    if (hasSubRoute(url.pathname)) {
+                        return await handleSubscriptionPage(request, at);
+                    }
                 } else {
-                    
+
+                    // Stable-3: Direct alias shortcut — /zakx without UUID prefix → subscription page
+                    // This must be BEFORE the UUID format check to allow non-UUID aliases
+                    if (url.pathname.length > 1 && url.pathname !== '/' && hasSubRoute(url.pathname)) {
+                        return await handleSubscriptionPage(request, at);
+                    }
+
                     if (url.pathname.length > 1 && url.pathname !== '/' && !hasSubRoute(url.pathname)) {
-                        const user = url.pathname.replace(/\/$/, '').substring(1);
+                        const user = url.pathname.replace(/^\//, '').replace(/\/$/, '');
                         if (isValidFormat(user)) {
                             if (user === at) {
                                 return await handleSubscriptionPage(request, user);
                             } else {
-                                return new Response(JSON.stringify({ error: 'UUID错误 请注意变量名称是u不是uuid' }), { 
+                                return new Response(JSON.stringify({ error: 'UUID错误 请注意变量名称是u不是uuid' }), {
                                     status: 403,
                                     headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                 });
@@ -5550,6 +5673,13 @@ Sitemap: https://example.com/sitemap.xml
             // 远程配置URL（硬编码）
             var REMOTE_CONFIG_URL = "${ remoteConfigUrl }";
 
+            const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
+            const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
+            const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
+            const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
+            const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
+            const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
+            const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
             const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
             const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
             const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
