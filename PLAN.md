@@ -317,25 +317,31 @@ Internal fixed routes（UI runtime dependencies）：
 
 ---
 
-### Phase Stable-2（下一階段）
+### Phase Stable-2（✅ 已完成）
 
-#### 4. Route tracing layer
+#### 4. Route tracing layer（✅ 完成）
 
 ```js
 GET /__trace?path=/zakx
-// → { matched: "sub_alias", source: "ROUTE_ALIASES", dispatch: "hasSubRoute → handleSubscriptionPage" }
+// → { matched: "DIRECT_ALIAS: /zakx", handler: "handleSubscriptionPage (direct alias shortcut)", source: "direct_alias" }
+
+GET /__trace?path=/hcxq/syv
+// → { matched: "/hcxq/*", source: "env.D" }
+// → { matched: "RANDOMIZED_ROUTES['/sub'] = '/syv'", handler: "handleSubscriptionRequest", source: "RANDOMIZED_ROUTES" }
 ```
 
-先提升 observability，再做 centralization refactor。
-
-#### 5. Config source tracing
+#### 5. Config source tracing（✅ 完成）
 
 ```json
+GET /__trace?path=/hcxq
 {
-  "cp": { "value": "hcxq", "source": "env" },
-  "piu": { "value": "", "source": "default" },
-  "fallback": { "value": "...", "source": "kv" }
+  "config_sources": {
+    "d": { "value": "hcxq", "source": "env" }
+  }
 }
+```
+
+Config source 追蹤每個 key 的來源：
 ```
 
 來源會越來越多：KV、env、build inject、runtime、defaults。config normalization layer 必須從一開始就做好。
@@ -453,8 +459,8 @@ Layer 3（Blanket 404）：
 
 ### Phase Stable-2
 
-- [ ] `GET /__trace?path=` route tracing endpoint
-- [ ] Config source tracing（`{ value, source }` format）
+- [x] `GET /__trace?path=` route tracing endpoint
+- [x] Config source tracing（`{ value, source }` format）
 
 ### Phase Stable-3
 
@@ -544,18 +550,17 @@ function getConfigValue(key, defaultValue, envRef) {
 
 *計劃更新時間：2026-05-23*
 *P2 Freeze：P2-1/P2-4/P2-5 ✅ 完成，P2-2 ⚠️ 部分，P2-3 ⏸️ 延期*
-*Phase Stable-1 ✅ 完成，Phase Stable-2 下一階段*
+*Phase Stable-1 ✅ 完成，Phase Stable-2 ✅ 完成，Phase Stable-3 下一階段*
 
 ---
 
 ## 已知問題（待處理）
 
-### 1. Browser saveConfig FAKERESPONSE HEADER（未確認）
-- **現象**：用戶瀏覽器保存配置仍顯示 `FAKERESPONSE HEADER` 錯誤
-- **Server-side 驗證**：`curl -X POST /api/config` → `{"success":true}` ✅
-- **可能原因**：瀏覽器 JS cache 緊舊版（舊版使用 randomized path `/mim/awcg`，新版使用 `/api/config`）
-- **解決方案**：Chrome DevTools → Network → **Disable cache** → Ctrl+Shift+R hard refresh
-- **狀態**：未確認，需用戶親自測試
+### 1. saveConfig FAKE_RESPONSE_HEADERS（✅ 已修復）
+- **現象**：瀏覽器保存配置顯示 `FAKE_RESPONSE_HEADERS is not defined`
+- **根因**：browser `<script>` 內的 `saveConfig()` 引用了未定義的 `FAKE_RESPONSE_HEADERS`
+- **修復**：build.js `patchWorkerJs()` step 3 — 將 `FAKE_RESPONSE_HEADERS` inject 到 terminalHtml browser script scope
+- **狀態**：✅ 已修復並部署
 
 ### 2. Git Push Pending
 - **Commit**：5633095（"fix: P2-0 alias routing + Phase Stable-1 foundations"）
