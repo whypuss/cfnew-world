@@ -38,6 +38,102 @@
         return ROUTE_ALIASES.find(alias => path.includes(alias)) || '';
     }
 
+    // Phase Stable-3: Route Registry — single source of truth for routing
+    // Route types:
+    //   fixed       — internal static routes (never randomized)
+    //   randomized  — public surface routes that get randomized (sub, connect)
+    //   custom_path — env.D custom path prefix
+    //   alias       — ROUTE_ALIASES entries (shortcut subscription aliases)
+    //   uuid_path   — /{uuid}/{alias} full subscription path
+
+    const ROUTE_REGISTRY = {
+        // Fixed internal routes (path → { handler, type })
+        fixed: {
+            '/robots.txt':      { handler: 'static_robots',       type: 'fixed' },
+            '/favicon.ico':     { handler: 'static_favicon',      type: 'fixed' },
+            '/sitemap.xml':     { handler: 'sitemap',             type: 'fixed' },
+            '/api/posts':       { handler: 'blog_posts',          type: 'fixed' },
+            '/api/status':      { handler: 'status_json',         type: 'fixed' },
+            '/manifest.json':   { handler: 'pwa_manifest',       type: 'fixed' },
+            '/browserconfig.xml':{ handler: 'browser_config',    type: 'fixed' },
+            '/__route_debug':   { handler: 'route_debug',        type: 'fixed' },
+            '/__trace':         { handler: 'route_trace',         type: 'fixed' },
+            '/api/config':      { handler: 'config_api',          type: 'fixed' },
+            '/api/preferred-ips':{ handler: 'preferred_ips_api',  type: 'fixed' },
+        },
+        // Randomized public surface routes (canonical → { randomized, handler })
+        randomized: {
+            '/sub':    { randomized: RANDOMIZED_ROUTES['/sub'],    handler: 'handleSubscriptionRequest' },
+            '/connect':{ randomized: RANDOMIZED_ROUTES['/connect'], handler: 'handleWsRequest' },
+        },
+    };
+
+    // Phase Stable-3: matchRoute — single routing decision function
+    // Returns: { type, matched, handler, details }
+    //   type: 'fixed' | 'randomized' | 'custom_path' | 'direct_alias' | 'uuid_path' | 'blanket_404'
+    function matchRoute(pathname, env) {
+        const normalized = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
+        const segments = pathname.split('/').filter(Boolean);
+        const firstSeg = segments[0] || '';
+
+        const tmpAt = (env?.u || env?.U || '').toLowerCase();
+        const tmpCp = (env?.d || env?.D || '').toLowerCase();
+        const cleanCp = tmpCp.startsWith('/') ? tmpCp.substring(1) : tmpCp;
+
+        // Step 1: Fixed internal routes (exact match or prefix)
+        for (const [path, info] of Object.entries(ROUTE_REGISTRY.fixed)) {
+            if (normalized === path || normalized.startsWith(path + '/')) {
+                return { type: 'fixed', matched: true, handler: info.handler, path, details: { source: 'fixed' } };
+            }
+        }
+
+        // Step 2: Randomized public surface (check both canonical and randomized form)
+        for (const [canonical, info] of Object.entries(ROUTE_REGISTRY.randomized)) {
+            if (normalized === canonical || normalized === info.randomized) {
+                return { type: 'randomized', matched: true, handler: info.handler, canonical, randomized: info.randomized, details: { source: 'randomized' } };
+            }
+        }
+
+        // Step 3: Custom D path (env.D prefix)
+        if (cleanCp) {
+            const customPrefix = '/' + cleanCp;
+            if (normalized === customPrefix || normalized.startsWith(customPrefix + '/')) {
+                return { type: 'custom_path', matched: true, handler: 'subscription_dispatch', path: customPrefix, details: { source: 'env.D' } };
+            }
+        }
+
+        // Step 4: Direct alias shortcut (single segment, not UUID, not known route)
+        if (segments.length === 1 && firstSeg &&
+            !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(firstSeg) &&
+            !ROUTE_REGISTRY.fixed[normalized] && !ROUTE_REGISTRY.randomized[normalized]) {
+            // It's a potential alias — check against ROUTE_ALIASES
+            if (ROUTE_ALIASES.some(alias => normalized.includes(alias))) {
+                return { type: 'direct_alias', matched: true, handler: 'handleSubscriptionPage', path: normalized, details: { source: 'direct_alias' } };
+            }
+        }
+
+        // Step 5: UUID path (/{uuid} or /{uuid}/{alias})
+        if (firstSeg && !ROUTE_REGISTRY.fixed['/' + firstSeg]) {
+            const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(firstSeg);
+            if (isValidUUID) {
+                if (firstSeg === tmpAt) {
+                    // Valid UUID matching env.U — could be subscription page or request
+                    if (segments.length === 1) {
+                        return { type: 'uuid_path', matched: true, handler: 'handleSubscriptionPage', path: '/' + firstSeg, details: { source: 'uuid_match' } };
+                    }
+                    // /{uuid}/{alias}
+                    return { type: 'uuid_path', matched: true, handler: 'handleSubscriptionRequest', path: pathname, details: { source: 'uuid_match' } };
+                } else {
+                    // Valid UUID but doesn't match env.U → 403
+                    return { type: 'uuid_path', matched: true, handler: 'forbidden', path: '/' + firstSeg, details: { source: 'uuid_mismatch', expected: tmpAt } };
+                }
+            }
+        }
+
+        // Step 6: Blanket 404
+        return { type: 'blanket_404', matched: false, handler: 'not_found', path: pathname, details: { source: 'none' } };
+    }
+
     // P2-1: Cache-Control randomization for traffic normalization
     const CACHE_CONTROL_OPTIONS = [
         'public, max-age=3600',      // 30%
@@ -777,74 +873,84 @@ Sitemap: https://example.com/sitemap.xml
         const normalizedCustomPath = cleanCp ? '/' + cleanCp : '';
 
         const traces = [];
+        const resolution_steps = [];
 
-        // Check: blank/root
-        if (pathname === '/' || pathname === '') {
-            traces.push({ pattern: '/', matched: true, handler: 'terminal page (root)', source: 'fixed' });
+        // Step 1: Fixed internal routes
+        for (const [path, info] of Object.entries(ROUTE_REGISTRY.fixed)) {
+            if (normalizedPath === path || normalizedPath.startsWith(path + '/')) {
+                traces.push({ pattern: path, matched: true, handler: info.handler, source: 'fixed' });
+                resolution_steps.push({ step: 1, check: 'fixed_internal', pattern: path, result: 'matched', handler: info.handler });
+                break;
+            }
+        }
+        if (!traces.length) {
+            resolution_steps.push({ step: 1, check: 'fixed_internal', pattern: '(none)', result: 'no_match' });
         }
 
-        // Check: isCustomSubPath (custom D path)
-        if (cleanCp) {
-            const isCustomSubPath = pathname === '/' + cleanCp || pathname.startsWith('/' + cleanCp + '/');
-            if (isCustomSubPath) {
+        // Step 2: Randomized public surface
+        if (!traces.length) {
+            for (const [canonical, info] of Object.entries(ROUTE_REGISTRY.randomized)) {
+                if (normalizedPath === canonical || normalizedPath === info.randomized) {
+                    traces.push({ pattern: `${canonical} → ${info.randomized}`, matched: true, handler: info.handler, source: 'RANDOMIZED_ROUTES' });
+                    resolution_steps.push({ step: 2, check: 'randomized_surface', pattern: `${canonical} → ${info.randomized}`, result: 'matched', handler: info.handler });
+                    break;
+                }
+            }
+        }
+        if (!traces.length) {
+            resolution_steps.push({ step: 2, check: 'randomized_surface', pattern: '(none)', result: 'no_match' });
+        }
+
+        // Step 3: Custom D path
+        if (!traces.length && cleanCp) {
+            const customPrefix = '/' + cleanCp;
+            if (normalizedPath === customPrefix || normalizedPath.startsWith(customPrefix + '/')) {
                 traces.push({ pattern: `/${cleanCp}/*`, matched: true, handler: 'handleSubscriptionPage or handleSubscriptionRequest', source: 'env.D' });
+                resolution_steps.push({ step: 3, check: 'custom_path_env_D', pattern: customPrefix + '/*', result: 'matched', handler: 'subscription_dispatch' });
             }
         }
-
-        // Check: ROUTE_ALIASES (e.g. /pets, /jrlmp, /ljgj)
-        // These are randomized aliases that map to the /sub subscription path
-        for (const alias of ROUTE_ALIASES) {
-            if (normalizedPath.includes(alias) || pathname.includes(alias)) {
-                traces.push({ pattern: `ROUTE_ALIAS: ${alias}`, matched: true, handler: 'handleSubscriptionRequest (alias)', source: 'ROUTE_ALIASES' });
-            }
+        if (!traces.length && cleanCp) {
+            resolution_steps.push({ step: 3, check: 'custom_path_env_D', pattern: '(none)', result: 'no_match' });
         }
 
-        // Check: direct alias shortcut (standalone alias without UUID prefix)
-        // The worker serves handleSubscriptionPage for any hasSubRoute() path,
-        // even if it's not a full /{uuid}/{alias} path. This is a direct shortcut.
-        // e.g. /zakx → handleSubscriptionPage (the alias lookup is inside handleSubscriptionPage)
-        if (!traces.some(t => t.matched)) {
-            // Check if this path looks like a direct alias (one segment, not a UUID, not a known route)
-            const segments = pathname.split('/').filter(Boolean);
-            if (segments.length === 1 && segments[0] && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(segments[0])) {
-                traces.push({ pattern: `DIRECT_ALIAS: /${segments[0]}`, matched: true, handler: 'handleSubscriptionPage (direct alias shortcut)', source: 'direct_alias' });
+        // Step 4: Direct alias shortcut
+        if (!traces.length && segments.length === 1 && firstSeg &&
+            !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(firstSeg) &&
+            !ROUTE_REGISTRY.fixed[normalizedPath] && !ROUTE_REGISTRY.randomized[normalizedPath]) {
+            if (ROUTE_ALIASES.some(alias => normalizedPath.includes(alias))) {
+                traces.push({ pattern: `DIRECT_ALIAS: /${firstSeg}`, matched: true, handler: 'handleSubscriptionPage (direct alias shortcut)', source: 'direct_alias' });
+                resolution_steps.push({ step: 4, check: 'direct_alias_shortcut', pattern: normalizedPath, result: 'matched', handler: 'handleSubscriptionPage' });
             }
         }
-
-        // Check: RANDOMIZED_ROUTES /sub and /connect
-        for (const [routeKey, routeVal] of Object.entries(RANDOMIZED_ROUTES)) {
-            if (pathname.includes(routeVal)) {
-                traces.push({ pattern: `RANDOMIZED_ROUTES['${routeKey}'] = '${routeVal}'`, matched: true, handler: routeKey === '/sub' ? 'handleSubscriptionRequest' : 'WebSocket upgrade', source: 'RANDOMIZED_ROUTES' });
-            }
+        if (!traces.length) {
+            resolution_steps.push({ step: 4, check: 'direct_alias_shortcut', pattern: '(none)', result: 'no_match' });
         }
 
-        // Check: UUID direct path
-        if (firstSeg && firstSeg !== tmpAt && firstSeg !== cleanCp && !ROUTE_ALIASES.some(a => pathname.includes(a))) {
+        // Step 5: UUID path
+        if (!traces.length && firstSeg && !ROUTE_REGISTRY.fixed['/' + firstSeg]) {
             const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(firstSeg);
             if (isValidUUID) {
-                traces.push({ pattern: `/{uuid} = ${firstSeg}`, matched: true, handler: firstSeg === tmpAt ? 'handleSubscriptionPage' : '403 (UUID mismatch)', source: 'uuid env' });
+                if (firstSeg === tmpAt) {
+                    const handler = segments.length === 1 ? 'handleSubscriptionPage' : 'handleSubscriptionRequest';
+                    traces.push({ pattern: `/{uuid} = ${firstSeg}`, matched: true, handler, source: 'uuid env' });
+                    resolution_steps.push({ step: 5, check: 'uuid_path', pattern: `/{uuid}=${firstSeg}`, result: 'matched', handler, source: 'uuid_match' });
+                } else {
+                    traces.push({ pattern: `/{uuid} = ${firstSeg}`, matched: true, handler: '403 (UUID mismatch)', source: 'uuid env' });
+                    resolution_steps.push({ step: 5, check: 'uuid_path', pattern: `/{uuid}=${firstSeg}`, result: 'mismatch', handler: 'forbidden', expected: tmpAt });
+                }
             }
         }
-
-        // Check: /refresh endpoint
-        if (pathname.endsWith('/refresh')) {
-            traces.push({ pattern: '/{uuid}/refresh', matched: true, handler: 'cache invalidation', source: 'fixed' });
+        if (!traces.length) {
+            resolution_steps.push({ step: 5, check: 'uuid_path', pattern: '(none)', result: 'no_match' });
         }
 
-        // Check: fixed internal routes
-        const fixedRoutes = ['/__route_debug', '__trace', '/api/config', '/api/preferred-ips', '/robots.txt', '/favicon.ico', '/sitemap.xml', '/api/posts', '/api/status'];
-        for (const fixed of fixedRoutes) {
-            if (pathname === fixed || pathname.startsWith(fixed + '/')) {
-                traces.push({ pattern: fixed, matched: true, handler: 'fixed internal handler', source: 'fixed' });
-            }
-        }
-
-        // Blanket 404 check
+        // Step 6: Blanket 404 check
         if (traces.length === 0) {
             traces.push({ pattern: '(none)', matched: false, handler: '404 Not Found (blanket)', source: 'none' });
+            resolution_steps.push({ step: 6, check: 'blanket_404', pattern: '(none)', result: 'no_match' });
         }
 
-        return traces;
+        return { traces, resolution_steps };
     }
 
     async function setConfigValue(key, value) {
@@ -1049,7 +1155,7 @@ Sitemap: https://example.com/sitemap.xml
                     // GET /__trace?path=/zakx  → trace routing decision for that path
                     if (pathname === '/__trace') {
                         const tracePath = new URL(request.url).searchParams.get('path') || '/';
-                        const routeTraces = traceRoute(tracePath, env);
+                        const { traces: routeTraces, resolution_steps } = traceRoute(tracePath, env);
                         const allKeys = ['d', 'p', 'yx', 'yxURL', 's', 'wk', 'ev', 'et', 'ex', 'ech', 'rm', 'ae', 'scu', 'ena', 'epd', 'epi', 'egi', 'ipv4', 'ipv6', 'homepage'];
                         const configSources = {};
                         for (const key of allKeys) {
@@ -1058,9 +1164,13 @@ Sitemap: https://example.com/sitemap.xml
                                 configSources[key] = src;
                             }
                         }
+                        // Phase Stable-3: Also include matchRoute result for single-source routing info
+                        const matchResult = matchRoute(tracePath, env);
                         return new Response(JSON.stringify({
                             trace_path: tracePath,
                             route_traces: routeTraces,
+                            resolution_steps: resolution_steps,
+                            match_route: matchResult,
                             config_sources: configSources,
                             routing: {
                                 RANDOMIZED_ROUTES: RANDOMIZED_ROUTES,
@@ -5440,6 +5550,7 @@ Sitemap: https://example.com/sitemap.xml
             // 远程配置URL（硬编码）
             var REMOTE_CONFIG_URL = "${ remoteConfigUrl }";
 
+            const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
             const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
             const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
             const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
