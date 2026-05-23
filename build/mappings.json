@@ -3,53 +3,51 @@
   "projectSeed": "cfnew-plus-v1",
   "routes": {
     "/sub": "/syv",
-    "/api/config": "/rop/etst",
-    "/api/preferred-ips": "/jrl/mpjlj",
-    "/?ed=2048": "/connect?ed=2048"
+    "/connect": "/data"
   },
   "constants": {
-    "vless": "ck",
-    "trojan": "eo",
-    "ws": "ov",
-    "clash": "yz",
-    "base64": "pw",
-    "surge": "fk",
-    "singbox": "vp",
-    "quantumult": "nt"
+    "vless": "ak",
+    "trojan": "dl",
+    "ws": "ku",
+    "clash": "xv",
+    "base64": "ug",
+    "surge": "kn",
+    "singbox": "ow",
+    "quantumult": "vp"
   },
   "headers": {
-    "Content-Type": "cf-ob",
-    "X-Real-IP": "cfx-om",
-    "CF-Connecting-IP": "cf-cn"
+    "Content-Type": "cfx-zi",
+    "X-Real-IP": "cf-uf",
+    "CF-Connecting-IP": "x-vp"
   },
   "wsPath": {
-    "/?ed=2048": "/socket?ed=2048"
+    "/connect": "/live"
   },
   "jsonKeys": {
-    "ip": "host",
+    "ip": "a",
     "port": "svc",
-    "region": "area",
-    "server": "host"
+    "region": "r",
+    "server": "a"
   },
   "cacheControl": {
-    "default": "private, max-age=1800"
+    "default": "public, max-age=3600"
   },
   "fakeHeaders": {
-    "x-build": "server-timing-pki",
-    "x-edge": "x-build-fhi",
-    "x-runtime": "x-build-ysl",
-    "server-timing": "x-runtime-knp"
+    "x-build": "x-build-omr",
+    "x-edge": "x-build-cnl",
+    "x-runtime": "server-timing-tuv",
+    "server-timing": "x-build-nup"
   },
   "queryParams": {
-    "target": "bwv",
-    "token": "zkxg",
-    "wk": "rvi"
+    "target": "kic",
+    "token": "fhid",
+    "wk": "ysl"
   },
   "routeAliases": {
     "/sub": [
-      "/zakx",
-      "/lyk",
-      "/sxvmu"
+      "/pets",
+      "/jrlmp",
+      "/ljgj"
     ]
   }
 }

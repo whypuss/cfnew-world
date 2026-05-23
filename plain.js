@@ -67,28 +67,28 @@
     };
 
     let backupIPs = [
-        { domain: 'ProxyIP.HK.CMLiussss.net', "reg": 'HK', regionCode: 'HK', "port": 443 },
-        { domain: 'ProxyIP.US.CMLiussss.net', "reg": 'US', regionCode: 'US', "port": 443 },
-        { domain: 'ProxyIP.SG.CMLiussss.net', "reg": 'SG', regionCode: 'SG', "port": 443 },
-        { domain: 'ProxyIP.JP.CMLiussss.net', "reg": 'JP', regionCode: 'JP', "port": 443 },
-        { domain: 'ProxyIP.KR.CMLiussss.net', "reg": 'KR', regionCode: 'KR', "port": 443 },
-        { domain: 'ProxyIP.DE.CMLiussss.net', "reg": 'DE', regionCode: 'DE', "port": 443 },
-        { domain: 'ProxyIP.SE.CMLiussss.net', "reg": 'SE', regionCode: 'SE', "port": 443 },
-        { domain: 'ProxyIP.NL.CMLiussss.net', "reg": 'NL', regionCode: 'NL', "port": 443 },
-        { domain: 'ProxyIP.FI.CMLiussss.net', "reg": 'FI', regionCode: 'FI', "port": 443 },
-        { domain: 'ProxyIP.GB.CMLiussss.net', "reg": 'GB', regionCode: 'GB', "port": 443 },
-        { domain: 'ProxyIP.AU.CMLiussss.net', "reg": 'AU', regionCode: 'AU', "port": 443 },
-        { domain: 'ProxyIP.BR.CMLiussss.net', "reg": 'BR', regionCode: 'BR', "port": 443 },
-        { domain: 'ProxyIP.CA.CMLiussss.net', "reg": 'CA', regionCode: 'CA', "port": 443 },
-        { domain: 'ProxyIP.FR.CMLiussss.net', "reg": 'FR', regionCode: 'FR', "port": 443 },
-        { domain: 'ProxyIP.CH.CMLiussss.net', "reg": 'CH', regionCode: 'CH', "port": 443 },
-        { domain: 'ProxyIP.RU.CMLiussss.net', "reg": 'RU', regionCode: 'RU', "port": 443 },
-        { domain: 'ProxyIP.IN.CMLiussss.net', "reg": 'IN', regionCode: 'IN', "port": 443 },
-        { domain: 'ProxyIP.TW.CMLiussss.net', "reg": 'TW', regionCode: 'TW', "port": 443 },
-        { domain: 'ProxyIP.Oracle.cmliussss.net', "reg": 'Oracle', regionCode: 'Oracle', "port": 443 },
-        { domain: 'ProxyIP.DigitalOcean.CMLiussss.net', "reg": 'DigitalOcean', regionCode: 'DigitalOcean', "port": 443 },
-        { domain: 'ProxyIP.Vultr.CMLiussss.net', "reg": 'Vultr', regionCode: 'Vultr', "port": 443 },
-        { domain: 'ProxyIP.Multacom.CMLiussss.net', "reg": 'Multacom', regionCode: 'Multacom', "port": 443 }
+        { domain: 'ProxyIP.HK.CMLiussss.net', "reg": 'HK', regionCode: 'HK', "pt": 443 },
+        { domain: 'ProxyIP.US.CMLiussss.net', "reg": 'US', regionCode: 'US', "pt": 443 },
+        { domain: 'ProxyIP.SG.CMLiussss.net', "reg": 'SG', regionCode: 'SG', "pt": 443 },
+        { domain: 'ProxyIP.JP.CMLiussss.net', "reg": 'JP', regionCode: 'JP', "pt": 443 },
+        { domain: 'ProxyIP.KR.CMLiussss.net', "reg": 'KR', regionCode: 'KR', "pt": 443 },
+        { domain: 'ProxyIP.DE.CMLiussss.net', "reg": 'DE', regionCode: 'DE', "pt": 443 },
+        { domain: 'ProxyIP.SE.CMLiussss.net', "reg": 'SE', regionCode: 'SE', "pt": 443 },
+        { domain: 'ProxyIP.NL.CMLiussss.net', "reg": 'NL', regionCode: 'NL', "pt": 443 },
+        { domain: 'ProxyIP.FI.CMLiussss.net', "reg": 'FI', regionCode: 'FI', "pt": 443 },
+        { domain: 'ProxyIP.GB.CMLiussss.net', "reg": 'GB', regionCode: 'GB', "pt": 443 },
+        { domain: 'ProxyIP.AU.CMLiussss.net', "reg": 'AU', regionCode: 'AU', "pt": 443 },
+        { domain: 'ProxyIP.BR.CMLiussss.net', "reg": 'BR', regionCode: 'BR', "pt": 443 },
+        { domain: 'ProxyIP.CA.CMLiussss.net', "reg": 'CA', regionCode: 'CA', "pt": 443 },
+        { domain: 'ProxyIP.FR.CMLiussss.net', "reg": 'FR', regionCode: 'FR', "pt": 443 },
+        { domain: 'ProxyIP.CH.CMLiussss.net', "reg": 'CH', regionCode: 'CH', "pt": 443 },
+        { domain: 'ProxyIP.RU.CMLiussss.net', "reg": 'RU', regionCode: 'RU', "pt": 443 },
+        { domain: 'ProxyIP.IN.CMLiussss.net', "reg": 'IN', regionCode: 'IN', "pt": 443 },
+        { domain: 'ProxyIP.TW.CMLiussss.net', "reg": 'TW', regionCode: 'TW', "pt": 443 },
+        { domain: 'ProxyIP.Oracle.cmliussss.net', "reg": 'Oracle', regionCode: 'Oracle', "pt": 443 },
+        { domain: 'ProxyIP.DigitalOcean.CMLiussss.net', "reg": 'DigitalOcean', regionCode: 'DigitalOcean', "pt": 443 },
+        { domain: 'ProxyIP.Vultr.CMLiussss.net', "reg": 'Vultr', regionCode: 'Vultr', "pt": 443 },
+        { domain: 'ProxyIP.Multacom.CMLiussss.net', "reg": 'Multacom', regionCode: 'Multacom', "pt": 443 }
     ];
 
     const directDomains = [
@@ -355,7 +355,7 @@
             if (match) {
                 return {
                     address: match[1],
-                    "port": match[2] ? parseInt(match[2], 10) : null
+                    "pt": match[2] ? parseInt(match[2], 10) : null
                 };
             }
         }
@@ -372,7 +372,7 @@
             }
         }
 
-        return { address: input, "port": null };
+        return { address: input, "pt": null };
     }
 
     export default {
@@ -459,13 +459,13 @@
                             if (isValidIP(address)) {
                                 customPreferredIPs.push({ 
                                     "addr": address, 
-                                    "port": port,
+                                    "pt": port,
                                     isp: nodeName
                                 });
                             } else {
                                 customPreferredDomains.push({ 
                                     domain: address, 
-                                    "port": port,
+                                    "pt": port,
                                     name: nodeName
                                 });
                             }
@@ -1288,7 +1288,7 @@ body {
                     name: name,
                     type: 'rn',
                     "a": server,
-                    "port": port,
+                    "pt": port,
                     uuid: uuid,
                     tls: tls,
                     network: network,
@@ -1341,7 +1341,7 @@ body {
                     name: name,
                     type: 'qp',
                     "a": server,
-                    "port": port,
+                    "pt": port,
                     password: password,
                     network: network,
                     sni: sni,
@@ -1793,20 +1793,20 @@ body {
             if (item.port) {
                 const port = item.port;
                 if (CF_HTTPS_PORTS.includes(port)) {
-                    portsToGenerate.push({ "port": port, tls: true });
+                    portsToGenerate.push({ "pt": port, tls: true });
                 } else if (CF_HTTP_PORTS.includes(port)) {
                     if (!disableNonTLS) {
-                        portsToGenerate.push({ "port": port, tls: false });
+                        portsToGenerate.push({ "pt": port, tls: false });
                     }
                 } else {
-                    portsToGenerate.push({ "port": port, tls: true });
+                    portsToGenerate.push({ "pt": port, tls: true });
                 }
             } else {
                 defaultHttpsPorts.forEach(port => {
-                    portsToGenerate.push({ "port": port, tls: true });
+                    portsToGenerate.push({ "pt": port, tls: true });
                 });
                 defaultHttpPorts.forEach(port => {
-                    portsToGenerate.push({ "port": port, tls: false });
+                    portsToGenerate.push({ "pt": port, tls: false });
                 });
             }
 
@@ -1880,20 +1880,20 @@ body {
             if (item.port) {
                 const port = item.port;
                 if (CF_HTTPS_PORTS.includes(port)) {
-                    portsToGenerate.push({ "port": port, tls: true });
+                    portsToGenerate.push({ "pt": port, tls: true });
                 } else if (CF_HTTP_PORTS.includes(port)) {
                     if (!disableNonTLS) {
-                        portsToGenerate.push({ "port": port, tls: false });
+                        portsToGenerate.push({ "pt": port, tls: false });
                     }
                 } else {
-                    portsToGenerate.push({ "port": port, tls: true });
+                    portsToGenerate.push({ "pt": port, tls: true });
                 }
             } else {
                 defaultHttpsPorts.forEach(port => {
-                    portsToGenerate.push({ "port": port, tls: true });
+                    portsToGenerate.push({ "pt": port, tls: true });
                 });
                 defaultHttpPorts.forEach(port => {
-                    portsToGenerate.push({ "port": port, tls: false });
+                    portsToGenerate.push({ "pt": port, tls: false });
                 });
             }
 
@@ -2119,7 +2119,7 @@ body {
         async function connectAndSend(address, port, useSocks = false) {
             const remoteSock = useSocks ?
                 await establishSocksConnection(addrType, address, port, effectiveSocksConfig) :
-                connect({ hostname: address, "port": port });
+                connect({ hostname: address, "pt": port });
             const writer = remoteSock.writable.getWriter();
             await writer.write(rawData);
             writer.releaseLock();
@@ -2241,7 +2241,7 @@ body {
 
     async function forwardUDP(udpChunk, webSocket, respHeader) {
         try {
-            const tcpSocket = connect({ hostname: '8.8.4.4', "port": 53 });
+            const tcpSocket = connect({ hostname: '8.8.4.4', "pt": 53 });
             let header = respHeader;
             const writer = tcpSocket.writable.getWriter();
             await writer.write(udpChunk);
@@ -2259,7 +2259,7 @@ body {
 
     async function establishSocksConnection(addrType, address, port, socksConfig = parsedSocks5Config) {
         const { username, password, hostname, socksPort } = socksConfig;
-        const socket = connect({ hostname, "port": socksPort });
+        const socket = connect({ hostname, "pt": socksPort });
         const writer = socket.writable.getWriter();
         await writer.write(new Uint8Array(username ? [5, 2, 0, 2] : [5, 1, 0]));
         const reader = socket.readable.getReader();
@@ -6007,7 +6007,7 @@ hr {
             hasError: false,
             addressRemote: address,
             addressType: atype,
-            "port": portRemote,
+            "pt": portRemote,
             hostname: address,
             rawClientData: socks5DataBuffer.slice(portIndex + 4)
         };
@@ -6423,7 +6423,7 @@ hr {
             while (attempt < MAX_RETRIES) {
                 attempt++;
                 try {
-                    const remote = connect({ hostname, "port": httpx.port });
+                    const remote = connect({ hostname, "pt": httpx.port });
                     const timeoutPromise = xhttp_sleep(CONNECT_TIMEOUT_MS).then(() => {
                         throw new Error(atob('Y29ubmVjdCB0aW1lb3V0'));
                     });
@@ -6552,7 +6552,7 @@ hr {
                     if (match) {
                         results.push({
                             "addr": match[1],
-                            "port": parseInt(match[2] || '443', 10),
+                            "pt": parseInt(match[2] || '443', 10),
                             name: match[3]?.trim() || match[1]
                         });
                     }
@@ -6574,7 +6574,7 @@ hr {
                 if (match) {
                     results.push({
                         "addr": match[1],
-                        "port": parseInt(match[2], 10),
+                        "pt": parseInt(match[2], 10),
                         name: match[3].trim() || match[1]
                     });
                 }
@@ -6904,13 +6904,13 @@ hr {
                     );
 
                     if (exists) {
-                        skippedIPs.push({ "addr": item.ip, "port": port, reason: '已存在' });
+                        skippedIPs.push({ "addr": item.ip, "pt": port, reason: '已存在' });
                         continue;
                     }
 
                     const newIP = {
                         "addr": item.ip,
-                        "port": port,
+                        "pt": port,
                         name: name,
                         addedAt: new Date().toISOString()
                     };
@@ -6998,7 +6998,7 @@ hr {
                 return new Response(JSON.stringify({
                     success: true,
                     message: '优选IP已删除',
-                    deleted: { "addr": body.ip, "port": port }
+                    deleted: { "addr": body.ip, "pt": port }
                 }), {
                     headers: { 'cfx-op': 'application/json' }
                 });
@@ -7178,13 +7178,13 @@ hr {
                     if (isValidIP(address)) {
                         customPreferredIPs.push({ 
                             "addr": address, 
-                            "port": port,
+                            "pt": port,
                             isp: nodeName
                         });
                     } else {
                         customPreferredDomains.push({ 
                             domain: address, 
-                            "port": port,
+                            "pt": port,
                             name: nodeName
                         });
                     }
@@ -7223,7 +7223,7 @@ hr {
 
             result.push({
                 "addr": address,
-                "port": port || 443,
+                "pt": port || 443,
                 name: nodeName,
                 addedAt: new Date().toISOString()
             });

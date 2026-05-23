@@ -27,6 +27,41 @@ const OUTPUT_PATH = path.join(__dirname, '..', 'plain.js'); // Overwrite plain.j
 const WORKER_JS_PATH = path.join(__dirname, '..', 'worker.js');
 const MAPPINGS_PATH = path.join(__dirname, 'mappings.json');
 
+/**
+ * Route Classification Policy
+ * ============================
+ * Distinguishes "public polymorphic surface" from "internal control plane".
+ *
+ * randomizable  — External observable attack surface (subscription ingress, WS).
+ *                 Randomized at build time via ROUTE_SEED_VERSION.
+ * fixed         — Internal API contracts / UI runtime dependencies.
+ *                 NEVER randomized — frontend JS calls these deterministically.
+ *
+ * Rule: If frontend JS does fetch('/api/X'), that path MUST be fixed.
+ * Rule: If the path is an external ingress point, it CAN be randomized.
+ */
+const ROUTE_POLICY = {
+    // Public polymorphic surface — CAN be randomized
+    randomizable: [
+        '/sub',       // Subscription entry (external ingress)
+        '/connect'    // WebSocket ingress (external observable surface)
+    ],
+    // Internal control plane — NEVER randomize (frontend API contracts)
+    fixed: [
+        '/api/config',          // KV status check — frontend fetch('/api/config')
+        '/api/preferred-ips',   // Preferred IPs API — frontend fetch()
+        '/region',              // Worker region detection
+        '/test-api',            // API connectivity test
+        '/__route_debug',       // Debug endpoint
+        '/__trace',             // Route tracing (future)
+        '/__health_stats',      // Health telemetry (future)
+        '/refresh',             // Node refresh
+        '/robots.txt',          // Static fake
+        '/sitemap.xml',         // Static fake
+        '/manifest.json'        // Static fake
+    ]
+};
+
 // Character sets for random string generation
 const ALPHANUMERIC = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 const LOWERCASE = 'abcdefghijklmnopqrstuvwxyz';
@@ -167,11 +202,11 @@ function generateMappings() {
         routeAliases: {}
     };
 
-    // Route mappings
+    // Route mappings — only randomizable per ROUTE_POLICY
+    // Internal API contracts (fixed) are NOT randomized
     mappings.routes['/sub'] = randomRoute();
-    mappings.routes['/api/config'] = '/' + randomString(3, LOWERCASE) + '/' + randomString(4, LOWERCASE);
-    mappings.routes['/api/preferred-ips'] = '/' + randomString(3, LOWERCASE) + '/' + randomString(5, LOWERCASE);
-    mappings.routes['/?ed=2048'] = randomWsPath() + '?ed=2048';
+    mappings.routes['/connect'] = randomWsPath();
+    // NOTE: /api/config, /api/preferred-ips are FIXED — do NOT add here
 
     // Route aliases pool — multiple aliases for /sub
     const subAliases = [];
@@ -203,8 +238,9 @@ function generateMappings() {
     // Also map server -> random (for JSON response keys)
     mappings.jsonKeys['server'] = randomJsonKey('ip');
 
-    // WS path base (without query)
-    mappings.wsPath['/?ed=2048'] = randomWsPath() + '?ed=2048';
+    // WS path base (without query) — /connect is now randomizable
+    mappings.wsPath['/connect'] = randomWsPath();
+    // NOTE: /?ed=2048 query param semantics are FROZEN — no semantic mutation
 
     // Cache-Control options (weighted toward longer cache)
     const cacheOptions = [
@@ -255,14 +291,13 @@ function patchWorkerJs(mappings) {
 
     let workerSource = fs.readFileSync(WORKER_JS_PATH, 'utf8');
     const subPath = mappings.routes['/sub'];
-    const configPath = mappings.routes['/api/config'];
-    const preferredPath = mappings.routes['/api/preferred-ips'];
-    const wsPath = mappings.routes['/?ed=2048'];
+    const connectPath = mappings.routes['/connect'];
     const subAliases = mappings.routeAliases['/sub'] || [];
 
     // 1. Update RANDOMIZED_ROUTES constant in worker.js
+    // Only /sub and /connect are randomized — /api/config and /api/preferred-ips are FIXED
     const rrPattern = /const RANDOMIZED_ROUTES = \{[^}]+\};/;
-    const newRr = `const RANDOMIZED_ROUTES = { '/sub': '${subPath}', '/api/config': '${configPath}', '/api/preferred-ips': '${preferredPath}', '/?ed=2048': '${wsPath}' };`;
+    const newRr = `const RANDOMIZED_ROUTES = { '/sub': '${subPath}', '/connect': '${connectPath}' };`;
     workerSource = workerSource.replace(rrPattern, newRr);
     console.log(`  Updated RANDOMIZED_ROUTES constant`);
 
@@ -277,7 +312,7 @@ function patchWorkerJs(mappings) {
         // Insert after RANDOMIZED_ROUTES line
         workerSource = workerSource.replace(
             /const RANDOMIZED_ROUTES = \{[^}]+\};\n/,
-            `const RANDOMIZED_ROUTES = { '/sub': '${subPath}', '/api/config': '${configPath}', '/api/preferred-ips': '${preferredPath}', '/?ed=2048': '${wsPath}' };\n${newFakeHeaders}\n`
+            `const RANDOMIZED_ROUTES = { '/sub': '${subPath}', '/connect': '${connectPath}' };\n${newFakeHeaders}\n`
         );
         console.log(`  Inserted FAKE_RESPONSE_HEADERS constant`);
     }
