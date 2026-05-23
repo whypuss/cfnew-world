@@ -1,2 +1,11 @@
-node_modules/\nobfuscate.js\npackage.json\npackage-lock.json\nplain.js\nobfuscated.js\nworker.js.bak
 node_modules/
+.wrangler/
+
+# Build artifacts — generated at deploy time, do NOT commit
+plain.js
+obfuscate.js
+worker.js.bak
+
+# Package files — managed by package manager
+package.json
+package-lock.json

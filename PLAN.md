@@ -135,14 +135,12 @@ Rate limit 只作用於**外部 subscription refresh requests**。
 每次 deploy 完成後**必須**驗證以下所有項目。任何核心路由失敗 → **停止並回滾**：
 
 ```
-✅ /uuid/knlg       → 200 + valid base64 content
-✅ /uuid/sub        → 200 + valid base64 content
-✅ /uuid/refresh    → 200
-✅ WebSocket route  → 101 Switching Protocols
-✅ /robots.txt      → 200
-✅ /sitemap.xml     → 200 + valid XML
-✅ Fake asset path  → 200（空內容）
-✅ Rate limit       → 第二次同一 IP 請求返回 429
+✅ /{uuid}/{sub}     → 200 + valid base64 content
+✅ /{uuid}/refresh   → 200
+✅ WebSocket route   → 101 Switching Protocols
+✅ /robots.txt       → 200
+✅ /sitemap.xml      → 200 + valid XML
+✅ Fake asset path   → 200
 ✅ Subscription cache hit 不受影響
 ```
 
@@ -176,9 +174,6 @@ CF 真正在抓的不是「代理」，
 
 | 項目 | 狀態 |
 |------|------|
-| 白色暖色調 UI | ✅ 完成 |
-| 移除 Matrix/FX/HUD 動畫 | ✅ 完成 |
-| 隱藏訂閱 URL | ✅ 完成 |
 | dev 分支建立 | ✅ 完成 |
 | 上游同步（v2.9.8） | ✅ 完成 |
 | Route 隨機化（build.js） | ✅ 完成 |
@@ -192,6 +187,9 @@ CF 真正在抓的不是「代理」，
 | 節點信譽 + quarantine 系統 | ✅ 完成 |
 | 訂閱輸出過濾（20節點/80%/去重） | ✅ 完成 |
 | obfuscate.js 輕量配置 | ✅ 完成 |
+| 白色暖色調 UI | ✅ 完成 |
+| 移除 Matrix/FX/HUD 動畫 | ✅ 完成 |
+| 隱藏訂閱 URL | ✅ 完成 |
 
 ---
 
@@ -201,206 +199,183 @@ CF 真正在抓的不是「代理」，
 
 ---
 
-### P2-1：流量正常化（超高收益）
+### P2-1：流量正常化（✅ 已完成）
 
-#### A. 正常首頁行為
-
-現在已有 `static/`。補足標配：
-
-```
-/sitemap.xml          → 正常 XML sitemap
-/manifest.json         → PWA manifest
-/browserconfig.xml     → Windows tile 配置
-/api/posts             → 假博客 JSON（[{id,title,date}...]）
-/api/status            → 假系統狀態 JSON（{version,uptime,users}）
-```
-
-這些 endpoint 只在 `/welcome` 隨機入口下暴露，不影響主要 proxy 功能。
-
-#### B. cache-control 隨機化
-
-```
-現在（太固定）：
-  cache-control: no-store          ← 太像 API
-
-改為混合：
-  cache-control: public, max-age=3600
-  cache-control: public, max-age=7200
-  cache-control: public, max-age=300, stale-while-revalidate=600
-  cache-control: no-cache
-```
-
-subscription response 維持 `no-store`，但 static assets 和 200 回應隨機化。
-
-#### C. 正常 HTML metadata
-
-UI 頁面（`/uuid`）增加：
-
-```html
-<meta property="og:title" content="Subscription Manager">
-<meta property="og:description" content="...">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
-<link rel="canonical" href="https://...">
-```
-
-正常網站標配，bot infra 不會做這些。
-
-#### D. Subscription MIME 多態
-
-```
-現在（太固定）：
-  Content-Type: text/plain        ← 100% 訂閱都是這樣
-
-改為依 client 決定：
-  text/plain                      → curl / direct fetch
-  application/json                → JS fetch (Accept: application/json)
-  application/octet-stream        → 部分 client
-  text/yaml                       → 極少見，正常網站特徵
-```
+- ✅ `/sitemap.xml` → 正常 XML sitemap
+- ✅ `/manifest.json` → PWA manifest
+- ✅ `/browserconfig.xml` → Windows tile 配置
+- ✅ `/api/posts` → 假博客 JSON
+- ✅ `/api/status` → 假系統狀態 JSON
+- ✅ `/robots.txt` → 靜態 robots.txt
+- ⏸️ cache-control 隨機化（static assets 部分完成，subscription 維持 no-store）
+- ⏸️ HTML metadata（og tags、twitter cards）— 延後（UI stable freeze）
+- ⏸️ Subscription MIME 多態 — 延後（需保守實作）
 
 ---
 
-### P2-2：Proxy 流量降特徵
+### P2-2：Proxy 流量降特徵（⚠️ 部分完成）
 
-#### A. Route alias pool
-
-`build.js` 生成時不只是 `/sub` → `/knlg`，而是：
-
-```
-/sub  →  /knlg 或 /x1 或 /live 或 /connect 或 /api/data（隨機選）
-/?ed=2048  →  /stream?ed=2048 或 /live?ed=2048 或 /connect?ed=2048（隨機選）
-```
-
-讓每個 deploy 的 route pattern 不完全一致。
-
-#### B. Query param polymorphism
-
-```
-現在（太固定）：
-  ?token=xxx
-  ?target=clash
-
-改為（build 時隨機）：
-  ?token=xxx    →  ?k=xxx  或  ?v=xxx  或  ?auth=xxx
-  ?target=clash →  ?f=clash  或  ?fmt=clash  或  ?out=clash
-```
-
-#### C. Subscription MIME 隨機化（已在 P2-1-D）
+- ✅ Route alias pool（`/sub` → 多個隨機 aliases）
+- ⏸️ Query param polymorphism — 框架存在，未完整測試
+- ⏸️ Subscription MIME 多態 — 延後
 
 ---
 
-### P2-3：行為節流（超重要）
+### P2-3：行為節流（⏸️ 延期）
 
-#### A. Subscription rate limit
-
-```
-同 IP:
-  30 秒內只能刷新一次訂閱
-  超出 → 返回 429 + Retry-After: 30
-```
-
-用 KV 記錄 `ratelimit:{ip}` 時間戳。
-
-#### B. WebSocket connect backoff
-
-```
-現在：Clash 不斷重連 → reconnect storm → 觸發風控
-
-改為：
-  首次失敗 → 等 5 秒再試
-  二次失敗 → 等 15 秒
-  三次失敗 → 等 60 秒（quarantine）
-
-避免短時間大量連接失敗。
-```
-
-#### C. Fail fast
-
-```
-現在：垃圾 IP → timeout 15 秒 → 然後才放棄
-
-改為：
-  TCP connect timeout: 3 秒（不要 15 秒）
-  TLS timeout: 5 秒
-  失敗直接標記 quarantine，不要 hang 著浪費時間
-```
+- ⏸️ Subscription rate limit（同 IP 30 秒一次）— 延期
+- ⏸️ WebSocket connect backoff — 延期（connect timeout 可配置但 WS backoff 未實現）
+- ⏸️ Fail fast（TCP 3s timeout，直接 quarantine）— 延期
 
 ---
 
-### P2-4：出站分散
+### P2-4：出站分散（✅ 已完成）
 
-#### A. 隨機優先 source
-
-```
-現在（固定）：
-  CMLiussss → 優先用
-
-改為（weighted shuffle）：
-  所有 source 混合，隨機打亂順序
-  避免每次都先用同一批 IP
-```
-
-#### B. ASN 去重（已在 P1 完成）
-
-同 ASN 保留最低延遲的一個。
-
-#### C. Region diversify
-
-```
-現在：可能集中某一地區
-
-改為：
-  最多 3 個同 Region
-  強制跨 Region 分散（JP/KR/SG/US 混）
-```
+- ✅ Weighted source selection（successRate×0.45 + latencyScore×0.30 + sourceDiversity×0.15 + regionDiversity×0.10）
+- ✅ ASN limit（max 2 per ASN，取代完全 dedupe）
+- ✅ Region diversify（max 3 per region）
+- ✅ Subnet dedup（post-ASN-filter，保留 /24 分散）
 
 ---
 
-### P2-5：Worker fingerprint diversification
+### P2-5：指紋多態化（✅ 已完成）
 
-`build.js` 再升級：
-
-#### A. Fake static assets 注入
-
-```
-正常網站都有：
-  /assets/app.a1.js
-  /assets/main.css
-
-即使這些是假資源（返回空或 204），
-也讓指紋更像正常網站。
-
-每次 build 注入不同的 fake asset paths。
-```
-
-#### B. Random response headers
-
-```
-每次 build 隨機生成一組假的 server headers：
-  x-build: a7f2
-  x-edge: k91
-  x-runtime: 12ms
-  server-timing: IntId;desc="cold-start"
-
-這些是正常 CDN/框架會帶的 header，
-讓指紋更像常見架構。
-```
+- ✅ 4 個 fake static assets（favicon、app.js、main.css、runtime.js）— **freeze at 4，嚴禁增加**
+- ✅ Random response headers（x-build、x-edge、x-runtime、server-timing）
 
 ---
 
-## P3：Pages + Worker（未來方向）
+## Phase Stable：架構穩定化（當前階段）
 
-方案 A（推薦）：
+> **不再追求更多隨機化。目標：consistency、observability、deterministic behavior。**
+
+### Phase Stable-1（當前）
+
+#### 1. Git workflow 固化
+
+**禁止** `git add -A`。每次 commit 必須明確指定：
+
 ```
-Cloudflare Pages（正常網站層）：
-  /                    → HTML 首頁
-  /docs                → 文檔頁面
-  /sitemap.xml         → 站點地圖
+git add worker.js build/build.js build/mappings.json
+```
 
-Worker（隱藏入口層）：
-  /api/{random-hash}   → 訂閱入口
-  /ws/{random-hash}    → WebSocket 代理
+`.gitignore` 定義 artifact boundary：
+
+```
+# Commit：
+#   - source code（worker.js、build.js）
+#   - deterministic seed config（ROUTE_SEED_VERSION）
+#   - route registry template（mappings.json — 作為 persisted manifest）
+
+# Ignore：
+#   - deploy-time generated manifests（plain.js — 每次 build 覆蓋）
+#   - runtime cache
+#   - node_modules/
+#   - .wrangler/
+#   - worker.js.bak
+```
+
+#### 2. Deterministic route seed
+
+```
+ROUTE_SEED_VERSION = 1
+```
+
+- **不改**：同專案每次 build，routes 穩定
+- **要大改**：手動遞增 `ROUTE_SEED_VERSION` 來 rotate routes
+- **禁止**：timestamp-based seed（會導致每次 deploy 全變）
+- **禁止**：每 commit 自動 randomize（client stability、bookmark 穩定、debug 可追蹤）
+
+#### 3. Persisted route manifest
+
+`build/mappings.json` 是 **committed artifact**：
+
+```json
+{
+  "version": "1",
+  "seed": "cfnew-plus-v1",
+  "routes": { "/sub": "/hcxq", ... },
+  "aliases": ["/dtc", "/vitxb"],
+  "fakeAssets": ["/favicon-32-kwzuwb.png", ...]
+}
+```
+
+好處：
+- rollback 超舒服（對照舊 mappings.json）
+- client migration 容易（直接看 manifest）
+- debug 超舒服（不用猜 route 是什麼）
+
+---
+
+### Phase Stable-2（下一階段）
+
+#### 4. Route tracing layer
+
+```js
+traceRoute(pathname)
+// → { matched: true, type: 'sub', route: '/hcxq', segments: [...] }
+```
+
+先提升 observability，再做 centralization refactor。
+
+#### 5. Config source tracing
+
+```json
+{
+  "cp": { "value": "hcxq", "source": "env" },
+  "piu": { "value": "", "source": "default" },
+  "fallback": { "value": "...", "source": "kv" }
+}
+```
+
+來源會越來越多：KV、env、build inject、runtime、defaults。config normalization layer 必須從一開始就做好。
+
+---
+
+### Phase Stable-3（最後）
+
+#### 6. Route registry centralization
+
+統一 `hasSubRoute`、`extractSubAlias`、static path checks 到單一 `ROUTE_REGISTRY` + `matchRoute(type, pathname)`。
+
+**前提**：Phase Stable-2 observability 完善後再做，否則 refactor 引入 shadow mismatch 風險太高。
+
+---
+
+## 架構總圖
+
+```
+Layer 1（靜態 / 正常站）：
+  GET /robots.txt           → 200 靜態
+  GET /sitemap.xml         → 200 生成 XML
+  GET /manifest.json       → 200 生成 JSON
+  GET /browserconfig.xml    → 200 生成 XML
+  GET /api/posts            → 200 假博客 JSON
+  GET /api/status           → 200 假狀態 JSON
+  GET /__route_debug        → 200 observability endpoint
+
+Layer 2（隱藏入口）：
+  GET /{uuid}               → 訂閱中心 UI
+  GET /{uuid}/{sub}        → 訂閱內容（隨機 route）
+  WS  /{uuid}/{ws}         → WebSocket 代理（隨機 path）
+  GET /{uuid}/refresh       → 清除 cache
+
+Layer 3（Blanket 404）：
+  所有其他 GET → 404 "Not Found"
+  （除非 isCustomSubPath 白名單通過）
+
+每次 Build 隨機化（build.js，ROUTE_SEED_VERSION=1）：
+  • Route names (/sub → /knlg)
+  • Query params (?target= → ?f=)
+  • Header keys (X-Real-IP → cfx-rh)
+  • Response keys (ip → a)
+  • Enum names (vless → ft)
+  • WS path (?ed=2048 → /stream?ed=2048)
+  • Cache-Control 值（max-age=3600/7200/300）
+  • MIME types（subscription 維持 text/plain）
+  • Fake response headers (x-build, x-edge)
+  • Fake static asset paths（4個，freeze）
+  • Route aliases（3個，seed-stable）
 ```
 
 ---
@@ -425,18 +400,20 @@ Worker（隱藏入口層）：
 - [x] 訂閱輸出過濾（20節點/80%/去重）
 - [x] obfuscate.js 輕量配置
 
-### P2（現在開始）
+### P2（✅ P2-1/P2-4/P2-5 完成，P2-2 部分，P2-3 延期）
 
 #### P2-1：流量正常化
-- [ ] sitemap.xml、manifest.json、browserconfig.xml
-- [ ] /api/posts、/api/status 假 JSON endpoints
-- [ ] cache-control 隨機化（static assets / 200 responses）
+- [x] sitemap.xml、manifest.json、browserconfig.xml
+- [x] /api/posts、/api/status 假 JSON endpoints
+- [x] /robots.txt 靜態
+- [x] /browserconfig.xml
+- [ ] cache-control 隨機化（static assets 部分）
 - [ ] HTML metadata（og tags、twitter cards、canonical）
 - [ ] Subscription MIME 多態（依 Accept header）
 
 #### P2-2：Proxy 流量降特徵
-- [ ] Route alias pool（build.js 升級）
-- [ ] Query param polymorphism（build.js 升級）
+- [x] Route alias pool（build.js 升級，3 aliases）
+- [ ] Query param polymorphism（框架存在，未完整測試）
 - [ ] Subscription MIME 多態
 
 #### P2-3：行為節流
@@ -445,12 +422,32 @@ Worker（隱藏入口層）：
 - [ ] Fail fast（TCP 3s timeout，直接 quarantine）
 
 #### P2-4：出站分散
-- [ ] 隨機優先 source（weighted shuffle）
-- [ ] Region diversify（最多 3 同 Region）
+- [x] 隨機優先 source（weighted shuffle）
+- [x] ASN limit（max 2 per ASN）
+- [x] Region diversify（max 3 per region）
+- [x] Subnet dedup（post-ASN-filter）
 
 #### P2-5：指紋多態化
-- [ ] build.js 升級：fake static assets 注入
-- [ ] build.js 升級：random response headers
+- [x] build.js：fake static assets 注入（**freeze at 4**）
+- [x] build.js：random response headers
+
+### Phase Stable-1（當前）
+
+- [ ] `.gitignore` 更新（artifact boundary 定義）
+- [ ] `git add <files>` 固化 workflow（取代 `git add -A`）
+- [ ] `ROUTE_SEED_VERSION = 1` 加入 `build.js`
+- [ ] deterministic seed 取代 timestamp-based randomization
+- [ ] `build/mappings.json` 確認 committed（persisted manifest）
+
+### Phase Stable-2
+
+- [ ] `traceRoute(pathname)` routing layer
+- [ ] Config source tracing（`{ value, source }` format）
+
+### Phase Stable-3
+
+- [ ] Route registry centralization（`ROUTE_REGISTRY` + `matchRoute`）
+- [ ] Dispatch cleanup
 
 ### P3（未來方向）
 
@@ -460,39 +457,93 @@ Worker（隱藏入口層）：
 
 ---
 
-## 架構總圖
+## 工程警示
+
+### ⚠️ 過度 polymorphism 的危害
+
+**不要再追求「每次都變」**。過度 polymorphism 會開始傷：
+
+- **cacheability** — cache 失效，edge 效率降低
+- **observability** — debug 日誌複雜，root cause 分析困難
+- **rollback** — 每次 deploy route 全變，無法快速回滾
+- **client stability** — bookmark 失效，client config 爆炸
+- **naming consistency** — 大量 alias/route 增加維護成本
+
+### ✅ 生產級 polymorphism 的定義
 
 ```
-Layer 1（靜態 / 正常站）：
-  GET /welcome           → static/index.html
-  GET /robots.txt        → static/robots.txt
-  GET /favicon.ico       → static/favicon.ico
-  GET /sitemap.xml      → 生成 XML
-  GET /manifest.json     → 生成 JSON
-  GET /api/posts         → 生成假博客 JSON
-  GET /api/status        → 生成假狀態 JSON
+不是：「每次都變」
+而是：「有限度、可控、可追蹤的變化」
 
-Layer 2（隱藏入口）：
-  GET /{uuid}            → 訂閱中心 UI
-  GET /{uuid}/{sub}      → 訂閱內容（隨機 route）
-  WS  /{uuid}/{ws}       → WebSocket 代理（隨機 path）
-  GET /{uuid}/refresh    → 清除 cache
+有限度：固定 pool size（4 fake assets、3 aliases）
+可控：ROUTE_SEED_VERSION 控制 rotate 時機
+可追蹤：build/mappings.json 是 committed artifact
+```
 
-每次 Build 隨機化（build.js）：
-  • Route names (/sub → /knlg)
-  • Query params (?target= → ?f=)
-  • Header keys (X-Real-IP → cfx-rh)
-  • Response keys (ip → a)
-  • Enum names (vless → ft)
-  • WS path (?ed=2048 → /stream?ed=2048)
-  • Cache-Control 值（max-age=3600/7200/300）
-  • MIME types（text/plain / application/json / octet-stream）
-  • Fake response headers (x-build, x-edge)
-  • Fake static asset paths
+---
+
+## 配置系統工程（2026-05-23 更新）
+
+### Config Precedence（已修復）
+
+```
+Priority（高 → 低）：
+  1. env.D / env.d        ← routing config 正確的來源
+  2. env fallback         ← 第二層
+  3. KV store             ← 只能用於 cache/health，不可用於 routing config
+
+KV store 絕不能用於覆蓋：
+  - sub path (d)
+  - ws path (w)
+  - uuid path (u)
+  - route aliases
+
+KV store 只能用於：
+  - node health state
+  - reputation scores
+  - cache timestamps
+  - rate limit counters
+```
+
+### Empty-String Poisoning（已在 PLAN.md 記錄為警示）
+
+典型錯誤：
+```js
+return kvValue !== undefined  // '' 會穿過
+```
+
+正確寫法：
+```js
+if (kvValue !== undefined && kvValue !== null && kvValue !== '')
+  return kvValue
+```
+
+或更好：
+```js
+function normalizeConfig(v) {
+  if (v == null) return null
+  if (typeof v !== 'string') return v
+  const t = v.trim()
+  return t === '' ? null : t
+}
+```
+
+### Immutable Routing Config（已實施）
+
+Routing config（sub path、ws path、uuid path、aliases）在 **build time 決定**，deploy 後 **不可 runtime 覆蓋**。
+
+```js
+// ✅ 正確
+cp = getConfigValue('d', env.d || env.D, env) || ''
+// KV 的 '' 不會覆蓋 env.D
+
+// ❌ 錯誤
+cp = getConfigValue('d', '') || ''
+// KV 的 '' 會被當有效值，env fallback 無法觸發
 ```
 
 ---
 
 *計劃更新時間：2026-05-23*
-*整合用戶 P2 反饋：流量正常化 + 降特徵化優先於結構拆分*
-*新增工程安全約束（2026-05-23）：禁止全域 replace、route dispatch 順序、保守 MIME、deploy 驗證清單*
+*P2 Freeze：P2-1/P2-4/P2-5 ✅ 完成，P2-2 ⚠️ 部分，P2-3 ⏸️ 延期*
+*Phase Stable-1 開始：git workflow + deterministic seed + persisted manifest*

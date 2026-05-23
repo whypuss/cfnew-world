@@ -3,6 +3,15 @@
  * 
  * This script randomizes route names, enum/constant names, header keys,
  * and WS path at build time to break fingerprint clustering by CF's automated systems.
+ * 
+ * ARTIFACT BOUNDARY:
+ *   Commit:   worker.js, build.js, build/mappings.json
+ *   Ignore:  plain.js (generated), .wrangler/, node_modules/
+ * 
+ * ROUTE_SEED_VERSION:
+ *   每次想要 rotate all routes，遞增此值。
+ *   同版本號，每次 build 結果一致（deterministic）。
+ *   禁止使用 timestamp 作為 seed。
  */
 
 const fs = require('fs');
@@ -10,6 +19,9 @@ const path = require('path');
 const crypto = require('crypto');
 
 // Configuration
+const ROUTE_SEED_VERSION = 1;
+const PROJECT_NAME = 'cfnew-plus';
+const PROJECT_SEED = `${PROJECT_NAME}-v${ROUTE_SEED_VERSION}`;
 const PLAIN_JS_PATH = path.join(__dirname, '..', 'plain.js');
 const OUTPUT_PATH = path.join(__dirname, '..', 'plain.js'); // Overwrite plain.js
 const WORKER_JS_PATH = path.join(__dirname, '..', 'worker.js');
@@ -22,13 +34,43 @@ const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const NUMBERS = '0123456789';
 
 /**
- * Generate a random string of specified length
+ * Seeded PRNG — 保证同 ROUTE_SEED_VERSION 每次 build 結果完全一致
+ * 不再使用 crypto.randomBytes（每次不同）
+ */
+function createSeededRng(seed) {
+    let h = 0xdeadbeef;
+    for (let i = 0; i < seed.length; i++) {
+        h = Math.imul(h ^ seed.charCodeAt(i), 2654435761);
+    }
+    h = Math.imul(h ^ (h >>> 16), 2246822519);
+    h = Math.imul(h ^ (h >>> 13), 3266489917);
+    h ^= h >>> 16;
+    return function() {
+        h ^= h >>> 16;
+        h = Math.imul(h, 2246822519);
+        h ^= h >>> 13;
+        h = Math.imul(h, 3266489917);
+        h ^= h >>> 16;
+        return (h >>> 0) / 4294967296;
+    };
+}
+
+const rng = createSeededRng(PROJECT_SEED);
+
+/**
+ * Seeded random integer in [0, max)
+ */
+function randInt(max) {
+    return Math.floor(rng() * max);
+}
+
+/**
+ * Generate a random string of specified length (deterministic per seed version)
  */
 function randomString(length, charset = ALPHANUMERIC) {
     let result = '';
-    const bytes = crypto.randomBytes(length);
     for (let i = 0; i < length; i++) {
-        result += charset[bytes[i] % charset.length];
+        result += charset[Math.floor(rng() * charset.length)];
     }
     return result;
 }
@@ -37,7 +79,7 @@ function randomString(length, charset = ALPHANUMERIC) {
  * Generate a random route path (e.g., "/a7f", "/x2k")
  */
 function randomRoute() {
-    const length = 3 + Math.floor(Math.random() * 3); // 3-5 chars
+    const length = 3 + randInt(3); // 3-5 chars
     return '/' + randomString(length, LOWERCASE);
 }
 
@@ -45,7 +87,7 @@ function randomRoute() {
  * Generate a random constant name (2-6 chars)
  */
 function randomConstant(maxLen = 6) {
-    const length = 2 + Math.floor(Math.random() * (maxLen - 2));
+    const length = 2 + randInt(maxLen - 2);
     return randomString(length, LOWERCASE);
 }
 
@@ -55,7 +97,7 @@ function randomConstant(maxLen = 6) {
 function randomHeader() {
     const prefixes = ['x-', 'cf-', 'cfx-', 'x' + randomString(1, LOWERCASE) + '-'];
     const suffix = randomString(2, LOWERCASE);
-    return prefixes[Math.floor(Math.random() * prefixes.length)] + suffix;
+    return prefixes[randInt(prefixes.length)] + suffix;
 }
 
 /**
@@ -63,7 +105,7 @@ function randomHeader() {
  */
 function randomWsPath() {
     const paths = ['/live', '/socket', '/connect', '/v2', '/ws', '/data', '/sync', '/stream'];
-    return paths[Math.floor(Math.random() * paths.length)];
+    return paths[randInt(paths.length)];
 }
 
 /**
@@ -76,7 +118,7 @@ function randomJsonKey(type) {
         'region': ['r', 'loc', 'reg', 'area']
     };
     const choices = options[type] || [randomConstant(3)];
-    return choices[Math.floor(Math.random() * choices.length)];
+    return choices[randInt(choices.length)];
 }
 
 /**
@@ -94,7 +136,7 @@ function randomCacheControl() {
         'private, max-age=600',
         'public, s-maxage=300'
     ];
-    return options[Math.floor(Math.random() * options.length)];
+    return options[randInt(options.length)];
 }
 
 /**
@@ -102,7 +144,7 @@ function randomCacheControl() {
  */
 function randomFakeHeader() {
     const prefixes = ['x-build', 'x-edge', 'x-runtime', 'server-timing'];
-    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const prefix = prefixes[randInt(prefixes.length)];
     const suffix = randomString(3, LOWERCASE);
     return `${prefix}-${suffix}`;
 }
@@ -112,7 +154,8 @@ function randomFakeHeader() {
  */
 function generateMappings() {
     const mappings = {
-        timestamp: new Date().toISOString(),
+        seedVersion: ROUTE_SEED_VERSION,
+        projectSeed: PROJECT_SEED,
         routes: {},
         constants: {},
         headers: {},
@@ -173,7 +216,7 @@ function generateMappings() {
     ];
     // Weighted random selection
     const totalWeight = cacheOptions.reduce((sum, o) => sum + o.weight, 0);
-    let rand = Math.floor(Math.random() * totalWeight);
+    let rand = Math.floor(rng() * totalWeight);
     for (const opt of cacheOptions) {
         rand -= opt.weight;
         if (rand < 0) {
