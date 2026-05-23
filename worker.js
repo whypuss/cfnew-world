@@ -1214,6 +1214,11 @@ Sitemap: https://example.com/sitemap.xml
 
                 const url = new URL(request.url);
 
+                // DEBUG: log config API requests
+                if (url.pathname.includes('/api/config') || url.pathname.includes('/mim/awcg')) {
+                    console.log('CONFIG_API', request.method, url.pathname, 'cp:', cp);
+                }
+
                 if (url.pathname.includes('/api/config')) {
                     const pathParts = url.pathname.split('/').filter(p => p);
 
@@ -5307,6 +5312,7 @@ Sitemap: https://example.com/sitemap.xml
             // 远程配置URL（硬编码）
             var REMOTE_CONFIG_URL = "${ remoteConfigUrl }";
 
+            const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
             // 翻译对象
             const translations = {
                 zh: {
@@ -7977,6 +7983,8 @@ Sitemap: https://example.com/sitemap.xml
     }
 
     async function handleConfigAPI(request) {
+        console.log('handleConfigAPI called, method:', request.method);
+
         if (request.method === 'GET') {
 
             if (!kvStore) {
@@ -7996,6 +8004,7 @@ Sitemap: https://example.com/sitemap.xml
                 headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
             });
         } else if (request.method === 'POST') {
+            console.log('handleConfigAPI POST, attempting to parse body');
             
             if (!kvStore) {
                 return new Response(JSON.stringify({
