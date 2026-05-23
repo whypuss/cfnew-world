@@ -3549,7 +3549,7 @@ Sitemap: https://example.com/sitemap.xml
             const regionMap = new Map();
             const regionFiltered = [];
             for (const node of validNodes) {
-                const region = node.record.region || node.linkData.region || 'unknown';
+                const region = (node.record && node.record.region) || node.linkData.region || 'unknown';
                 if (!regionMap.has(region)) {
                     regionMap.set(region, 0);
                 }
@@ -3563,9 +3563,9 @@ Sitemap: https://example.com/sitemap.xml
             // P1-2: Deduplicate by ASN (keep lowest latencyScore = highest latency score is better)
             const asnMap = new Map();
             for (const node of validNodes) {
-                const asn = node.record.asn || 'unknown';
+                const asn = (node.record && node.record.asn) || 'unknown';
                 const existing = asnMap.get(asn);
-                if (!existing || node.record.latencyScore > existing.record.latencyScore) {
+                if (!existing || (node.record && node.record.latencyScore) > (existing.record && existing.record.latencyScore)) {
                     asnMap.set(asn, node);
                 }
             }
@@ -3573,9 +3573,9 @@ Sitemap: https://example.com/sitemap.xml
             // P1-2: Deduplicate by /24 subnet (keep lowest latencyScore)
             const subnetMap = new Map();
             for (const node of validNodes) {
-                const subnet = node.record.ipSubnet || node.linkData.ip; // fallback to IP if no subnet
+                const subnet = (node.record && node.record.ipSubnet) || node.linkData.ip; // fallback to IP if no subnet
                 const existing = subnetMap.get(subnet);
-                if (!existing || node.record.latencyScore > existing.record.latencyScore) {
+                if (!existing || (node.record && node.record.latencyScore) > (existing.record && existing.record.latencyScore)) {
                     subnetMap.set(subnet, node);
                 }
             }
