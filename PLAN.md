@@ -249,29 +249,28 @@ CF 真正在抓的不是「代理」，
 
 > **不再追求更多隨機化。目標：consistency、observability、deterministic behavior。**
 
-### Phase Stable-1（當前）
+### Phase Stable-1（✅ 已完成）
 
 #### 1. Git workflow 固化
 
 **禁止** `git add -A`。每次 commit 必須明確指定：
 
 ```
-git add worker.js build/build.js build/mappings.json
+git add worker.js build/build.js build/mappings.json PLAN.md .gitignore
 ```
 
-`.gitignore` 定義 artifact boundary：
+`.gitignore` 已定義 artifact boundary：
 
 ```
 # Commit：
 #   - source code（worker.js、build.js）
 #   - deterministic seed config（ROUTE_SEED_VERSION）
-#   - route registry template（mappings.json — 作為 persisted manifest）
+#   - route registry template（mappings.json — persisted manifest）
+#   - PLAN.md
 
 # Ignore：
-#   - deploy-time generated manifests（plain.js — 每次 build 覆蓋）
-#   - runtime cache
-#   - node_modules/
-#   - .wrangler/
+#   - plain.js、obfuscated.js（build 產出）
+#   - .wrangler/、node_modules/
 #   - worker.js.bak
 ```
 
@@ -279,12 +278,14 @@ git add worker.js build/build.js build/mappings.json
 
 ```
 ROUTE_SEED_VERSION = 1
+PROJECT_SEED = 'cfnew-plus-v1'
 ```
 
-- **不改**：同專案每次 build，routes 穩定
-- **要大改**：手動遞增 `ROUTE_SEED_VERSION` 來 rotate routes
-- **禁止**：timestamp-based seed（會導致每次 deploy 全變）
-- **禁止**：每 commit 自動 randomize（client stability、bookmark 穩定、debug 可追蹤）
+- 所有 `Math.random()` 替換為 `createSeededRng(PROJECT_SEED)`
+- 同 seed version → 同 routes（deterministic across rebuilds）
+- Rotate routes：手動遞增 `ROUTE_SEED_VERSION`
+- **禁止**：timestamp-based seed
+- **禁止**：每 commit 自動 randomize
 
 #### 3. Persisted route manifest
 
@@ -292,18 +293,27 @@ ROUTE_SEED_VERSION = 1
 
 ```json
 {
-  "version": "1",
-  "seed": "cfnew-plus-v1",
-  "routes": { "/sub": "/hcxq", ... },
-  "aliases": ["/dtc", "/vitxb"],
-  "fakeAssets": ["/favicon-32-kwzuwb.png", ...]
+  "seedVersion": 1,
+  "projectSeed": "cfnew-plus-v1",
+  "routes": { "/sub": "/syv", "/connect": "/data" },
+  "aliases": ["/zakx", "/lyk", "/sxvmu"],
+  "fakeAssets": ["/favicon-32-{hash}.png", "/assets/app-{hash}.js", ...]
 }
 ```
 
-好處：
-- rollback 超舒服（對照舊 mappings.json）
-- client migration 容易（直接看 manifest）
-- debug 超舒服（不用猜 route 是什麼）
+#### 4. Route classification（已實作）
+
+Public polymorphic routes（外部 observable attack surface）：
+- `/sub` — subscription path（randomized）
+- `/connect` — WebSocket path（randomized，取代 `/?ed=2048`）
+
+Internal fixed routes（UI runtime dependencies）：
+- `/api/config` — KV storage
+- `/api/preferred-ips` — IP lookup
+- `/__route_debug` — debug endpoint
+- `/refresh` — cache invalidation
+
+**原則**：UI contract routes 永不 randomize，否則 frontend JS 會斷裂。
 
 ---
 
@@ -312,8 +322,8 @@ ROUTE_SEED_VERSION = 1
 #### 4. Route tracing layer
 
 ```js
-traceRoute(pathname)
-// → { matched: true, type: 'sub', route: '/hcxq', segments: [...] }
+GET /__trace?path=/zakx
+// → { matched: "sub_alias", source: "ROUTE_ALIASES", dispatch: "hasSubRoute → handleSubscriptionPage" }
 ```
 
 先提升 observability，再做 centralization refactor。
@@ -431,17 +441,19 @@ Layer 3（Blanket 404）：
 - [x] build.js：fake static assets 注入（**freeze at 4**）
 - [x] build.js：random response headers
 
-### Phase Stable-1（當前）
+### Phase Stable-1（✅ 已完成）
 
-- [ ] `.gitignore` 更新（artifact boundary 定義）
-- [ ] `git add <files>` 固化 workflow（取代 `git add -A`）
-- [ ] `ROUTE_SEED_VERSION = 1` 加入 `build.js`
-- [ ] deterministic seed 取代 timestamp-based randomization
-- [ ] `build/mappings.json` 確認 committed（persisted manifest）
+- [x] `.gitignore` artifact boundary 定義
+- [x] `git add <files>` 固化 workflow
+- [x] `ROUTE_SEED_VERSION = 1` + `PROJECT_SEED` in `build.js`
+- [x] `createSeededRng()` 取代所有 `Math.random()`
+- [x] `build/mappings.json` committed as artifact
+- [x] Route classification（public vs internal routes）
+- [x] Commit `5633095` made（pending push to origin）
 
 ### Phase Stable-2
 
-- [ ] `traceRoute(pathname)` routing layer
+- [ ] `GET /__trace?path=` route tracing endpoint
 - [ ] Config source tracing（`{ value, source }` format）
 
 ### Phase Stable-3
@@ -488,7 +500,7 @@ Layer 3（Blanket 404）：
 
 ```
 Priority（高 → 低）：
-  1. env.D / env.d        ← routing config 正確的來源
+  1. env.D / env.d        ← routing config 正確的來源（Cloudflare Secret）
   2. env fallback         ← 第二層
   3. KV store             ← 只能用於 cache/health，不可用於 routing config
 
@@ -505,45 +517,47 @@ KV store 只能用於：
   - rate limit counters
 ```
 
-### Empty-String Poisoning（已在 PLAN.md 記錄為警示）
+### Empty-String Poisoning（已修復 ✅）
 
-典型錯誤：
-```js
-return kvValue !== undefined  // '' 會穿過
-```
+**根本原因**：KV store 的 `d` key 被設為 empty-string `''`，`getConfigValue` 返回 `''` 被當作有效值，env fallback 無法觸發，導致：
+1. Blanket 404 攔截所有 custom sub path（包括 `/hcxq`）
+2. Alias routing 被 `firstSeg !== tmpAt` 誤殺
 
-正確寫法：
-```js
-if (kvValue !== undefined && kvValue !== null && kvValue !== '')
-  return kvValue
-```
+**修復方案**：
+1. 刪除 KV `d` key：`npx wrangler kv key delete d --binding C`
+2. `getConfigValue` 增加 bypass：key `'d'` 直接跳過 KV
+3. Blanket 404 白名單：`isCustomSubPath` 捷徑
+4. Alias 白名單：`!isSubAlias` 保護
 
-或更好：
+**防範機制**：
 ```js
-function normalizeConfig(v) {
-  if (v == null) return null
-  if (typeof v !== 'string') return v
-  const t = v.trim()
-  return t === '' ? null : t
+function getConfigValue(key, defaultValue, envRef) {
+  const kvVal = await env.CF_KV.get(key);
+  // '' and null/undefined are both treated as "missing"
+  if (key === 'd') return envRef?.d || envRef?.D || defaultValue; // bypass KV
+  if (kvVal !== undefined && kvVal !== null && kvVal !== '') return kvVal;
+  return envRef?.[key] || envRef?.[key.toUpperCase()] || defaultValue;
 }
-```
-
-### Immutable Routing Config（已實施）
-
-Routing config（sub path、ws path、uuid path、aliases）在 **build time 決定**，deploy 後 **不可 runtime 覆蓋**。
-
-```js
-// ✅ 正確
-cp = getConfigValue('d', env.d || env.D, env) || ''
-// KV 的 '' 不會覆蓋 env.D
-
-// ❌ 錯誤
-cp = getConfigValue('d', '') || ''
-// KV 的 '' 會被當有效值，env fallback 無法觸發
 ```
 
 ---
 
 *計劃更新時間：2026-05-23*
 *P2 Freeze：P2-1/P2-4/P2-5 ✅ 完成，P2-2 ⚠️ 部分，P2-3 ⏸️ 延期*
-*Phase Stable-1 開始：git workflow + deterministic seed + persisted manifest*
+*Phase Stable-1 ✅ 完成，Phase Stable-2 下一階段*
+
+---
+
+## 已知問題（待處理）
+
+### 1. Browser saveConfig FAKERESPONSE HEADER（未確認）
+- **現象**：用戶瀏覽器保存配置仍顯示 `FAKERESPONSE HEADER` 錯誤
+- **Server-side 驗證**：`curl -X POST /api/config` → `{"success":true}` ✅
+- **可能原因**：瀏覽器 JS cache 緊舊版（舊版使用 randomized path `/mim/awcg`，新版使用 `/api/config`）
+- **解決方案**：Chrome DevTools → Network → **Disable cache** → Ctrl+Shift+R hard refresh
+- **狀態**：未確認，需用戶親自測試
+
+### 2. Git Push Pending
+- **Commit**：5633095（"fix: P2-0 alias routing + Phase Stable-1 foundations"）
+- **Status**：本地，未 push 到 origin
+- **解決方案**：`git push origin dev`
