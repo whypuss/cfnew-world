@@ -1343,34 +1343,11 @@ Sitemap: https://example.com/sitemap.xml
                                     // Stable-3A: fall through to legacy dispatch (needs config context)
                                     break;
                                 }
-                                // Stable-3A: handle randomized /sub route directly here
-                                // Must init KV AND load config so getConfigValue() finds yx/kvConfig
-                                await initKVStore(env);
-                                await loadKVConfig();
-                                // Restore config that handleSubscriptionRequest needs from kvConfig
-                                const _cp = getConfigValue('yx', '');
-                                if (_cp) {
-                                    try {
-                                        const _arr = _cp.split(',').map(i => i.trim()).filter(Boolean);
-                                        customPreferredIPs = [];
-                                        customPreferredDomains = [];
-                                        _arr.forEach(item => {
-                                            let _nm = '', _ap = item;
-                                            if (item.includes('#')) {
-                                                const _pt = item.split('#');
-                                                _ap = _pt[0].trim(); _nm = _pt[1].trim();
-                                            }
-                                            const { address: _ad, port: _pt2 } = parseAddressAndPort(_ap);
-                                            if (!_nm) _nm = '优选-' + _ad + (_pt2 ? ':' + _pt2 : '');
-                                            if (isValidIP(_ad)) {
-                                                customPreferredIPs.push({ ip: _ad, port: _pt2, isp: _nm });
-                                            } else {
-                                                customPreferredDomains.push({ domain: _ad, port: _pt2, name: _nm });
-                                            }
-                                        });
-                                    } catch (_) {}
-                                }
-                                return await handleSubscriptionRequest(request, at, null);
+                                // Stable-3A: fall through to legacy dispatch for /sub
+                                // Legacy dispatch (line 1366+) has full config loading (KV init,
+                                // loadKVConfig, customPreferredIPs from kvConfig.yx, etc.)
+                                // Early-return path is too fragile to replicate all of that.
+                                break;
                             case 'direct_alias':
                                 return await handleSubscriptionPage(request, at);
                             case 'uuid_path':
