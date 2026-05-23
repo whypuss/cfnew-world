@@ -567,7 +567,7 @@
 
                 const url = new URL(request.url);
 
-                if (url.pathname.includes('/mim/awcg')) {
+                if (url.pathname.includes('/api/config')) {
                     const pathParts = url.pathname.split('/').filter(p => p);
 
                     const apiIndex = pathParts.indexOf('api');
@@ -4612,7 +4612,7 @@ hr {
             
             // 配置管理相关函数
             async function checkKVStatus() {
-                const apiUrl = window.location.pathname + '/mim/awcg';
+                const apiUrl = window.location.pathname + '/api/config';
                 try {
                     const response = await fetch(apiUrl);
                     function getCookie(name) {
@@ -4725,7 +4725,7 @@ hr {
             }
 
             async function loadCurrentConfig() {
-                const apiUrl = window.location.pathname + '/mim/awcg';
+                const apiUrl = window.location.pathname + '/api/config';
                 try {
                     const response = await fetch(apiUrl);
 
@@ -4876,7 +4876,7 @@ hr {
             }
 
             async function saveConfig(configData) {
-                const apiUrl = window.location.pathname + '/mim/awcg';
+                const apiUrl = window.location.pathname + '/api/config';
 
                 try {
                     const response = await fetch(apiUrl, {
@@ -4944,7 +4944,7 @@ hr {
             async function resetAllConfig() {
                 if (confirm('确定要重置所有配置吗？这将清空所有KV配置，恢复为环境变量设置。')) {
                     try {
-                        const response = await fetch(window.location.pathname + '/mim/awcg', {
+                        const response = await fetch(window.location.pathname + '/api/config', {
                             method: 'POST',
                             headers: { 'cfx-op': 'application/json' },
                             body: JSON.stringify({ 

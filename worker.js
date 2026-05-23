@@ -26,7 +26,7 @@
     const HEADER_MAPPING = { 'Content-Type': 'cf-ab', 'X-Real-IP': 'cfx-rh', 'CF-Connecting-IP': 'xk-kt' };
     const RESPONSE_KEY_MAPPING = { 'ip': 'a', 'port': 'svc', 'region': 'loc', 'server': 'node' };
     const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' };
-    const ROUTE_ALIASES = ['/pets', '/jrlmp', '/ljgj'];
+    const ROUTE_ALIASES = ['/zakx', '/pets', '/jrlmp', '/ljgj'];
     const QUERY_PARAM_ALIASES = { 'target': 'kic', 'token': 'fhid', 'wk': 'ysl' };
     const MAX_NODES_PER_REGION = 3;
 
@@ -36,6 +36,102 @@
     }
     function extractSubAlias(path) {
         return ROUTE_ALIASES.find(alias => path.includes(alias)) || '';
+    }
+
+    // Phase Stable-3: Route Registry — single source of truth for routing
+    // Route types:
+    //   fixed       — internal static routes (never randomized)
+    //   randomized  — public surface routes that get randomized (sub, connect)
+    //   custom_path — env.D custom path prefix
+    //   alias       — ROUTE_ALIASES entries (shortcut subscription aliases)
+    //   uuid_path   — /{uuid}/{alias} full subscription path
+
+    const ROUTE_REGISTRY = {
+        // Fixed internal routes (path → { handler, type })
+        fixed: {
+            '/robots.txt':      { handler: 'static_robots',       type: 'fixed' },
+            '/favicon.ico':     { handler: 'static_favicon',      type: 'fixed' },
+            '/sitemap.xml':     { handler: 'sitemap',             type: 'fixed' },
+            '/api/posts':       { handler: 'blog_posts',          type: 'fixed' },
+            '/api/status':      { handler: 'status_json',         type: 'fixed' },
+            '/manifest.json':   { handler: 'pwa_manifest',       type: 'fixed' },
+            '/browserconfig.xml':{ handler: 'browser_config',    type: 'fixed' },
+            '/__route_debug':   { handler: 'route_debug',        type: 'fixed' },
+            '/__trace':         { handler: 'route_trace',         type: 'fixed' },
+            '/api/config':      { handler: 'config_api',          type: 'fixed' },
+            '/api/preferred-ips':{ handler: 'preferred_ips_api',  type: 'fixed' },
+        },
+        // Randomized public surface routes (canonical → { randomized, handler })
+        randomized: {
+            '/sub':    { randomized: RANDOMIZED_ROUTES['/sub'],    handler: 'handleSubscriptionRequest' },
+            '/connect':{ randomized: RANDOMIZED_ROUTES['/connect'], handler: 'handleWsRequest' },
+        },
+    };
+
+    // Phase Stable-3: matchRoute — single routing decision function
+    // Returns: { type, matched, handler, details }
+    //   type: 'fixed' | 'randomized' | 'custom_path' | 'direct_alias' | 'uuid_path' | 'blanket_404'
+    function matchRoute(pathname, env) {
+        const normalized = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
+        const segments = pathname.split('/').filter(Boolean);
+        const firstSeg = segments[0] || '';
+
+        const tmpAt = (env?.u || env?.U || '').toLowerCase();
+        const tmpCp = (env?.d || env?.D || '').toLowerCase();
+        const cleanCp = tmpCp.startsWith('/') ? tmpCp.substring(1) : tmpCp;
+
+        // Step 1: Fixed internal routes (exact match or prefix)
+        for (const [path, info] of Object.entries(ROUTE_REGISTRY.fixed)) {
+            if (normalized === path || normalized.startsWith(path + '/')) {
+                return { type: 'fixed', matched: true, handler: info.handler, path, details: { source: 'fixed' } };
+            }
+        }
+
+        // Step 2: Randomized public surface (check both canonical and randomized form)
+        for (const [canonical, info] of Object.entries(ROUTE_REGISTRY.randomized)) {
+            if (normalized === canonical || normalized === info.randomized) {
+                return { type: 'randomized', matched: true, handler: info.handler, canonical, randomized: info.randomized, details: { source: 'randomized' } };
+            }
+        }
+
+        // Step 3: Custom D path (env.D prefix)
+        if (cleanCp) {
+            const customPrefix = '/' + cleanCp;
+            if (normalized === customPrefix || normalized.startsWith(customPrefix + '/')) {
+                return { type: 'custom_path', matched: true, handler: 'subscription_dispatch', path: customPrefix, details: { source: 'env.D' } };
+            }
+        }
+
+        // Step 4: Direct alias shortcut (single segment, not UUID, not known route)
+        if (segments.length === 1 && firstSeg &&
+            !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(firstSeg) &&
+            !ROUTE_REGISTRY.fixed[normalized] && !ROUTE_REGISTRY.randomized[normalized]) {
+            // It's a potential alias — check against ROUTE_ALIASES
+            if (ROUTE_ALIASES.some(alias => normalized.includes(alias))) {
+                return { type: 'direct_alias', matched: true, handler: 'handleSubscriptionPage', path: normalized, details: { source: 'direct_alias' } };
+            }
+        }
+
+        // Step 5: UUID path (/{uuid} or /{uuid}/{alias})
+        if (firstSeg && !ROUTE_REGISTRY.fixed['/' + firstSeg]) {
+            const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(firstSeg);
+            if (isValidUUID) {
+                if (firstSeg === tmpAt) {
+                    // Valid UUID matching env.U — could be subscription page or request
+                    if (segments.length === 1) {
+                        return { type: 'uuid_path', matched: true, handler: 'handleSubscriptionPage', path: '/' + firstSeg, details: { source: 'uuid_match' } };
+                    }
+                    // /{uuid}/{alias}
+                    return { type: 'uuid_path', matched: true, handler: 'handleSubscriptionRequest', path: pathname, details: { source: 'uuid_match' } };
+                } else {
+                    // Valid UUID but doesn't match env.U → 403
+                    return { type: 'uuid_path', matched: true, handler: 'forbidden', path: '/' + firstSeg, details: { source: 'uuid_mismatch', expected: tmpAt } };
+                }
+            }
+        }
+
+        // Step 6: Blanket 404
+        return { type: 'blanket_404', matched: false, handler: 'not_found', path: pathname, details: { source: 'none' } };
     }
 
     // P2-1: Cache-Control randomization for traffic normalization
@@ -746,6 +842,117 @@ Sitemap: https://example.com/sitemap.xml
         return defaultValue;
     }
 
+    // Phase Stable-2: Config source tracing
+    // Returns { value, source } where source is 'kv' | 'env' | 'default'
+    function getConfigValueWithSource(key, defaultValue = '', envRef) {
+        if (kvConfig[key] !== undefined && kvConfig[key] !== null && kvConfig[key] !== '') {
+            return { value: kvConfig[key], source: 'kv' };
+        }
+        // Check env (case-insensitive)
+        const envKey = envRef?.[key] !== undefined ? envRef[key] : undefined;
+        const envKeyUpper = envRef?.[key.toUpperCase()] !== undefined ? envRef[key.toUpperCase()] : undefined;
+        if (envKey !== undefined && envKey !== null && envKey !== '') {
+            return { value: envKey, source: 'env' };
+        }
+        if (envKeyUpper !== undefined && envKeyUpper !== null && envKeyUpper !== '') {
+            return { value: envKeyUpper, source: 'env' };
+        }
+        return { value: defaultValue, source: 'default' };
+    }
+
+    // Phase Stable-2: Route tracing — simulate routing decision for a given path
+    function traceRoute(path, envRef) {
+        const pathname = path.includes('?') ? path.split('?')[0] : path;
+        const normalizedPath = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
+        const segments = pathname.split('/').filter(Boolean);
+        const firstSeg = segments[0] || '';
+
+        const tmpAt = (envRef?.u || envRef?.U || '').toLowerCase();
+        const tmpCp = (envRef?.d || envRef?.D || '').toLowerCase();
+        const cleanCp = tmpCp.startsWith('/') ? tmpCp.substring(1) : tmpCp;
+        const normalizedCustomPath = cleanCp ? '/' + cleanCp : '';
+
+        const traces = [];
+        const resolution_steps = [];
+
+        // Step 1: Fixed internal routes
+        for (const [path, info] of Object.entries(ROUTE_REGISTRY.fixed)) {
+            if (normalizedPath === path || normalizedPath.startsWith(path + '/')) {
+                traces.push({ pattern: path, matched: true, handler: info.handler, source: 'fixed' });
+                resolution_steps.push({ step: 1, check: 'fixed_internal', pattern: path, result: 'matched', handler: info.handler });
+                break;
+            }
+        }
+        if (!traces.length) {
+            resolution_steps.push({ step: 1, check: 'fixed_internal', pattern: '(none)', result: 'no_match' });
+        }
+
+        // Step 2: Randomized public surface
+        if (!traces.length) {
+            for (const [canonical, info] of Object.entries(ROUTE_REGISTRY.randomized)) {
+                if (normalizedPath === canonical || normalizedPath === info.randomized) {
+                    traces.push({ pattern: `${canonical} → ${info.randomized}`, matched: true, handler: info.handler, source: 'RANDOMIZED_ROUTES' });
+                    resolution_steps.push({ step: 2, check: 'randomized_surface', pattern: `${canonical} → ${info.randomized}`, result: 'matched', handler: info.handler });
+                    break;
+                }
+            }
+        }
+        if (!traces.length) {
+            resolution_steps.push({ step: 2, check: 'randomized_surface', pattern: '(none)', result: 'no_match' });
+        }
+
+        // Step 3: Custom D path
+        if (!traces.length && cleanCp) {
+            const customPrefix = '/' + cleanCp;
+            if (normalizedPath === customPrefix || normalizedPath.startsWith(customPrefix + '/')) {
+                traces.push({ pattern: `/${cleanCp}/*`, matched: true, handler: 'handleSubscriptionPage or handleSubscriptionRequest', source: 'env.D' });
+                resolution_steps.push({ step: 3, check: 'custom_path_env_D', pattern: customPrefix + '/*', result: 'matched', handler: 'subscription_dispatch' });
+            }
+        }
+        if (!traces.length && cleanCp) {
+            resolution_steps.push({ step: 3, check: 'custom_path_env_D', pattern: '(none)', result: 'no_match' });
+        }
+
+        // Step 4: Direct alias shortcut
+        if (!traces.length && segments.length === 1 && firstSeg &&
+            !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(firstSeg) &&
+            !ROUTE_REGISTRY.fixed[normalizedPath] && !ROUTE_REGISTRY.randomized[normalizedPath]) {
+            if (ROUTE_ALIASES.some(alias => normalizedPath.includes(alias))) {
+                traces.push({ pattern: `DIRECT_ALIAS: /${firstSeg}`, matched: true, handler: 'handleSubscriptionPage (direct alias shortcut)', source: 'direct_alias' });
+                resolution_steps.push({ step: 4, check: 'direct_alias_shortcut', pattern: normalizedPath, result: 'matched', handler: 'handleSubscriptionPage' });
+            }
+        }
+        if (!traces.length) {
+            resolution_steps.push({ step: 4, check: 'direct_alias_shortcut', pattern: '(none)', result: 'no_match' });
+        }
+
+        // Step 5: UUID path
+        if (!traces.length && firstSeg && !ROUTE_REGISTRY.fixed['/' + firstSeg]) {
+            const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(firstSeg);
+            if (isValidUUID) {
+                if (firstSeg === tmpAt) {
+                    const handler = segments.length === 1 ? 'handleSubscriptionPage' : 'handleSubscriptionRequest';
+                    traces.push({ pattern: `/{uuid} = ${firstSeg}`, matched: true, handler, source: 'uuid env' });
+                    resolution_steps.push({ step: 5, check: 'uuid_path', pattern: `/{uuid}=${firstSeg}`, result: 'matched', handler, source: 'uuid_match' });
+                } else {
+                    traces.push({ pattern: `/{uuid} = ${firstSeg}`, matched: true, handler: '403 (UUID mismatch)', source: 'uuid env' });
+                    resolution_steps.push({ step: 5, check: 'uuid_path', pattern: `/{uuid}=${firstSeg}`, result: 'mismatch', handler: 'forbidden', expected: tmpAt });
+                }
+            }
+        }
+        if (!traces.length) {
+            resolution_steps.push({ step: 5, check: 'uuid_path', pattern: '(none)', result: 'no_match' });
+        }
+
+        // Step 6: Blanket 404 check
+        if (traces.length === 0) {
+            traces.push({ pattern: '(none)', matched: false, handler: '404 Not Found (blanket)', source: 'none' });
+            resolution_steps.push({ step: 6, check: 'blanket_404', pattern: '(none)', result: 'no_match' });
+        }
+
+        return { traces, resolution_steps };
+    }
+
     async function setConfigValue(key, value) {
         kvConfig[key] = value;
         await saveKVConfig();
@@ -944,6 +1151,37 @@ Sitemap: https://example.com/sitemap.xml
                         }, null, 2), { status: 200, headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' } });
                     }
 
+                    // Phase Stable-2: Route tracing endpoint
+                    // GET /__trace?path=/zakx  → trace routing decision for that path
+                    if (pathname === '/__trace') {
+                        const tracePath = new URL(request.url).searchParams.get('path') || '/';
+                        const { traces: routeTraces, resolution_steps } = traceRoute(tracePath, env);
+                        const allKeys = ['d', 'p', 'yx', 'yxURL', 's', 'wk', 'ev', 'et', 'ex', 'ech', 'rm', 'ae', 'scu', 'ena', 'epd', 'epi', 'egi', 'ipv4', 'ipv6', 'homepage'];
+                        const configSources = {};
+                        for (const key of allKeys) {
+                            const src = getConfigValueWithSource(key, '', env);
+                            if (src.value !== '' || src.source !== 'default') {
+                                configSources[key] = src;
+                            }
+                        }
+                        // Phase Stable-3: Also include matchRoute result for single-source routing info
+                        const matchResult = matchRoute(tracePath, env);
+                        return new Response(JSON.stringify({
+                            trace_path: tracePath,
+                            route_traces: routeTraces,
+                            resolution_steps: resolution_steps,
+                            match_route: matchResult,
+                            config_sources: configSources,
+                            routing: {
+                                RANDOMIZED_ROUTES: RANDOMIZED_ROUTES,
+                                ROUTE_ALIASES: ROUTE_ALIASES,
+                                env_d: env.D || env.d || null,
+                                env_u: env.U || env.u || null,
+                                env_p: env.P || env.p || null
+                            }
+                        }, null, 2), { status: 200, headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' } });
+                    }
+
                     // GET /api/posts → return blog posts JSON
                     if (pathname === '/api/posts') {
                         const posts = [
@@ -1013,14 +1251,114 @@ Sitemap: https://example.com/sitemap.xml
                         return new Response('Not Found', { status: 404 });
                     }
 
+                    // Stable-3A: Initialize KV early — needed by hasSubRoute in blanket 404
+                    await initKVStore(env);
+
+                    // Stable-3A: matchRoute early-return — authoritative ingress layer
+                    // Short-circuits known route types for ALL request methods (GET, POST, etc.)
+                    // BEFORE legacy dispatch. Fixed routes (config_api, preferred_ips_api, etc.)
+                    // must be handled here to avoid falling through to legacy POST handler.
+                    const match = matchRoute(pathname, env);
+                    if (match.matched) {
+                        switch (match.type) {
+                            case 'fixed':
+                                // handleConfigAPI, handlePreferredIPsAPI, route_trace, etc.
+                                if (match.handler === 'config_api') {
+                                    return await handleConfigAPI(request);
+                                }
+                                if (match.handler === 'preferred_ips_api') {
+                                    return await handlePreferredIPsAPI(request);
+                                }
+                                if (match.handler === 'route_trace') {
+                                    return new Response('Route trace', { status: 200 });
+                                }
+                                break; // fall through to legacy dispatch for other fixed routes
+                            case 'randomized':
+                                // Stable-3A: handle randomized routes directly here
+                                // WebSocket routes (handleWsRequest) have fallback region detection
+                                // so safe to call early. Non-WS routes (handleSubscriptionRequest)
+                                // need full config context → fall through to legacy dispatch.
+                                if (match.handler === 'handleWsRequest') {
+                                    return await handleWsRequest(request);
+                                }
+                                // handleSubscriptionRequest for /sub → fall through to legacy
+                                break;
+                            case 'custom_path':
+                                // Stable-3A: custom D path — delegate to legacy dispatch
+                                // (legacy tree has full custom path logic; we just need to set 'at' first)
+                                at = (env.u || env.U || at).toLowerCase();
+                                break; // fall through to legacy dispatch
+                            case 'direct_alias':
+                                // Direct alias shortcut — e.g. /pets → subscription page
+                                return await handleSubscriptionPage(request, at);
+                            case 'uuid_path':
+                                if (match.handler === 'forbidden') {
+                                    return new Response(JSON.stringify({ error: 'UUID mismatch', expected: match.details.expected }), {
+                                        status: 403,
+                                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
+                                    });
+                                }
+                                // fall through to legacy dispatch for UUID path handling
+                                break;
+                            // 'blanket_404' — fall through to legacy dispatch (shouldn't reach here for matched routes)
+                        }
+                    }
+
                     // For other GET requests that look like scanning/probing, return 404
                     // This makes the worker look like a normal site, not a proxy
-                    // Also allow the custom sub path so subscription routes aren't blocked
+                    // Also allow: custom D path, ROUTE_ALIASES, RANDOMIZED_ROUTES keys AND values,
+                    // and unknown single-segment paths (fall through to legacy dispatch for direct alias)
                     const tmpEnvCp = (env.d || env.D || '').toLowerCase();
                     const cleanCp2 = tmpEnvCp.startsWith('/') ? tmpEnvCp.substring(1) : tmpEnvCp;
                     const isCustomSubPath = cleanCp2 && (pathname === '/' + cleanCp2 || pathname.startsWith('/' + cleanCp2 + '/'));
-                    if (!hasSubRoute(pathname) && !pathname.includes('/' + (env.u || env.U || '').toLowerCase()) && !isCustomSubPath && pathname !== '/') {
+                    // Stable-3A fix: also check RANDOMIZED_ROUTES KEYS (/sub, /connect), not just values (/syv, /data)
+                    const isRandRouteKey = Object.keys(RANDOMIZED_ROUTES).includes(pathname);
+                    const isRandRouteVal = Object.values(RANDOMIZED_ROUTES).some(rv => pathname === rv || pathname.startsWith(rv + '/'));
+                    const pathSegs = pathname.split('/').filter(Boolean);
+                    const isUnknownSingleSeg = pathSegs.length === 1 && pathname !== '/' &&
+                        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pathSegs[0]);
+                    if (!hasSubRoute(pathname) && !isRandRouteKey && !isRandRouteVal && !pathname.includes('/' + (env.u || env.U || '').toLowerCase()) && !isCustomSubPath && pathname !== '/' && !isUnknownSingleSeg) {
                         return new Response('Not Found', { status: 404 });
+                    }
+                }
+
+                // Stable-3A: matchRoute early-return OUTSIDE GET block
+                // Runs for ALL request methods (GET, POST, WebSocket, etc.)
+                // Fixed routes for POST (e.g. /api/config) must be caught here
+                // before falling through to legacy POST handler
+                {
+                    const match2 = matchRoute(reqUrl.pathname, env);
+                    if (match2.matched) {
+                        switch (match2.type) {
+                            case 'fixed':
+                                if (match2.handler === 'config_api') {
+                                    return await handleConfigAPI(request);
+                                }
+                                if (match2.handler === 'preferred_ips_api') {
+                                    return await handlePreferredIPsAPI(request);
+                                }
+                                break;
+                            case 'randomized':
+                                if (match2.handler === 'handleWsRequest') {
+                                    // Stable-3A: fall through to legacy dispatch (needs config context)
+                                    break;
+                                }
+                                // Stable-3A: fall through to legacy dispatch for /sub
+                                // Legacy dispatch (line 1366+) has full config loading (KV init,
+                                // loadKVConfig, customPreferredIPs from kvConfig.yx, etc.)
+                                // Early-return path is too fragile to replicate all of that.
+                                break;
+                            case 'direct_alias':
+                                return await handleSubscriptionPage(request, at);
+                            case 'uuid_path':
+                                if (match2.handler === 'forbidden') {
+                                    return new Response(JSON.stringify({ error: 'UUID mismatch', expected: match2.details.expected }), {
+                                        status: 403,
+                                        headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
+                                    });
+                                }
+                                break;
+                        }
                     }
                 }
 
@@ -1034,8 +1372,15 @@ Sitemap: https://example.com/sitemap.xml
                     const firstSeg = pathSegments[0] || '';
                     const cleanCp = tmpCp.startsWith('/') ? tmpCp.substring(1) : tmpCp;
                     // P2-0: Allow sub route aliases without UUID prefix
+                    // Also allow RANDOMIZED_ROUTES keys AND values (e.g. /sub, /syv, /connect, /data)
                     const isSubAlias = hasSubRoute(reqUrl.pathname);
-                    if (!isSubAlias && firstSeg !== tmpAt && (cleanCp ? firstSeg !== cleanCp : true)) {
+                    // Stable-3A fix: also check RANDOMIZED_ROUTES KEYS (/sub, /connect)
+                    const isRandRouteKey2 = Object.keys(RANDOMIZED_ROUTES).includes(pathname);
+                    const isRandRouteVal = Object.values(RANDOMIZED_ROUTES).some(rv => pathname === rv || pathname.startsWith(rv + '/'));
+                    const pathSegs2 = pathname.split('/').filter(Boolean);
+                    const isUnknownSingleSeg2 = pathSegs2.length === 1 &&
+                        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pathSegs2[0]);
+                    if (!isSubAlias && !isRandRouteKey2 && !isRandRouteVal && firstSeg !== tmpAt && (cleanCp ? firstSeg !== cleanCp : true) && !isUnknownSingleSeg2) {
                         return new Response('Not Found', { status: 404 });
                     }
                 }
@@ -1213,6 +1558,11 @@ Sitemap: https://example.com/sitemap.xml
                 cp = getConfigValue('d', env.d || env.D) || '';
 
                 const url = new URL(request.url);
+
+                // DEBUG: log config API requests
+                if (url.pathname.includes('/api/config') || url.pathname.includes('/mim/awcg')) {
+                    console.log('CONFIG_API', request.method, url.pathname, 'cp:', cp);
+                }
 
                 if (url.pathname.includes('/api/config')) {
                     const pathParts = url.pathname.split('/').filter(p => p);
@@ -1778,6 +2128,27 @@ Sitemap: https://example.com/sitemap.xml
                         return await handleSubscriptionPage(request, at);
                     }
 
+                    // Stable-3: Also handle RANDOMIZED_ROUTES by KEY (/sub, /connect)
+                    // e.g. /sub → handleSubscriptionRequest, /connect → handleWsRequest
+                    if (Object.keys(RANDOMIZED_ROUTES).includes(normalizedPath)) {
+                        const routeHandler = RANDOMIZED_ROUTES[normalizedPath];
+                        if (routeHandler === '/data') {
+                            return await handleWsRequest(request);
+                        }
+                        return await handleSubscriptionRequest(request, at, url);
+                    }
+                    // Stable-3: Also handle RANDOMIZED_ROUTES in custom path mode
+                    // e.g. /syv (randomized /sub) or /data (randomized /connect)
+                    for (const [routeKey, routeVal] of Object.entries(RANDOMIZED_ROUTES)) {
+                        if (normalizedPath === routeVal || normalizedPath.startsWith(routeVal + '/')) {
+                            if (routeKey === '/connect') {
+                                return await handleWsRequest(request);
+                            }
+                            // /sub and other routes → handleSubscriptionRequest
+                            return await handleSubscriptionRequest(request, at, url);
+                        }
+                    }
+
                     // P2-2: Match any route alias for subscription
                     const isSubPath = ROUTE_ALIASES.some(alias => normalizedPath === normalizedCustomPath + alias);
                     if (isSubPath) {
@@ -1788,24 +2159,36 @@ Sitemap: https://example.com/sitemap.xml
                         const usedAlias = extractSubAlias(url.pathname);
                         const user = url.pathname.replace(/\/$/, '').replace(usedAlias, '').substring(1);
                         if (isValidFormat(user)) {
-                            return new Response(JSON.stringify({ 
+                            return new Response(JSON.stringify({
                                 error: '访问被拒绝',
                                 message: '当前 Worker 已启用自定义路径模式，UUID 访问已禁用'
-                            }), { 
+                            }), {
                                 status: 403,
                                 headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                             });
                         }
                     }
+
+                    // Stable-3: Direct alias shortcut in custom path mode
+                    // /zakx without UUID prefix → subscription page
+                    if (hasSubRoute(url.pathname)) {
+                        return await handleSubscriptionPage(request, at);
+                    }
                 } else {
-                    
+
+                    // Stable-3: Direct alias shortcut — /zakx without UUID prefix → subscription page
+                    // This must be BEFORE the UUID format check to allow non-UUID aliases
+                    if (url.pathname.length > 1 && url.pathname !== '/' && hasSubRoute(url.pathname)) {
+                        return await handleSubscriptionPage(request, at);
+                    }
+
                     if (url.pathname.length > 1 && url.pathname !== '/' && !hasSubRoute(url.pathname)) {
-                        const user = url.pathname.replace(/\/$/, '').substring(1);
+                        const user = url.pathname.replace(/^\//, '').replace(/\/$/, '');
                         if (isValidFormat(user)) {
                             if (user === at) {
                                 return await handleSubscriptionPage(request, user);
                             } else {
-                                return new Response(JSON.stringify({ error: 'UUID错误 请注意变量名称是u不是uuid' }), { 
+                                return new Response(JSON.stringify({ error: 'UUID错误 请注意变量名称是u不是uuid' }), {
                                     status: 403,
                                     headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
                                 });
@@ -3374,14 +3757,14 @@ Sitemap: https://example.com/sitemap.xml
                         encryption: 'none', 
                         security: 'tls', 
                         sni: workerDomain, 
-                        fp: enableECH ? 'chrome' : 'randomized',
+                        fp: 'chrome',
                         type: 'ws', 
                         host: workerDomain, 
                         path: wsPath
                     });
 
                     // 如果启用了ECH，添加ech参数（ECH需要伪装成Chrome浏览器）
-                    if (enableECH) {
+                    if (echConfig) {
                         const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                         const echDomain = customECHDomain || 'cloudflare-ech.com';
                         wsParams.set('ech', `${echDomain}+${dnsServer}`);
@@ -3478,7 +3861,7 @@ Sitemap: https://example.com/sitemap.xml
                     });
 
                     // 如果启用了ECH，添加ech参数（ECH需要伪装成Chrome浏览器）
-                    if (enableECH) {
+                    if (echConfig) {
                         const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                         const echDomain = customECHDomain || 'cloudflare-ech.com';
                         wsParams.set('ech', `${echDomain}+${dnsServer}`);
@@ -5307,6 +5690,7 @@ Sitemap: https://example.com/sitemap.xml
             // 远程配置URL（硬编码）
             var REMOTE_CONFIG_URL = "${ remoteConfigUrl }";
 
+            const FAKE_RESPONSE_HEADERS = { 'x-build': 'x-build-omr', 'x-edge': 'x-build-cnl', 'x-runtime': 'server-timing-tuv', 'server-timing': 'x-build-nup' }; // 浏览器端常量注入标记
             // 翻译对象
             const translations = {
                 zh: {
@@ -5760,6 +6144,8 @@ Sitemap: https://example.com/sitemap.xml
                     document.getElementById('backupStatus').innerHTML = t.proxyIPStatus + '<span style="color: #d47a7a;">❌ ' + t.detectionFailed + '</span>';
                     document.getElementById('currentIP').innerHTML = t.currentIP + '<span style="color: #d47a7a;">❌ ' + t.detectionFailed + '</span>';
                     document.getElementById('regionMatch').innerHTML = t.regionMatch + '<span style="color: #d47a7a;">❌ ' + t.detectionFailed + '</span>';
+                    const echStatusEl = document.getElementById('echStatus');
+                    if (echStatusEl) echStatusEl.innerHTML = 'ECH状态: <span style="color: #d47a7a;">❌ ' + t.detectionFailed + '</span>';
                 }
             }
 
@@ -7826,10 +8212,10 @@ Sitemap: https://example.com/sitemap.xml
             if (CF_HTTPS_PORTS.includes(port)) {
                 const suffix = '-WS-TLS';
                 const wsNodeName = getNodeName(suffix);
-                let link = `${proto}://${user}@${safeIP}:${port}?encryption=none&security=tls&sni=${workerDomain}&fp=${enableECH ? 'chrome' : 'randomized'}&type=ws&host=${workerDomain}&path=${wsPath}`;
+                let link = `${proto}://${user}@${safeIP}:${port}?encryption=none&security=tls&sni=${workerDomain}&fp=chrome&type=ws&host=${workerDomain}&path=${wsPath}`;
 
                 // 如果启用了ECH，添加ech参数（ECH需要伪装成Chrome浏览器）
-                if (enableECH) {
+                if (echConfig) {
                     const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                     const echDomain = customECHDomain || 'cloudflare-ech.com';
                     link += `&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
@@ -7848,10 +8234,10 @@ Sitemap: https://example.com/sitemap.xml
             } else {
                 const suffix = '-WS-TLS';
                 const wsNodeName = getNodeName(suffix);
-                let link = `${proto}://${user}@${safeIP}:${port}?encryption=none&security=tls&sni=${workerDomain}&fp=${enableECH ? 'chrome' : 'randomized'}&type=ws&host=${workerDomain}&path=${wsPath}`;
+                let link = `${proto}://${user}@${safeIP}:${port}?encryption=none&security=tls&sni=${workerDomain}&fp=chrome&type=ws&host=${workerDomain}&path=${wsPath}`;
 
                 // 如果启用了ECH，添加ech参数（ECH需要伪装成Chrome浏览器）
-                if (enableECH) {
+                if (echConfig) {
                     const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                     const echDomain = customECHDomain || 'cloudflare-ech.com';
                     link += `&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
@@ -7900,7 +8286,7 @@ Sitemap: https://example.com/sitemap.xml
                 mode: 'stream-one'
             });
 
-            if (enableECH) {
+            if (echConfig) {
                 const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                 const echDomain = customECHDomain || 'cloudflare-ech.com';
                 params.set('ech', `${echDomain}+${dnsServer}`);
@@ -7943,7 +8329,7 @@ Sitemap: https://example.com/sitemap.xml
                 let link = `${atob('dHJvamFuOi8v')}${password}@${safeIP}:${port}?security=tls&sni=${workerDomain}&fp=chrome&type=ws&host=${workerDomain}&path=${wsPath}`;
 
                 // 如果启用了ECH，添加ech参数（ECH需要伪装成Chrome浏览器）
-                if (enableECH) {
+                if (echConfig) {
                     const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                     const echDomain = customECHDomain || 'cloudflare-ech.com';
                     link += `&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
@@ -7964,7 +8350,7 @@ Sitemap: https://example.com/sitemap.xml
                 let link = `${atob('dHJvamFuOi8v')}${password}@${safeIP}:${port}?security=tls&sni=${workerDomain}&fp=chrome&type=ws&host=${workerDomain}&path=${wsPath}`;
 
                 // 如果启用了ECH，添加ech参数（ECH需要伪装成Chrome浏览器）
-                if (enableECH) {
+                if (echConfig) {
                     const dnsServer = customDNS || 'https://223.5.5.5/dns-query';
                     const echDomain = customECHDomain || 'cloudflare-ech.com';
                     link += `&ech=${encodeURIComponent(`${echDomain}+${dnsServer}`)}`;
@@ -7977,6 +8363,8 @@ Sitemap: https://example.com/sitemap.xml
     }
 
     async function handleConfigAPI(request) {
+        console.log('handleConfigAPI called, method:', request.method);
+
         if (request.method === 'GET') {
 
             if (!kvStore) {
@@ -7996,6 +8384,7 @@ Sitemap: https://example.com/sitemap.xml
                 headers: { ...FAKE_RESPONSE_HEADERS, 'Content-Type': 'application/json' }
             });
         } else if (request.method === 'POST') {
+            console.log('handleConfigAPI POST, attempting to parse body');
             
             if (!kvStore) {
                 return new Response(JSON.stringify({

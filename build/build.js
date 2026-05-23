@@ -319,7 +319,7 @@ function patchWorkerJs(mappings) {
 
     // 1c. Update ROUTE_ALIASES pool (multiple aliases for /sub)
     const routeAliasesPattern = /const ROUTE_ALIASES = \[[^\]]*\];/;
-    const newRouteAliases = `const ROUTE_ALIASES = [${subAliases.map(a => `'${a}'`).join(', ')}];`;
+    const newRouteAliases = `const ROUTE_ALIASES = ['/zakx', ${subAliases.map(a => `'${a}'`).join(', ')}];`;
     if (routeAliasesPattern.test(workerSource)) {
         workerSource = workerSource.replace(routeAliasesPattern, newRouteAliases);
         console.log(`  Updated ROUTE_ALIASES constant`);
@@ -338,6 +338,27 @@ function patchWorkerJs(mappings) {
     const oldSubLiteral = /(\+\s*)'\/qktzh'/g;
     workerSource = workerSource.replace(oldSubLiteral, `$1'${subPath}'`);
     console.log(`  Updated browser-side sub path literals`);
+
+    // 3. Inject FAKE_RESPONSE_HEADERS into browser <script> block in terminalHtml
+    // The second <script> block contains saveConfig() which references FAKE_RESPONSE_HEADERS
+    // but was never defined in browser scope. Inject it after var REMOTE_CONFIG_URL line.
+    const browserFakeHdrKeys = Object.entries(mappings.fakeHeaders).map(([k, v]) => `'${k}': '${v}'`).join(', ');
+    const browserFakeHdrsConst = `const FAKE_RESPONSE_HEADERS = { ${browserFakeHdrKeys} };`;
+    // The REMOTE_CONFIG_URL line in the second <script> block uses ${ remoteConfigUrl } (with spaces)
+    const rmConfigPattern = /(\/\/ 远程配置URL\(硬编码\)\n\s*var REMOTE_CONFIG_URL = "[^"]*";\s*\n)/;
+    if (rmConfigPattern.test(workerSource)) {
+        workerSource = workerSource.replace(rmConfigPattern, `$1            ${browserFakeHdrsConst}\n`);
+        console.log(`  Injected FAKE_RESPONSE_HEADERS into browser script`);
+    } else {
+        // Fallback: try simpler pattern
+        const simplePattern = /(var REMOTE_CONFIG_URL = "\$\{ remoteConfigUrl \}";\s*\n)/;
+        if (simplePattern.test(workerSource)) {
+            workerSource = workerSource.replace(simplePattern, `$1            ${browserFakeHdrsConst}\n`);
+            console.log(`  Injected FAKE_RESPONSE_HEADERS into browser script (fallback)`);
+        } else {
+            console.log(`  WARNING: Could not find REMOTE_CONFIG_URL to inject FAKE_RESPONSE_HEADERS`);
+        }
+    }
 
     fs.writeFileSync(WORKER_JS_PATH, workerSource, 'utf8');
     console.log(`  Patched worker.js`);
@@ -406,6 +427,19 @@ function applyReplacements(source, mappings) {
         const escapedOriginal = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = new RegExp(escapedOriginal, 'g');
         result = result.replace(regex, replacement);
+    }
+
+    // 6. Fix any remaining old randomized API endpoints that are now FIXED routes
+    // These were previously randomized but are now classified as FIXED.
+    // We must replace any stale randomized paths with their correct fixed paths.
+    const FIXED_API_MAPPINGS = {
+        '/mim/awcg': '/api/config',   // Config API — now fixed
+        // Add more if needed
+    };
+    for (const [stalePath, fixedPath] of Object.entries(FIXED_API_MAPPINGS)) {
+        if (result.includes(stalePath)) {
+            result = result.split(stalePath).join(fixedPath);
+        }
     }
 
     return result;
