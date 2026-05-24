@@ -4,19 +4,53 @@
 >
 > ⚠️ **KV Namespace 已迁移，使用新的 Namespace ID（见 wrangler.toml）**
 
-## 最新更新（v1.0-main）
+---
 
-### Bug 修复
-- **isWebSocket scope 问题**：修复 `isWebSocket` 变量定义在 GET block 内部但使用在外部导致的 `ReferenceError` 问题
-- **fp=chrome 协议兼容**：所有协议（VLESS/Trojan/xhttp/ECH）的 fp 参数统一为 `chrome`，避免 randomized 导致的连接问题
+## 版本进度（v1.0）
 
-### 基础设施
-- **KV Namespace 迁移**：旧的 Namespace 已失效，新建 Namespace，更新 wrangler.toml 中的 ID
-- **wrangler.toml 更新**：compatibility_date 修正为 `2025-01-01`
+### ✅ 已完成功能
 
-### 已知问题已修复
-- ~~订阅页面节点白色显示问题~~ ✅ 已修复
-- ~~Worker 500 错误（KV 绑定损坏）~~ ✅ 已修复
+**核心基础设施**
+- Route 随机化（build.js，ROUTE_SEED_VERSION=1）
+- Enum/constant name 随机化（vless→ak, ws→ku 等）
+- Response key 随机化（ip→a, port→svc 等）
+- Header key 随机化（X-Real-IP→cf-uf 等）
+- `build/mappings.json` committed as artifact
+- deterministic build（同一 seed 每次结果一致）
+
+**静态资源**
+- `static/` 目录（index.html, robots.txt, favicon.ico）
+- 4 个 fake static assets（build 时注入，freeze at 4）
+- Random response headers（x-build, x-edge, x-runtime）
+
+**订阅功能**
+- 多协议支持：VLESS、Trojan、xhttp、ECH
+- KV 预编译 cache（15min TTL）
+- 三层健康检查（TCP→TLS→WS）
+- 节点信誉 + quarantine 系统
+- 订阅输出过滤（20节点/80%/去重）
+- 多客户端支持：CLASH、SURGE、SING-BOX、LOON、QUANTUMULT X、V2RAY、Shadowrocket、STASH、NEKORAY、V2RAYNG
+- 隐藏订阅 URL
+
+**UI**
+- 白色暖色调 UI
+- 移除 Matrix/FX/HUD 动画
+- `/api/config` — KV storage endpoint
+- `/api/preferred-ips` — IP lookup endpoint
+
+### ⚠️ 缺失 / 待实现
+
+| 功能 | 优先级 | 状态 |
+|------|--------|------|
+| `/refresh` endpoint | P0 | ⚠️ 缺失 |
+| `?refresh=1` query param | P0 | ⚠️ 缺失 |
+| Config source tracing（`__trace`） | Stable-2 | ⚠️ 缺失 |
+| Route registry centralization（`matchRoute`） | Stable-3 | ⚠️ 缺失 |
+| Subscription MIME 多态 | P2-1 | ⏸️ 延期 |
+| Query param polymorphism | P2-2 | ⏸️ 延期 |
+| Rate limit（同 IP 30s） | P2-3 | ⏸️ 延期 |
+| WebSocket connect backoff | P2-3 | ⏸️ 延期 |
+| Fail fast（TCP 3s timeout） | P2-3 | ⏸️ 延期 |
 
 ---
 
@@ -38,7 +72,10 @@
 2. 复制新的 Namespace ID 到 `wrangler.toml`
 3. 写入配置 key: `c`，value 为 JSON 配置
 
+---
+
 ## 主要功能
+
 - 自定义路径、订阅转换、延迟测试
 - KV 图形化管理，配置实时生效
 - 多客户端支持：CLASH、SURGE、SING-BOX、LOON、QUANTUMULT X、V2RAY、Shadowrocket、STASH、NEKORAY、V2RAYNG
