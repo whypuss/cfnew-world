@@ -700,7 +700,7 @@ Sitemap: https://example.com/sitemap.xml
                 const customPreferred = getConfigValue('yx', env.yx || env.YX);
                 if (customPreferred) {
                     try {
-                        const preferredList = customPreferred.split(',').map(item => item.trim()).filter(item => item);
+                        const preferredList = customPreferred.split(/[\n,]/).map(item => item.trim()).filter(item => item);
                         customPreferredIPs = [];
                         customPreferredDomains = [];
 
