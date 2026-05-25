@@ -7823,7 +7823,7 @@ Sitemap: https://example.com/sitemap.xml
         const yxValue = getConfigValue('yx', '');
         if (yxValue) {
             try {
-                const preferredList = yxValue.split(',').map(item => item.trim()).filter(item => item);
+                const preferredList = yxValue.split(/[\n,]/).map(item => item.trim()).filter(item => item);
                 customPreferredIPs = [];
                 customPreferredDomains = [];
 
@@ -7870,7 +7870,7 @@ Sitemap: https://example.com/sitemap.xml
     function parseYxToArray(yxValue) {
         if (!yxValue || !yxValue.trim()) return [];
 
-        const items = yxValue.split(',').map(item => item.trim()).filter(item => item);
+        const items = yxValue.split(/[\n,]/).map(item => item.trim()).filter(item => item);
         const result = [];
 
         for (const item of items) {
